@@ -67,5 +67,11 @@
   },
   "get_image_url_fail": {
     "message": "无法读取远程的图片"
+  },
+  "micro_album_text": {
+    "message": "微相册"
+  },
+  "micro_album_hinter": {
+    "message": "前往微相册管理相册中的图片"
   }
 }

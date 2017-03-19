@@ -40,6 +40,16 @@ class Dispatcher {
         if (Number.isInteger(count) && count > 0) this.count = count;
     }
 
+    createMicroAlbum() {
+        let a = document.createElement("a");
+        let menuNav = document.querySelector(".menu-nav");
+        a.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
+        a.title = chrome.i18n.getMessage("micro_album_hinter");
+        a.target = "_blank";
+        a.textContent = chrome.i18n.getMessage("micro_album_text");
+        menuNav.prepend(a);
+    }
+
     actuator() {
         backWindow.Weibo.getAllPhoto(this.page, this.count)
             .then(result => {
@@ -48,6 +58,7 @@ class Dispatcher {
                 this.checkout.albumId = result.albumId;
                 this.loading.remove();
                 this.repaging();
+                this.createMicroAlbum();
 
                 if (!result.list.length) {
                     this.errorInjector(chrome.i18n.getMessage("page_no_data"));
