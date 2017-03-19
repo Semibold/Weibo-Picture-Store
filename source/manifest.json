@@ -1,0 +1,60 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extension_name__",
+  "version": "1.2.0",
+  "default_locale": "zh_CN",
+  "description": "__MSG_extension_description__",
+  "icons": {
+    "16": "icons/32.png",
+    "32": "icons/32.png",
+    "64": "icons/64.png",
+    "128": "icons/128.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/32.png",
+    "default_title": "__MSG_extension_name__"
+  },
+  "background": {
+    "scripts": [
+      "scripts/global/boot.js",
+      "scripts/global/utils.js",
+      "scripts/global/pipeline.js",
+      "scripts/global/register.js",
+      "scripts/module/getStatus.js",
+      "scripts/module/pidUpload.js",
+      "scripts/module/fileUpload.js",
+      "scripts/module/getAlbumId.js",
+      "scripts/module/createAlbum.js",
+      "scripts/module/checkAlbumId.js",
+      "scripts/module/getAllPhoto.js",
+      "scripts/module/removePhoto.js",
+      "scripts/module/readFile.js",
+
+      "scripts/background.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "match_about_blank": true,
+      "all_frames": true,
+      "js": ["scripts/inject.js"]
+    }
+  ],
+  "options_page": "options.html",
+  "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
+  "minimum_chrome_version": "56",
+  "permissions": [
+    "tabs",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "webNavigation",
+    "contextMenus",
+    "notifications",
+    "clipboardWrite",
+    "clipboardRead",
+    "<all_urls>"
+  ]
+}
