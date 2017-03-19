@@ -26,6 +26,9 @@
             } else {
                 return Promise.reject();
             }
+        }).catch(reason => {
+            Weibo.getStatus(true);
+            return Promise.reject(reason);
         });
     };
 

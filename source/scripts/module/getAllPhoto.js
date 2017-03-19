@@ -52,6 +52,7 @@
             try {
                 sessionStorage.removeItem("albumId");
             } catch (e) {}
+            Weibo.getStatus(true);
             return Promise.reject(reason);
         });
     };
