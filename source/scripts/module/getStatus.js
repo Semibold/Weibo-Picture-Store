@@ -72,9 +72,7 @@
         notificationId === notifyId && chrome.tabs.create({
             url: loginURL,
         }, tab => {
-            chrome.notifications.clear(notifyId, wasCleared => {
-                wasCleared && chrome.windows.getCurrent(result => chrome.windows.remove(result.id));
-            });
+            chrome.notifications.clear(notifyId);
         });
     });
 
