@@ -1,0 +1,220 @@
+#controller {
+    --margin-bottom: 2.5em;
+    position: relative;
+    margin: auto;
+    padding-bottom: var(--margin-bottom);
+    min-width: 720px;
+    width: 100%;
+    font-size: 87.5%;
+    color: #333;
+    background-color: #fff;
+}
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 3em;
+    line-height: 1;
+    border-bottom: 1px solid #e5e9ef;
+    background-color: #f6f9fa;
+    user-select: none;
+    z-index: 1000;
+}
+
+.option-wrapper > div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.parting-line {
+    margin-left: 1em;
+    width: 1px;
+    height: 1.8em;
+    background-color: #e5e9ef;
+}
+
+.network-protocol > label,
+.picture-clip > label {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.8em;
+}
+
+.network-protocol > label > input,
+.picture-clip > label > input {
+    display: inline-block;
+    vertical-align: middle;
+    cursor: default;
+}
+
+.custom-clip-size {
+    padding: 0 0.2em;
+    width: 8em;
+    border: 0;
+    border-bottom: 1px dotted #ddd;
+    background-color: transparent;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.custom-clip-size:focus {
+    border-bottom: 1px solid #21b3a3;
+}
+
+.copy-mode,
+.browsing-history {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.8em;
+    color: #6d757a;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.copy-mode:hover,
+.browsing-history:hover {
+    color: #333;
+}
+
+.copy-mode > .fa,
+.browsing-history > .fa {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 1.6em;
+}
+
+.copy-mode > .fa {
+    display: none;
+}
+
+.copy-mode[data-batch="true"] > .fa-check,
+.copy-mode[data-batch="false"] > .fa-times {
+    display: inline-block;
+}
+
+#content {
+    margin: 0 auto;
+    max-width: 1440px;
+    width: 100%;
+}
+
+#content > .item {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--margin-bottom);
+    padding: 0 1em;
+}
+
+#content > .item > div {
+    margin: 0 1em;
+}
+
+.holder-wrapper {
+    flex: none;
+}
+
+.image-holder {
+    width: 200px;
+    height: 200px;
+    border: 4px dashed #fdfdfd;
+    border-radius: 10px;
+    background: #e5e9ef url("../assets/placeholder.png") no-repeat center;
+    background-size: cover;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    transition: background-color 0.15s;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.image-holder:hover {
+    background-color: #999;
+}
+
+.image-holder > img {
+    width: 100%;
+    height: 100%;
+    background-size: 20px 20px;
+    background: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%), linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%) 0 0, 10px 10px;
+    /* Overload */
+    background: #fefefe;
+    object-fit: cover;
+}
+
+.table-wrapper {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.table-wrapper > table {
+    white-space: nowrap;
+}
+
+.table-wrapper tr > td {
+    padding: 0.5em;
+}
+
+.table-wrapper tr > td:nth-of-type(2) {
+    width: 100%;
+}
+
+.table-wrapper .title {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+}
+
+.table-wrapper td > input {
+    display: block;
+    padding: 0 0.3em;
+    width: 100%;
+    height: 2em;
+    border: 0;
+    border-bottom: 1px dotted #ddd;
+    background-color: transparent;
+    transition: border-color 0.2s, background-color 0.15s;
+    box-sizing: border-box;
+}
+
+.table-wrapper td > input:focus {
+    border-bottom: 1px solid #21b3a3;
+}
+
+.table-wrapper td > input:hover {
+    background-color: #f5f5f5;
+}
+
+.table-wrapper .button-copy {
+    display: inline-block;
+    padding: 0 0.8em;
+    line-height: 2em;
+    border: 0;
+    border-radius: 3px;
+    color: #fff;
+    background-color: #00a1d6;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    transition: background-color 0.25s ease-out;
+    cursor: pointer;
+}
+
+.table-wrapper .button-copy:hover {
+    background-color: #00b5e5;
+}
+
+#copy-to-clipboard {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    border: 0;
+    z-index: -1000;
+}
