@@ -74,6 +74,7 @@ const Utils = {
                 title: chrome.i18n.getMessage("warn_title"),
                 message: chrome.i18n.getMessage("get_image_url_fail"),
             });
+            return Promise.reject(reason);
         });
     },
 
