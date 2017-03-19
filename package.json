@@ -1,0 +1,23 @@
+{
+  "name": "weibo-picture-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome Extension",
+  "scripts": {
+    "deploy": "gulp deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aqours/Weibo-Picture-Store.git"
+  },
+  "author": "Aqours",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aqours/Weibo-Picture-Store/issues"
+  },
+  "homepage": "https://github.com/Aqours/Weibo-Picture-Store#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-zip": "^3.2.0"
+  }
+}
