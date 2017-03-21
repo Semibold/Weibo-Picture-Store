@@ -3,12 +3,25 @@
  */
 {
 
+    const overflow = 20 * 1000 * 1000;
+    const slopId = Utils.randomString(16);
+    const notifyId = Utils.randomString(16);
+
     Weibo.readFile = (files, readType, previewURL) => {
          let buffer = [];
          let oneline = Pipeline[readType];
 
          for (let file of files) {
              if (!file) continue;
+             if (file.size > overflow) {
+                 chrome.notifications.create(slopId, {
+                     type: "basic",
+                     iconUrl: chrome.i18n.getMessage("64"),
+                     title: chrome.i18n.getMessage("info_title"),
+                     message: chrome.i18n.getMessage("reason_size_exceeded"),
+                 });
+                 continue;
+             }
              if (Weibo.acceptType[file.type]) {
                  let fileType = file.type;
                  let promise = new Promise((resolve, reject) => {
@@ -36,6 +49,13 @@
                      fileReader[oneline.readType](file);
                  });
                  buffer.push(promise);
+             } else {
+                 chrome.notifications.create(notifyId, {
+                     type: "basic",
+                     iconUrl: chrome.i18n.getMessage("64"),
+                     title: chrome.i18n.getMessage("info_title"),
+                     message: chrome.i18n.getMessage("image_type_mismatch"),
+                 });
              }
          }
 
