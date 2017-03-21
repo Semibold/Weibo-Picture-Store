@@ -35,6 +35,9 @@
   "file_upload_failed": {
     "message": "微博登录信息校验成功，可是。。。图片上传失败了呢"
   },
+  "reason_size_exceeded": {
+    "message": "检测到某些图片的大小超过20M，自动丢弃这些图片"
+  },
   "upload_progress_message": {
     "message": "当前提示在上传完成后会自动关闭"
   },
