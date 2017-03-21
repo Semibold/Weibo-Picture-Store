@@ -1,0 +1,244 @@
+@import "animation.css";
+
+body {
+    background-color: rgb(242, 242, 242);
+}
+
+#controller {
+    margin: auto;
+    padding: 2em;
+    max-width: 1280px;
+    width: 100%;
+    font-size: 75%;
+    color: #333;
+    box-sizing: border-box;
+}
+
+#header h1 {
+    margin: 0.5em 1em 1em;
+    font-size: 2em;
+    line-height: 2;
+    font-weight: normal;
+    text-shadow: 0 0 1px #666;
+    border-bottom: 1px dashed #ccc;
+    box-sizing: border-box;
+}
+
+#content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#content > section {
+    --gap: 4px;
+    position: relative;
+    flex: 1 0 16em;
+    margin: 0.8em 0.8em 2.4em;
+    padding: var(--gap);
+    transition: 0.2s;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
+}
+
+#content > section:empty {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 0;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.img-label {
+    margin-top: var(--gap);
+    padding-top: var(--gap);
+    padding-bottom: 1px;
+    line-height: 1;
+    text-align: right;
+    border-top: 1px dotted #e5e9ef;
+}
+
+.img-body {
+    user-select: none;
+}
+
+.img-body:hover .remove-item {
+    opacity: 1;
+    visibility: visible;
+}
+
+.remove-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    margin-top: -1em;
+    margin-right: -1em;
+    width: 2em;
+    height: 2em;
+    opacity: 0;
+    visibility: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    transition: opacity 0.15s 250ms;
+    background-color: rgba(35, 35, 35, 0.9);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    z-index: 10;
+}
+
+.remove-item:hover {
+    animation: shake-little 2000ms 150ms infinite;
+}
+
+.remove-item .fa {
+    font-size: 1.2em;
+    line-height: 1;
+    color: #ffffff;
+}
+
+.image-linker {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    overflow: hidden;
+}
+
+.img-body:hover img {
+    transform: scale(1.2);
+}
+
+.image-linker img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s 100ms;
+}
+
+.create-date {
+    color: #99a2aa;
+    cursor: default;
+}
+
+#footer {
+    margin-bottom: 1em;
+}
+
+.post-nav {
+    display: flex;
+    justify-content: space-around;
+    color: #bbb;
+    user-select: none;
+}
+
+.post-nav .hint {
+    align-self: center;
+}
+
+.post-nav .hint > span {
+    display: block;
+    text-align: center;
+}
+
+.post-nav .prev,
+.post-nav .next {
+    display: inline-block;
+    width: 4em;
+    height: 2em;
+    font-size: 2em;
+    line-height: 2em;
+    text-align: center;
+    transition: color 0.2s;
+}
+
+.post-nav .prev[data-disabled="false"],
+.post-nav .next[data-disabled="false"] {
+    cursor: pointer;
+}
+
+.post-nav .prev[data-disabled="false"]:hover,
+.post-nav .next[data-disabled="false"]:hover {
+    color: #555;
+}
+
+.post-nav .prev[data-disabled="true"],
+.post-nav .next[data-disabled="true"] {
+    color: #e9e9e9;
+    cursor: default;
+}
+
+.footer-bottom {
+    margin-top: 2em;
+}
+
+.split-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, #ccc 50%, transparent 100%);
+}
+
+.menu-nav {
+    height: 2em;
+    line-height: 2;
+    text-align: center;
+}
+
+.menu-nav a {
+    display: inline-block;
+    padding: 0 0.8em;
+    line-height: 2.5;
+    color: #888;
+    transition: color 0.15s;
+    cursor: pointer;
+}
+
+.menu-nav a:hover {
+    color: #e8554e;
+}
+
+.pio-throw-message {
+    margin: 10% 0;
+    padding-bottom: 1em;
+    width: 100%;
+    color: #999;
+    font-size: 1.25em;
+    font-weight: 300;
+    line-height: 3;
+    text-align: center;
+    user-select: none;
+}
+
+.pio-loading {
+    margin: 10% 0;
+    padding-bottom: 1em;
+    width: 100%;
+    color: #999;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+.pio-loading::before {
+    content: "";
+    display: block;
+    margin: auto;
+    width: 48px;
+    height: 48px;
+    background: url("../assets/loading.svg") no-repeat center;
+    background-size: cover;
+}
+
+.pio-loading::after {
+    content: "loading";
+    line-height: 1.5;
+}

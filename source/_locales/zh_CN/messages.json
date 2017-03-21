@@ -1,0 +1,77 @@
+{
+  "extension_name": {
+    "message": "新浪微博图床"
+  },
+  "extension_description": {
+    "message": "新浪微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
+  },
+  "32": {
+    "message": "icons/32.png"
+  },
+  "64": {
+    "message": "icons/64.png"
+  },
+  "128": {
+    "message": "icons/128.png"
+  },
+  "info_title": {
+    "message": "普通提示"
+  },
+  "warn_title": {
+    "message": "警告提示"
+  },
+  "fail_title": {
+    "message": "错误提示"
+  },
+  "check_login_status": {
+    "message": "微博登录信息校验失败，请确认微博登录后再次尝试其他操作"
+  },
+  "logout_status_message": {
+    "message": "当前微博处于登出状态，请登录微博后再次尝试其他操作"
+  },
+  "login_hinter_message": {
+    "message": "单击转到微博的登录页面进行登录操作"
+  },
+  "file_upload_failed": {
+    "message": "微博登录信息校验成功，可是。。。图片上传失败了呢"
+  },
+  "upload_progress_message": {
+    "message": "当前提示在上传完成后会自动关闭"
+  },
+  "upload_progress_hinter": {
+    "message": "加速上传中，请耐心等候"
+  },
+  "file_upload_ended": {
+    "message": "图片上传流程结束啦！"
+  },
+  "copy_to_clipboard": {
+    "message": "复制成功：链接已经复制到剪切板了呦~"
+  },
+  "copy_to_clipboard_hinter": {
+    "message": "粘贴即可使用剪切板中的图片链接"
+  },
+  "image_type_mismatch": {
+    "message": "暂不支持当前选中的图片格式"
+  },
+  "remove_failed_message": {
+    "message": "操作失败：从相册中移除图片没有成功哈~"
+  },
+  "get_photo_fail_message": {
+    "message": "获取图片失败，欸嘿~"
+  },
+  "page_no_data": {
+    "message": "没有分页数据，欸嘿~"
+  },
+  "copy_image_url": {
+    "message": "把这张图片上传到微相册"
+  },
+  "get_image_url_fail": {
+    "message": "无法读取远程的图片"
+  },
+  "micro_album_text": {
+    "message": "微相册"
+  },
+  "micro_album_hinter": {
+    "message": "前往微相册管理相册中的图片"
+  }
+}

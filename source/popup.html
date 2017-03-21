@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>__MSG_extension_name__</title>
+    <link rel="stylesheet" href="sheets/global.css">
+    <link rel="stylesheet" href="sheets/scrollbar.css">
+    <link rel="stylesheet" href="assets/font-awesome.css">
+    <link rel="stylesheet" href="sheets/popup.css">
+    <template id="template">
+        <section class="item">
+            <div class="holder-wrapper">
+                <div class="image-holder" title="上传图片到微博相册"></div>
+            </div>
+            <div class="table-wrapper">
+                <table width="100%">
+                    <tbody>
+                        <tr class="type-url">
+                            <td><span class="title">URL</span></td>
+                            <td><input type="text" spellcheck="false" readonly placeholder="Uniform Resource Locator"></td>
+                            <td><a class="button-copy" data-type="URL">Copy</a></td>
+                        </tr>
+                        <tr class="type-html">
+                            <td><span class="title">HTML</span></td>
+                            <td><input type="text" spellcheck="false" readonly placeholder="HyperText Markup Language"></td>
+                            <td><a class="button-copy" data-type="HTML">Copy</a></td>
+                        </tr>
+                        <tr class="type-ubb">
+                            <td><span class="title">UBB</span></td>
+                            <td><input type="text" spellcheck="false" readonly placeholder="Ultimate Bulletin Board"></td>
+                            <td><a class="button-copy" data-type="UBB">Copy</a></td>
+                        </tr>
+                        <tr class="type-markdown">
+                            <td><span class="title">Markdown</span></td>
+                            <td><input type="text" spellcheck="false" readonly placeholder="Markdown"></td>
+                            <td><a class="button-copy" data-type="Markdown">Copy</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </template>
+</head>
+
+<body>
+
+<article id="controller">
+    <div id="header">
+        <div class="option-wrapper">
+            <div class="network-protocol">
+                <label title="使用http协议">
+                    <input type="radio" name="scheme" value="1">
+                    <span>http</span>
+                </label>
+                <label title="使用https协议">
+                    <input type="radio" name="scheme" value="2">
+                    <span>https</span>
+                </label>
+                <label title="使用相对协议">
+                    <input type="radio" name="scheme" value="3">
+                    <span>relative</span>
+                </label>
+            </div>
+            <div class="parting-line"></div>
+            <div class="picture-clip">
+                <label title="使用原始图片">
+                    <input type="radio" name="clipSize" value="1">
+                    <span>original</span>
+                </label>
+                <label title="中等裁剪尺寸">
+                    <input type="radio" name="clipSize" value="2">
+                    <span>medium</span>
+                </label>
+                <label title="缩略图裁剪尺寸">
+                    <input type="radio" name="clipSize" value="3">
+                    <span>thumbnail</span>
+                </label>
+                <label title="自定义裁剪尺寸">
+                    <input type="radio" name="clipSize" value="4">
+                    <input type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="off" maxlength="100" class="custom-clip-size">
+                </label>
+            </div>
+        </div>
+        <div class="setting-wrapper">
+            <a class="copy-mode" title="切换复制模式">
+                <i class="fa fa-times"></i>
+                <i class="fa fa-check"></i>
+            </a>
+            <a class="browsing-history" title="查看上传记录">
+                <i class="fa fa-history"></i>
+            </a>
+        </div>
+    </div>
+    <div id="content" ></div>
+    <div id="footer"></div>
+</article>
+<input id="file-input" type="file" accept="*/*" multiple hidden>
+<textarea id="copy-to-clipboard" title="stillage" cols="30" rows="10"></textarea>
+
+<script src="scripts/global/boot.js"></script>
+<script src="scripts/global/utils.js"></script>
+<script src="scripts/global/pipeline.js"></script>
+<script src="scripts/global/register.js"></script>
+
+<script src="scripts/popup/buildEvent.js"></script>
+<script src="scripts/popup/buildItem.js"></script>
+<script src="scripts/popup/dispatcher.js"></script>
+<script src="scripts/popup/popup.js"></script>
+
+</body>
+</html>
