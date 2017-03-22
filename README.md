@@ -5,7 +5,7 @@
 
 ## Introduction
 
-上传到图片到微博并生成外链的 Chrome 浏览器扩展（最低版本支持：Chrome 56）
+上传图片到微博并生成外链的 Chrome 浏览器扩展（最低版本支持：Chrome 56）
 
 
 ## Feature
