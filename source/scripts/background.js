@@ -93,14 +93,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(details => {
         }
     }
 
-    details.requestHeaders.push({
-        name,
-        value,
-    });
-
-    return {
-        requestHeaders: details.requestHeaders,
-    };
+    details.requestHeaders.push({name, value});
+    return {requestHeaders: details.requestHeaders};
 }, {
     urls: ["http://photo.weibo.com/*"],
 }, ["requestHeaders", "blocking"]);
