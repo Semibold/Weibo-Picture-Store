@@ -3,9 +3,6 @@
  */
 {
 
-    const overflow = 20 * 1000 * 1000;
-    const slopId = Utils.randomString(16);
-    const typeId = Utils.randomString(16);
     const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
 
@@ -15,31 +12,6 @@
         let total = result.length;
 
         for (let item of result) {
-            if (!item) {
-                total--;
-                continue;
-            }
-            if (!Weibo.acceptType[item.file.type]) {
-                total--;
-                chrome.notifications.create(typeId, {
-                    type: "basic",
-                    iconUrl: chrome.i18n.getMessage("64"),
-                    title: chrome.i18n.getMessage("info_title"),
-                    message: chrome.i18n.getMessage("image_type_mismatch"),
-                });
-                continue;
-            }
-            if (item.file.size > overflow) {
-                total--;
-                chrome.notifications.create(slopId, {
-                    type: "basic",
-                    iconUrl: chrome.i18n.getMessage("64"),
-                    title: chrome.i18n.getMessage("info_title"),
-                    message: chrome.i18n.getMessage("reason_size_exceeded"),
-                });
-                continue;
-            }
-
             let oneline = Pipeline[item.readType];
             let promise = fetch(Utils.createURL(url, oneline.getParam({
                 mime: item.file.type,

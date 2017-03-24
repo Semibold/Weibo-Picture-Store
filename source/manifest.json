@@ -23,6 +23,7 @@
       "scripts/global/register.js",
       "scripts/module/getStatus.js",
       "scripts/module/pidUpload.js",
+      "scripts/module/filePurity.js",
       "scripts/module/fileUpload.js",
       "scripts/module/getAlbumId.js",
       "scripts/module/createAlbum.js",
