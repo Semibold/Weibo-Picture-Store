@@ -93,8 +93,9 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                     buffer.push(item.url);
                 }
                 if (message.item.writeln === "clipboard") {
-                    Utils.writeToClipboard(buffer.join("\n"), () => {
-                        chrome.notifications.create(notifyId, {
+                    let text = buffer.join("\n");
+                    Utils.writeToClipboard(text, () => {
+                        text && chrome.notifications.create(notifyId, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("64"),
                             title: chrome.i18n.getMessage("info_title"),
