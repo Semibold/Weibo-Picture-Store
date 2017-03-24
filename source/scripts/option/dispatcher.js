@@ -16,6 +16,7 @@ class Dispatcher {
         this.checkout = {albumId: null, pages: null};
         this.searchParams = new URLSearchParams(location.search);
         this.loading = null;
+        this.sessionKey = "removedPhotoId";
         this.decorator();
         return {};
     }
@@ -121,9 +122,7 @@ class Dispatcher {
                             // 由于服务器缓存的原因，页面数据可能刷新不及时
                             // 可能会出现已删除的数据刷新后还存在的问题
                             // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
-                            try {
-                                sessionStorage.setItem("removed_photo_id", JSON.stringify(photoId));
-                            } catch (e) {}
+                            Utils.session.set(this.sessionKey, photoId);
                             chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
                         })
                         .catch(reason => {
@@ -155,16 +154,8 @@ class Dispatcher {
         }
     }
 
-    removedPhotoId () {
-        try {
-            return JSON.parse(sessionStorage.getItem("removed_photo_id"));
-        } catch (e) {
-            return null;
-        }
-    }
-
     buildItems(items) {
-        let removedPhotoId = this.removedPhotoId();
+        let removedPhotoId = Utils.session.get(this.sessionKey);
 
         for (let item of items) {
             if (item.photoId === removedPhotoId) continue;
@@ -176,7 +167,6 @@ class Dispatcher {
             let createDate = section.querySelector(".create-date");
             let preview = `${item.picHost}/mw690/${item.picName}`;
 
-            // section.dataset.pid = item.pid;
             section.dataset.photoId = item.photoId;
             section.dataset.albumId = this.checkout.albumId;
             image.src = preview;
