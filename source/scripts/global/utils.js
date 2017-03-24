@@ -80,7 +80,6 @@ const Utils = {
         let range = document.createRange();
         let selection = document.getSelection();
 
-        span.hidden = true;
         span.textContent = text;
         document.body.append(span);
         range.selectNodeContents(span);
