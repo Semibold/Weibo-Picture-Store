@@ -10,6 +10,7 @@ const dispatcher = new Dispatcher();
 const Resolve = files => {
     return backWindow.Weibo
         .readFile(files, "arrayBuffer", true)
+        .then(result => backWindow.Weibo.filePurity(result))
         .then(result => dispatcher.actuator(result));
 };
 
@@ -17,9 +18,7 @@ fileInput.accept = Object.keys(Weibo.acceptType).join(",");
 fileInput.addEventListener("change", e => Resolve(e.target.files));
 
 browsingHistory.addEventListener("click", e => {
-    backWindow.chrome.tabs.create({
-        url: "options.html",
-    });
+    backWindow.chrome.tabs.create({url: "options.html"});
 });
 
 document.addEventListener("keydown", e => {

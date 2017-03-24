@@ -17,6 +17,8 @@ class Dispatcher {
         this.urlPrefix = null;
         this.requestID = null;
         this.checkout = {total: 0, settle: 0, clear: true};
+        this.detailKey = "WB.detail";
+        this.configKey = "WB.config";
         this.decorator();
 
         return {
@@ -33,21 +35,19 @@ class Dispatcher {
 
     startStore() {
         let padding = {scheme: "1", clipSize: "1"};
+        let detail = Utils.local.get(this.detailKey);
+        let config = Utils.local.get(this.configKey);
 
-        try {
-            let detail = JSON.parse(localStorage.getItem("WB.detail"));
-            let config = JSON.parse(localStorage.getItem("WB.config"));
-            if (typeof detail === "string") {
-                this.external[4] = detail;
-            }
-            if (config) {
-                for (let name of Object.keys(padding)) {
-                    if (Weibo.startConfig[name][config[name]] != null) {
-                        padding[name] = config[name];
-                    }
+        if (typeof detail === "string") {
+            this.external[4] = detail;
+        }
+        if (config) {
+            for (let name of Object.keys(padding)) {
+                if (Weibo.startConfig[name][config[name]] != null) {
+                    padding[name] = config[name];
                 }
             }
-        } catch (e) {}
+        }
 
         this.config = new Proxy(padding, {
             get: (target, key, receiver) => {
@@ -64,17 +64,11 @@ class Dispatcher {
                             this.clipSize();
                             break;
                     }
-                    this.setStorage("WB.config", this.config);
+                    Utils.local.set(this.configKey, this.config);
                 }
                 return result;
             },
         });
-    }
-
-    setStorage(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (e) {}
     }
 
     startBlank() {
@@ -90,15 +84,14 @@ class Dispatcher {
         let copy = document.querySelector("a.copy-mode");
 
         copy.addEventListener("click", e => {
-            this.batch = !this.batch;
+            this.batch = copy.dataset.batch = !this.batch;
             this.copyMode();
-            copy.dataset.batch = this.batch;
         });
 
         this.linker.addEventListener("input", e => {
             this.external[4] = e.target.value;
             this.clipSize();
-            this.setStorage("WB.detail", e.target.value);
+            Utils.local.set(this.detailKey, e.target.value);
         });
         this.linker.addEventListener("focus", e => {
             if (!link.checked) {
@@ -214,7 +207,7 @@ class Dispatcher {
         let scheme = Weibo.startConfig.scheme;
         let clipSize = Weibo.startConfig.clipSize;
         let rootZone = Weibo.rootZone;
-        let typo = raw.fileType && Weibo.acceptType[raw.fileType].typo || ".jpg";
+        let typo = Weibo.acceptType[raw.file.type].typo;
         let url = `${scheme[this.config.scheme] + this.urlPrefix + rootZone}/${clipSize[this.config.clipSize]}/${raw.pid + typo}`;
 
         return Object.assign({}, raw, {

@@ -39,30 +39,27 @@ class BuildEvent {
                             }
                             if (item.kind === "string" && typeof item.getAsString === "function") {
                                 queues.push(new Promise((resolve, reject) => {
-                                    try {
-                                        item.getAsString(str => {
-                                            if (Utils.checkImageURL(str)) {
-                                                Utils.fetchImage(str)
-                                                    .then(blob => {
-                                                        buffer.push(blob);
-                                                        resolve();
-                                                    }).catch(reason => {
-                                                        chrome.notifications.create({
-                                                            type: "basic",
-                                                            iconUrl: chrome.i18n.getMessage("64"),
-                                                            title: chrome.i18n.getMessage("warn_title"),
-                                                            message: chrome.i18n.getMessage("get_image_url_fail"),
-                                                        });
-                                                        resolve();
+                                    item.getAsString(str => {
+                                        if (Utils.checkImageURL(str)) {
+                                            Utils.fetchImage(str)
+                                                .then(blob => {
+                                                    buffer.push(blob);
+                                                    resolve();
+                                                })
+                                                .catch(reason => {
+                                                    chrome.notifications.create({
+                                                        type: "basic",
+                                                        iconUrl: chrome.i18n.getMessage("64"),
+                                                        title: chrome.i18n.getMessage("warn_title"),
+                                                        message: chrome.i18n.getMessage("get_image_url_fail"),
                                                     });
-                                            } else {
-                                                resolve();
-                                            }
-                                        });
-                                    } catch (e) {
-                                        resolve();
-                                    }
-                                }));
+                                                    resolve();
+                                                });
+                                        } else {
+                                            resolve();
+                                        }
+                                    });
+                                }).catch(Utils.noop));
                             }
                         }
 
