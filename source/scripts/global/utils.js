@@ -76,13 +76,13 @@ const Utils = {
     },
 
     writeToClipboard(text, doneCallback, failCallback) {
-        let span = document.createElement("span");
+        let pre = document.createElement("pre");
         let range = document.createRange();
         let selection = document.getSelection();
 
-        span.textContent = text;
-        document.body.append(span);
-        range.selectNodeContents(span);
+        pre.textContent = text;
+        document.body.append(pre);
+        range.selectNodeContents(pre);
         selection.removeAllRanges();
         selection.addRange(range);
         if (document.execCommand("copy")) {
@@ -90,7 +90,7 @@ const Utils = {
         } else {
             typeof failCallback === "function" && failCallback();
         }
-        span.remove();
+        pre.remove();
     },
 
 };
