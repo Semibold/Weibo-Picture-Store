@@ -10,7 +10,7 @@
                     chrome.runtime.lastError && console.warn(chrome.runtime.lastError);
 
                     if (obj[uid] && obj[uid].albumId) {
-                        resolve(obj[uid].albumId);
+                        resolve({albumId: obj[uid].albumId});
                     } else {
                         reject();
                     }
