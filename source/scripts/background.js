@@ -46,7 +46,15 @@ const uploadMenuEntryId = chrome.contextMenus.create({
             Utils.fetchImage(obj.srcUrl)
                 .then(blob => Weibo.readFile([blob]))
                 .then(result => Weibo.fileUpload(result))
-                .then(result => result[0] && transformRaw(result[0]));
+                .then(result => result[0] && transformRaw(result[0]))
+                .catch(reason => {
+                    chrome.notifications.create({
+                        type: "basic",
+                        iconUrl: chrome.i18n.getMessage("64"),
+                        title: chrome.i18n.getMessage("warn_title"),
+                        message: chrome.i18n.getMessage("get_image_url_fail"),
+                    });
+                });
         } else {
             chrome.notifications.create(notifyId, {
                 type: "basic",

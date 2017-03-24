@@ -3,8 +3,10 @@
  */
 {
 
-    const sid = Utils.randomString(16);
-    const notifyId = Utils.randomString(16);
+    const overflow = 20 * 1000 * 1000;
+    const slopId = Utils.randomString(16);
+    const typeId = Utils.randomString(16);
+    const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
 
     Weibo.fileUpload = (result) => {
@@ -13,10 +15,34 @@
         let total = result.length;
 
         for (let item of result) {
-            let fileType = item.fileType;
+            if (!item) {
+                total--;
+                continue;
+            }
+            if (!Weibo.acceptType[item.file.type]) {
+                total--;
+                chrome.notifications.create(typeId, {
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("64"),
+                    title: chrome.i18n.getMessage("info_title"),
+                    message: chrome.i18n.getMessage("image_type_mismatch"),
+                });
+                continue;
+            }
+            if (item.file.size > overflow) {
+                total--;
+                chrome.notifications.create(slopId, {
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("64"),
+                    title: chrome.i18n.getMessage("info_title"),
+                    message: chrome.i18n.getMessage("reason_size_exceeded"),
+                });
+                continue;
+            }
+
             let oneline = Pipeline[item.readType];
             let promise = fetch(Utils.createURL(url, oneline.getParam({
-                mime: fileType,
+                mime: item.file.type,
             })), Utils.blendParams({
                 method: "POST",
                 body: oneline.getBody(item.result),
@@ -38,11 +64,10 @@
                                 uid = JSON.parse(atob(data)).uid.toString();
                             } catch (e) {}
                         }
-                        let result = {sid, pid, size, width, height, fileType};
-                        if (item.objectURL) {
-                            result.objectURL = item.objectURL;
-                        }
-                        return Promise.reject(result);
+                        Weibo.pidUpload({pid, uid});
+                        let file = item.file;
+                        let objectURL = item.objectURL;
+                        return {file, objectURL, pid, size, width, height};
                     } else {
                         return Promise.reject();
                     }
@@ -50,39 +75,27 @@
                     return Promise.reject();
                 }
             }).catch(reason => {
-                let result = null;
-                if (reason && reason.sid === sid) {
-                    result = reason;
-                } else {
-                    if (item.objectURL) {
-                        URL.revokeObjectURL(item.objectURL);
-                    }
+                if (item.objectURL) {
+                    URL.revokeObjectURL(item.objectURL);
                 }
-                return Promise.resolve(result);
             });
 
             buffer.push(promise);
         }
 
         return Promise.all(buffer).then(rawData => {
-            let pids = [];
             let pureData = [];
             for (let item of rawData) {
-                if (item) {
-                    pids.push(item.pid);
-                    pureData.push(item);
-                }
+                item && pureData.push(item);
             }
-            pids.length && Weibo.pidUpload({uid, pids});
-            total && !pureData.length && Weibo.getStatus(true)
-                .then(result => {
-                    result.login && chrome.notifications.create(notifyId, {
-                        type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
-                        title: chrome.i18n.getMessage("fail_title"),
-                        message: chrome.i18n.getMessage("file_upload_failed"),
-                    });
+            total && !pureData.length && Weibo.getStatus().then(result => {
+                result.login && chrome.notifications.create(failId, {
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("64"),
+                    title: chrome.i18n.getMessage("fail_title"),
+                    message: chrome.i18n.getMessage("file_upload_failed"),
                 });
+            });
             return pureData;
         });
     };

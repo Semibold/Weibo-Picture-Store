@@ -46,7 +46,13 @@ class BuildEvent {
                                                     .then(blob => {
                                                         buffer.push(blob);
                                                         resolve();
-                                                    }, reason => {
+                                                    }).catch(reason => {
+                                                        chrome.notifications.create({
+                                                            type: "basic",
+                                                            iconUrl: chrome.i18n.getMessage("64"),
+                                                            title: chrome.i18n.getMessage("warn_title"),
+                                                            message: chrome.i18n.getMessage("get_image_url_fail"),
+                                                        });
                                                         resolve();
                                                     });
                                             } else {

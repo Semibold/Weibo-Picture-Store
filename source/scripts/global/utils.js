@@ -9,12 +9,14 @@ const Utils = {
         return String(this[Symbol.for("guid")]++);
     },
 
+    noop() {},
+
     createSearchParams(obj, former) {
         let searchParams = new URLSearchParams(former);
 
         if (obj) {
             for (let [key, value] of Object.entries(obj)) {
-                searchParams.append(key, value);
+                searchParams.set(key, value);
             }
         }
 
@@ -22,14 +24,8 @@ const Utils = {
     },
 
     createURL(url, obj) {
-        if (url && typeof url === "object") {
-            obj = url.param;
-            url = url.base;
-        }
-
         let base = new URL(url);
         let searchParams = this.createSearchParams(obj, base.search);
-
         base.search = searchParams.toString();
         return base.href;
     },
@@ -50,9 +46,8 @@ const Utils = {
         let len = Math.abs(length) || 0;
         let charPool = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-        while (len) {
+        while (len--) {
             buffer.push(charPool[Math.floor(Math.random() * charPool.length)]);
-            len--;
         }
 
         return buffer.join("");
@@ -67,14 +62,6 @@ const Utils = {
             referrer: "client",
         }).then(response => {
             return response.ok ? response.blob() : Promise.reject();
-        }).catch(reason => {
-            chrome.notifications.create({
-                type: "basic",
-                iconUrl: chrome.i18n.getMessage("64"),
-                title: chrome.i18n.getMessage("warn_title"),
-                message: chrome.i18n.getMessage("get_image_url_fail"),
-            });
-            return Promise.reject(reason);
         });
     },
 
