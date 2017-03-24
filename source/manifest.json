@@ -18,6 +18,7 @@
     "scripts": [
       "scripts/global/boot.js",
       "scripts/global/utils.js",
+      "scripts/global/utilsExtend.js",
       "scripts/global/pipeline.js",
       "scripts/global/register.js",
       "scripts/module/getStatus.js",

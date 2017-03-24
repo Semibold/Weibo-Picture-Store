@@ -9,8 +9,6 @@
     Weibo.pidUpload = (obj) => {
         let uid = obj.uid;
         let pid = obj.pid;
-
-        if (!pid) return;
         let getAlbumId = Weibo.getAlbumId(uid);
 
         getAlbumId.then(result => {
