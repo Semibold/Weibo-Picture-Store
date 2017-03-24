@@ -45,8 +45,7 @@ class BuildEvent {
                                                 .then(blob => {
                                                     buffer.push(blob);
                                                     resolve();
-                                                })
-                                                .catch(reason => {
+                                                }, reason => {
                                                     chrome.notifications.create({
                                                         type: "basic",
                                                         iconUrl: chrome.i18n.getMessage("64"),

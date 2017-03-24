@@ -75,4 +75,23 @@ const Utils = {
         }
     },
 
+    writeToClipboard(text, doneCallback, failCallback) {
+        let span = document.createElement("span");
+        let range = document.createRange();
+        let selection = document.getSelection();
+
+        span.hidden = true;
+        span.textContent = text;
+        document.body.append(span);
+        range.selectNodeContents(span);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        if (document.execCommand("copy")) {
+            typeof doneCallback === "function" && doneCallback();
+        } else {
+            typeof failCallback === "function" && failCallback();
+        }
+        span.remove();
+    },
+
 };
