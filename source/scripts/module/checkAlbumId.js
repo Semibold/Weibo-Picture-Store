@@ -4,7 +4,6 @@
 {
 
     const overflow = 100;
-    const sid = Utils.randomString(16);
     const url = "http://photo.weibo.com/albums/get_all";
 
     const erupt = (page, count) => {
@@ -16,7 +15,6 @@
         }).then(result => {
             if (result && result.result) {
                 let dict = {
-                    sid: sid,
                     albumId: {},
                     standby: null,
                     counter: 0,
@@ -30,11 +28,11 @@
                     }
                 }
 
-                return Promise.reject(dict);
+                return dict;
             } else {
                 return Promise.reject();
             }
-        }).catch(reason => reason && reason.sid === sid ? reason : null);
+        }).catch(Utils.noop);
     };
 
     Weibo.checkAlbumId = (albumId) => {
@@ -48,29 +46,22 @@
 
         return Promise.all(buffer).then(list => {
             let total = overflow;
-            let dict = {
-                albumId: null,
-                standby: null,
-            };
+            let dict = {albumId: null};
 
             for (let item of list) {
-                if (item && item.sid === sid) {
+                if (item) {
                     total -= item.counter;
                     if (item.albumId[albumId]) {
                         dict.albumId = item.albumId[albumId];
                         break;
                     }
                     if (item.standby) {
-                        dict.standby = item.standby;
+                        dict.albumId = item.standby;
                     }
                 }
             }
 
-            if (dict.albumId) {
-                return dict.albumId;
-            } else {
-                return dict.standby ? dict.standby : Promise.reject(Boolean(total));
-            }
+            return dict.albumId ? dict : Promise.reject(Boolean(total));
         });
     };
 

@@ -13,9 +13,9 @@ const Pipeline = new Proxy({}, {
                     getParam(obj) {
                         return Object.assign({
                             s: "xml",
-                            ori: 1,
-                            data: 1,
-                            rotate: 0,
+                            ori: "1",
+                            data: "1",
+                            rotate: "0",
                             wm: "",
                             app: "miniblog",
                             mime: "image/jpeg",
@@ -36,9 +36,9 @@ const Pipeline = new Proxy({}, {
                     getParam(obj) {
                         return Object.assign({
                             s: "xml",
-                            ori: 1,
+                            ori: "1",
                             data: "base64",
-                            rotate: 0,
+                            rotate: "0",
                             wm: "",
                             app: "miniblog",
                             mime: "image/jpeg",

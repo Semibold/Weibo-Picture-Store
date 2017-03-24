@@ -15,7 +15,7 @@
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {
             if (result && result.result) {
-                return result.data.album_id.toString();
+                return {albumId: result.data.album_id.toString()};
             } else {
                 return Promise.reject();
             }

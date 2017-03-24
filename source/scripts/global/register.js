@@ -19,7 +19,7 @@ Weibo.acceptType = {
 Weibo.imagePostface = Object.values(Weibo.acceptType).map(item => item.type.slice(1)).join("|");
 
 Weibo.distinctProp = {
-    property: 2,
+    property: "2",
     caption: "Weibo_Chrome",
     description: "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUWFdcwtlGEX2w", // 64 位特征码
     answer: "",

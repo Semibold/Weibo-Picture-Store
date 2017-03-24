@@ -4,26 +4,21 @@
 {
 
     const url = "http://photo.weibo.com/photos/get_all";
+    const sessionKey = "albumInfo";
     const doneCode = 0;
 
     Weibo.getAllPhoto = (page, count) => {
         return new Promise((resolve, reject) => {
-            try {
-                let albumId = JSON.parse(sessionStorage.getItem("albumId"));
-                albumId ? resolve(albumId) : reject();
-            } catch (e) {
-                reject();
-            }
+            let result = Utils.session.get(sessionKey);
+            result ? resolve(result) : reject();
         }).catch(reason => {
             return Weibo.getAlbumId();
-        }).then(albumId => {
-            try {
-                sessionStorage.setItem("albumId", JSON.stringify(albumId));
-            } catch (e) {}
+        }).then(result => {
+            Utils.session.set(sessionKey, result);
             return fetch(Utils.createURL(url, {
                 page: page || 1,
                 count: count || 20,
-                album_id: albumId,
+                album_id: result.albumId,
             }), Utils.blendParams());
         }).then(response => {
             return response.ok ? response.json() : Promise.reject();
@@ -49,10 +44,8 @@
                 return Promise.reject();
             }
         }).catch(reason => {
-            try {
-                sessionStorage.removeItem("albumId");
-            } catch (e) {}
-            Weibo.getStatus(true);
+            Utils.session.remove(sessionKey);
+            Weibo.getStatus();
             return Promise.reject(reason);
         });
     };
