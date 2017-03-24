@@ -82,6 +82,40 @@ const uploadMenuEntryId = chrome.contextMenus.create({
 }, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
 
 
+chrome.runtime.onMessage.addListener((message, sender) => {
+    if (message && message.type === "CE.base64_data_sender") {
+        Weibo.filePurity(message.result)
+            .then(result => Weibo.fileUpload(result))
+            .then(result => {
+                let buffer = [];
+                for (let item of result) {
+                    item.url = `${message.prefix + item.pid + Weibo.acceptType[item.file.type].typo + message.postfix}`;
+                    buffer.push(item.url);
+                }
+                if (message.item.writeln === "clipboard") {
+                    Utils.writeToClipboard(buffer.join("\n"), () => {
+                        chrome.notifications.create(notifyId, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("64"),
+                            title: chrome.i18n.getMessage("info_title"),
+                            message: chrome.i18n.getMessage("copy_to_clipboard"),
+                            contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
+                        });
+                    })
+                }
+                chrome.tabs.sendMessage(sender.tab.id, {
+                    type: "CE.file_upload_sender",
+                    item: message.item,
+                    buffer: buffer,
+                    result: result,
+                    prefix: message.prefix,
+                    postfix: message.postfix,
+                });
+            });
+    }
+});
+
+
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     const name = "Referer";
     const value = "http://photo.weibo.com/";
