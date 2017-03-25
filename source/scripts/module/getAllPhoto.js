@@ -4,17 +4,14 @@
 {
 
     const url = "http://photo.weibo.com/photos/get_all";
-    const sessionKey = "albumInfo";
     const doneCode = 0;
 
-    Weibo.getAllPhoto = (page, count) => {
+    Weibo.getAllPhoto = (albumInfo, page, count) => {
         return new Promise((resolve, reject) => {
-            let result = Utils.session.get(sessionKey);
-            result ? resolve(result) : reject();
+            albumInfo ? resolve(albumInfo) : reject();
         }).catch(reason => {
             return Weibo.getAlbumId();
         }).then(result => {
-            Utils.session.set(sessionKey, result);
             return fetch(Utils.createURL(url, {
                 page: page || 1,
                 count: count || 20,
@@ -44,7 +41,6 @@
                 return Promise.reject();
             }
         }).catch(reason => {
-            Utils.session.remove(sessionKey);
             Weibo.getStatus();
             return Promise.reject(reason);
         });

@@ -17,6 +17,7 @@ class Dispatcher {
         this.searchParams = new URLSearchParams(location.search);
         this.loading = null;
         this.sessionKey = "removedPhotoId";
+        this.albumInfoKey = "albumInfo";
         this.decorator();
         return {};
     }
@@ -52,8 +53,9 @@ class Dispatcher {
     }
 
     actuator() {
-        backWindow.Weibo.getAllPhoto(this.page, this.count)
+        backWindow.Weibo.getAllPhoto(Utils.session.get(this.albumInfoKey), this.page, this.count)
             .then(result => {
+                Utils.session.set(this.albumInfoKey, {albumId: result.albumId});
                 // 服务器可能返回不准确的分页数据，会导致空白分页
                 this.checkout.pages = Math.ceil(result.total / this.count);
                 this.checkout.albumId = result.albumId;
@@ -67,6 +69,7 @@ class Dispatcher {
                     this.buildItems(result.list);
                 }
             }, reason => {
+                Utils.session.remove(this.albumInfoKey);
                 this.loading.remove();
                 this.repaging();
                 this.errorInjector(chrome.i18n.getMessage("get_photo_fail_message"));
