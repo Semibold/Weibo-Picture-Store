@@ -28,8 +28,8 @@ Weibo.distinctProp = {
 };
 
 Weibo.urlPrefix = [
-    "wx1", "wx2", "wx3", "wx4",
     "ws1", "ws2", "ws3", "ws4",
+    "wx1", "wx2", "wx3", "wx4",
 ];
 
 Weibo.rootZone = ".sinaimg.cn";
