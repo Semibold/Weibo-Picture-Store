@@ -132,6 +132,13 @@
     + 属于正常情况，服务器返回的数据时效性不足，脚本做了些弥补，因此会出现这种情况
 
 
+## Powered
+
+> Tampermonkey 的扩展（在 extension 文件夹下）
+
+高阶用法（需要会写 JavaScript，也可以安装他人写好的脚本），请查看[示例说明](example_tampermonkey.js)
+
+
 ## Thanks
 
 - [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
