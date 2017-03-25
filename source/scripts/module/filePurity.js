@@ -33,7 +33,7 @@
             pureData.push(item);
         }
 
-        return pureData;
+        return Promise.resolve(pureData);
     };
 
 }
