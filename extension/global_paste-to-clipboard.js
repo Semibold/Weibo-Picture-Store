@@ -16,9 +16,14 @@
         note: [
             {
                 writeln: "clipboard",
-                selector: "body",
+                selector: "html",
                 eventType: "paste",
             },
+            // {
+            //     writeln: "clipboard",
+            //     selector: "html",
+            //     eventType: "drop",
+            // },
         ],
         prefix: "https://ws1.sinaimg.cn/large/",
         postfix: "",
