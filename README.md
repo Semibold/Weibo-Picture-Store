@@ -136,7 +136,7 @@
 
 > Tampermonkey 的扩展（在 extension 文件夹下）
 
-高阶用法（需要会写 JavaScript，也可以安装他人写好的脚本），请查看[示例说明](example_tampermonkey.js)
+高阶用法（需要会写 JavaScript，也可以安装他人写好的脚本），请查看[示例说明](example/tampermonkey.js)
 
 
 ## Thanks
