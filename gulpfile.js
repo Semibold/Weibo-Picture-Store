@@ -1,9 +1,13 @@
-let gulp = require('gulp');
-let zip = require('gulp-zip');
+/**
+ * Gulp
+ */
+const gulp = require("gulp");
+const gulpZip = require("gulp-zip");
 
-gulp.task('deploy', () => {
+
+gulp.task("deploy", n => {
     return gulp
-        .src('./source/**')
-        .pipe(zip('weibo-picture-store.zip'))
-        .pipe(gulp.dest('./deploy/'));
+        .src("./source/**")
+        .pipe(gulpZip("weibo-picture-store.zip"))
+        .pipe(gulp.dest("./deploy/"));
 });

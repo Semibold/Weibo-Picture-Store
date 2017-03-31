@@ -107,6 +107,14 @@
 - thumb300 -> 300像素正方形裁剪
 - orj180 -> 180像素宽度原比例缩放
 - orj360 -> 360像素宽度原比例缩放
+- woriginal -> 原图，和large一样
+- bmiddle -> 440像素宽度原比例缩放
+- wap50 -> 50像素宽度原比例缩放
+- wap180 -> 180像素宽度原比例缩放
+- wap240 -> 240像素宽度原比例缩放
+- wap360 -> 360像素宽度原比例缩放
+- wap720 -> 720像素宽度原比例缩放
+- wap800 -> 800像素宽度原比例缩放
 - crop.x.y.x1.y1.w -> 自定义矩形裁剪，其中 x, y 表示左上角坐标，x1, y1 表示右下角坐标，w 是宽度
 
 
@@ -136,7 +144,7 @@
 
 > Tampermonkey 的扩展（在 extension 文件夹下）
 
-高阶用法（需要会写 JavaScript，也可以安装他人写好的脚本），请查看[示例说明](example_tampermonkey.js)
+高阶用法（需要会写 JavaScript，也可以安装他人写好的脚本），请查看[示例说明](example/tampermonkey.js)
 
 
 ## Thanks
