@@ -61,7 +61,7 @@
                 }
             }
 
-            return dict.albumId ? dict : Promise.reject(Boolean(total));
+            return dict.albumId ? dict : Promise.reject(Boolean(total && total !== overflow));
         });
     };
 
