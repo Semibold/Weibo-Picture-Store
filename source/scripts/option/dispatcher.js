@@ -16,7 +16,7 @@ class Dispatcher {
         this.checkout = {albumId: null, pages: null};
         this.searchParams = new URLSearchParams(location.search);
         this.loading = null;
-        this.sessionKey = "removedPhotoId";
+        this.removedKey = "removedPhotoId";
         this.albumInfoKey = "albumInfo";
         this.decorator();
         return {};
@@ -125,7 +125,7 @@ class Dispatcher {
                             // 由于服务器缓存的原因，页面数据可能刷新不及时
                             // 可能会出现已删除的数据刷新后还存在的问题
                             // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
-                            Utils.session.set(this.sessionKey, photoId);
+                            Utils.session.set(this.removedKey, photoId);
                             chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
                         })
                         .catch(reason => {
@@ -158,7 +158,7 @@ class Dispatcher {
     }
 
     buildItems(items) {
-        let removedPhotoId = Utils.session.get(this.sessionKey);
+        let removedPhotoId = Utils.session.get(this.removedKey);
 
         for (let item of items) {
             if (item.photoId === removedPhotoId) continue;

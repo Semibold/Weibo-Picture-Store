@@ -51,7 +51,7 @@ const uploadMenuEntryId = chrome.contextMenus.create({
                         title: chrome.i18n.getMessage("warn_title"),
                         message: chrome.i18n.getMessage("get_image_url_fail"),
                     });
-                    return Promise.reject();
+                    return Promise.reject(reason);
                 })
                 .then(blob => Weibo.readFile([blob]))
                 .then(result => Weibo.filePurity(result))
