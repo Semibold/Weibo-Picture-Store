@@ -67,7 +67,7 @@ const uploadMenuEntryId = chrome.contextMenus.create({
                                 message: chrome.i18n.getMessage("copy_to_clipboard"),
                                 contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
                             });
-                        });                        
+                        });
                     }
                 });
         } else {

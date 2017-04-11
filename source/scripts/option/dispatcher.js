@@ -10,7 +10,7 @@ class Dispatcher {
         this.prev = document.querySelector(".post-nav > .prev");
         this.next = document.querySelector(".post-nav > .next");
         this.pagination = document.querySelector(".post-nav .pagination");
-        this.content =  document.querySelector("#content");
+        this.content = document.querySelector("#content");
         this.template = document.querySelector("#template");
         this.fragment = document.createDocumentFragment();
         this.checkout = {albumId: null, pages: null};

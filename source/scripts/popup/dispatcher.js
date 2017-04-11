@@ -9,7 +9,7 @@ class Dispatcher {
         this.buffer = new Map();
         this.copier = document.querySelector("#copy-to-clipboard");
         this.linker = document.querySelector("input.custom-clip-size");
-        this.content =  document.querySelector("#content");
+        this.content = document.querySelector("#content");
         this.fragment = document.createDocumentFragment();
         this.copyId = Utils.randomString(16);
         this.notifyId = Utils.randomString(16);
@@ -79,7 +79,7 @@ class Dispatcher {
         document.querySelector("a.copy-mode").dataset.batch = this.batch;
     }
 
-    startEvent () {
+    startEvent() {
         let link = document.querySelector(`[name="clipSize"][value="4"]`);
         let copy = document.querySelector("a.copy-mode");
 
