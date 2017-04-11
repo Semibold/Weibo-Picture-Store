@@ -30,7 +30,7 @@
                 eventType: "paste",
             },
         ],
-        prefix: "https://ws1.sinaimg.cn/large/",
+        prefix: "https://wx1.sinaimg.cn/large/",
         postfix: "",
 
     }, location.origin);
