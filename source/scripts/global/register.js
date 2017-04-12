@@ -10,6 +10,10 @@ Weibo.acceptType = {
         type: ".png",
         typo: ".jpg",
     },
+    "image/apng": {
+        type: ".png",
+        typo: ".jpg",
+    },
     "image/gif": {
         type: ".gif",
         typo: ".gif",

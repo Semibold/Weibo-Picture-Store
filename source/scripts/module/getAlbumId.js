@@ -21,7 +21,7 @@
         }).catch(reason => {
             return Weibo.checkAlbumId();
         }).catch(reason => {
-            return reason === true ? Weibo.createAlbum() : Promise.reject();
+            return reason === true ? Utils.singleton(Weibo.createAlbum) : Promise.reject();
         });
     };
 

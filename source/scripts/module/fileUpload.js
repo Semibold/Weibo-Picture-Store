@@ -6,12 +6,18 @@
     const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
 
-    Weibo.fileUpload = (result) => {
+    Weibo.fileUpload = (hybrid, replay) => {
         let uid = null;
         let buffer = [];
-        let total = result.length;
+        let waitRevokeURL = [];
+        let total = hybrid.length;
+        let revokeUselessURL = () => {
+            for (let objectURL of waitRevokeURL) {
+                URL.revokeObjectURL(objectURL);
+            }
+        };
 
-        for (let item of result) {
+        for (let item of hybrid) {
             let oneline = Pipeline[item.readType];
             let promise = fetch(Utils.createURL(url, oneline.getParam({
                 mime: item.file.type,
@@ -47,9 +53,7 @@
                     return Promise.reject();
                 }
             }).catch(reason => {
-                if (item.objectURL) {
-                    URL.revokeObjectURL(item.objectURL);
-                }
+                item.objectURL && waitRevokeURL.push(item.objectURL);
             });
 
             buffer.push(promise);
@@ -60,15 +64,30 @@
             for (let item of rawData) {
                 item && pureData.push(item);
             }
-            total && !pureData.length && Weibo.getStatus().then(result => {
-                result.login && chrome.notifications.create(failId, {
-                    type: "basic",
-                    iconUrl: chrome.i18n.getMessage("64"),
-                    title: chrome.i18n.getMessage("fail_title"),
-                    message: chrome.i18n.getMessage("file_upload_failed"),
-                });
-            });
-            return pureData;
+            if (total && !pureData.length && !replay) {
+                return Utils.singleton(Weibo.setStatus)
+                    .then(result => {
+                        if (result.login) {
+                            return Weibo.fileUpload(hybrid, true);
+                        } else {
+                            revokeUselessURL();
+                            return pureData;
+                        }
+                    })
+                    .catch(reason => {
+                        reason.login && chrome.notifications.create(failId, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("64"),
+                            title: chrome.i18n.getMessage("fail_title"),
+                            message: chrome.i18n.getMessage("file_upload_failed"),
+                        });
+                        revokeUselessURL();
+                        return pureData;
+                    });
+            } else {
+                revokeUselessURL();
+                return pureData;
+            }
         });
     };
 

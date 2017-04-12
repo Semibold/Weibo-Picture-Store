@@ -33,6 +33,8 @@ chrome.browserAction.onClicked.addListener(tab => {
     }
 });
 
+
+chrome.runtime.onInstalled.addListener(details => chrome.tabs.create({url: "readme.html#changelog"}));
 chrome.windows.onRemoved.addListener(windowId => {
     if (windowId === popupState.id) popupState.id = null;
 });
