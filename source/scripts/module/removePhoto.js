@@ -6,7 +6,7 @@
     const url = "http://photo.weibo.com/albums/delete_batch";
     const doneCode = 0;
 
-    Weibo.removePhoto = (albumId, photoIdArray) => {
+    Weibo.removePhoto = (albumId, photoIdArray, replay) => {
         if (!albumId || !photoIdArray) return Promise.reject();
         if (Array.isArray(photoIdArray) && !photoIdArray.length) return Promise.reject();
 
@@ -27,8 +27,11 @@
                 return Promise.reject();
             }
         }).catch(reason => {
-            Weibo.getStatus();
-            return Promise.reject(reason);
+            if (replay) {
+                return Promise.reject(reason);
+            } else {
+                return Utils.singleton(Weibo.setStatus).then(result => result.login ? Weibo.removePhoto(albumId, photoIdArray, true) : Promise.reject(reason));
+            }
         });
     };
 

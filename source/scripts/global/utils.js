@@ -4,12 +4,29 @@
 const Utils = {
 
     [Symbol.for("guid")]: 1,
+    [Symbol.for("sole")]: new Map(),
 
     get guid() {
         return String(this[Symbol.for("guid")]++);
     },
 
     noop() {},
+
+    singleton(fn, ...params) {
+        let sole = this[Symbol.for("sole")];
+
+        if (!sole.has(fn)) {
+            sole.set(fn, fn(...params).then(result => {
+                sole.delete(fn);
+                return Promise.resolve(result);
+            }, reason => {
+                sole.delete(fn);
+                return Promise.reject(reason);
+            }));
+        }
+
+        return sole.get(fn);
+    },
 
     createSearchParams(obj, former) {
         let searchParams = new URLSearchParams(former);
