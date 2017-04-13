@@ -4,7 +4,7 @@
 {
 
     const doneCode = "100000";
-    const loginURL = "http://weibo.com/";
+    const loginURL = "http://weibo.com/login.php?url=" + encodeURIComponent("http://weibo.com");
     const url = "http://weibo.com/aj/onoff/getstatus";
     const notifyId = Utils.randomString(16);
 
