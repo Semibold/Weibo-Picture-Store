@@ -58,7 +58,7 @@
         // 图片的前缀和后缀，可以用来和 CE_value 随意组合
         // 得到的图片地址是：prefix + CE_value + postfix
         // CE_value 是图片的 pid 加后缀名，比如：006G4xsfgy1fdyyqh94oij308c06bq32.jpg
-        prefix: "https://ws1.sinaimg.cn/large/",
+        prefix: "https://wx1.sinaimg.cn/large/",
         postfix: "",
 
     }, location.origin);

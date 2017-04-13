@@ -8,7 +8,11 @@ Weibo.acceptType = {
     },
     "image/png": {
         type: ".png",
-        typo: ".jpg",
+        typo: ".png",
+    },
+    "image/apng": {
+        type: ".png",
+        typo: ".png",
     },
     "image/apng": {
         type: ".png",
@@ -32,7 +36,6 @@ Weibo.distinctProp = {
 };
 
 Weibo.urlPrefix = [
-    "ws1", "ws2", "ws3", "ws4",
     "wx1", "wx2", "wx3", "wx4",
 ];
 
