@@ -20,7 +20,18 @@ Weibo.acceptType = {
     },
 };
 
-Weibo.imagePostface = Object.values(Weibo.acceptType).map(item => item.type.slice(1)).join("|");
+// https://support.google.com/webmasters/answer/2598805
+// https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+Weibo.chromeSupportedType = new Set([
+    "image/jpeg",
+    "image/png",
+    "image/apng", // Chrome 59
+    "image/gif",
+    "image/bmp",
+    "image/webp",
+    "image/x-icon",
+    "image/svg+xml",
+]);
 
 Weibo.distinctProp = {
     property: "2",

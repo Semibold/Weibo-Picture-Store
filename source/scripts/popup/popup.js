@@ -14,7 +14,7 @@ const Resolve = files => {
         .then(result => dispatcher.actuator(result));
 };
 
-fileInput.accept = Object.keys(Weibo.acceptType).join(",");
+fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
 fileInput.addEventListener("change", e => Resolve(e.target.files));
 
 browsingHistory.addEventListener("click", e => {
