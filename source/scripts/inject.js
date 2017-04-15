@@ -8,7 +8,7 @@ const fileInput = document.createElement("input");
 fileInput.type = "file";
 fileInput.hidden = true;
 fileInput.multiple = true;
-fileInput.accept = Object.keys(Weibo.acceptType).join(",");
+fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
 
 const Resolve = (files, item, prefix, postfix) => {
     Weibo.readFile(files)

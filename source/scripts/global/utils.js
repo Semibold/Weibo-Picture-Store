@@ -85,8 +85,11 @@ const Utils = {
     checkImageURL(str, force) {
         try {
             let url = new URL(str);
-            let result = new RegExp(`.+\\.(${Weibo.imagePostface})$`).test(url.pathname);
-            return force ? result : result && !url.origin.includes(Weibo.rootZone);
+            if (force) {
+                return true;
+            } else {
+                return !url.origin.includes(Weibo.rootZone);
+            }
         } catch (e) {
             return false;
         }
