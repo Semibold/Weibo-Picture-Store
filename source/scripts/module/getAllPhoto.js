@@ -44,7 +44,7 @@
             if (replay) {
                 return Promise.reject(reason);
             } else {
-                return Utils.singleton(Weibo.setStatus).then(result => result.login ? Weibo.getAllPhoto(albumInfo, page, count, true) : Promise.reject(reason));
+                return Weibo.setStatus().then(result => result.login ? Weibo.getAllPhoto(albumInfo, page, count, true) : Promise.reject(reason));
             }
         });
     };

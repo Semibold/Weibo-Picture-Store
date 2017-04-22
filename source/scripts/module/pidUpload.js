@@ -28,7 +28,14 @@
             if (result && result.code === doneCode && result.result) {
                 return getAlbumId;
             } else {
-                return Promise.reject(result);
+                if (!retry && result && result.code === overflowCode) {
+                    return Utils.singleton(Weibo.getAllPhoto, null, 10, 100)
+                        .then(result => Weibo.removePhoto(result.albumId, result.list.map(item => item.photoId)))
+                        .then(result => Weibo.pidUpload(obj, true))
+                        .then(result => getAlbumId);
+                } else {
+                    return Promise.reject();
+                }
             }
         }).then(result => {
             uid && chrome.storage.sync.set({
@@ -36,30 +43,9 @@
             }, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
             console.info("Workflow Ended: done");
         }, reason => {
-            if (!retry && reason && reason.code === overflowCode) {
-                Utils.singleton(Weibo.getAllPhoto, null, 10, 100)
-                    .then(result => {
-                        if (result.total + 1 > overflowNumber) {
-                            return result;
-                        } else {
-                            Weibo.pidUpload(obj, true);
-                            return Promise.reject();
-                        }
-                    })
-                    .then(result => {
-                        let photoIdArray = [];
-                        for (let item of result.list) {
-                            photoIdArray.push(item.photoId);
-                        }
-                        return [result.albumId, photoIdArray];
-                    })
-                    .then(result => Weibo.removePhoto(...result))
-                    .then(result => Weibo.pidUpload(obj, true));
-            } else {
-                uid && chrome.storage.sync.remove(uid, () => {
-                    chrome.runtime.lastError && console.warn(chrome.runtime.lastError);
-                });
-            }
+            uid && chrome.storage.sync.remove(uid, () => {
+                chrome.runtime.lastError && console.warn(chrome.runtime.lastError);
+            });
             console.warn("Workflow Ended: fail");
         });
     };

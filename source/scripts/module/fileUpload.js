@@ -65,7 +65,7 @@
                 item && pureData.push(item);
             }
             if (total && !pureData.length && !replay) {
-                return Utils.singleton(Weibo.setStatus)
+                return Weibo.setStatus()
                     .then(result => {
                         if (result.login) {
                             return Weibo.fileUpload(hybrid, true);

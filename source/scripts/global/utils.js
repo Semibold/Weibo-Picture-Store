@@ -48,7 +48,7 @@ const Utils = {
     },
 
     blendParams(obj) {
-        return Object.assign({}, {
+        return Object.assign({
             method: "GET",
             mode: "cors",
             credentials: "include",
