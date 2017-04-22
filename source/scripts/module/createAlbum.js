@@ -1,4 +1,5 @@
 /**
+ * Singleton
  * Create Album
  * Referer Wanted:
  *     http://photo.weibo.com/${uid}/client
@@ -7,7 +8,7 @@
 
     const url = "http://photo.weibo.com/albums/create";
 
-    Weibo.createAlbum = () => {
+    const createAlbum = () => {
         return fetch(url, Utils.blendParams({
             method: "POST",
             body: Utils.createSearchParams(Weibo.distinctProp),
@@ -21,5 +22,7 @@
             }
         });
     };
+
+    Weibo.createAlbum = (...rift) => Utils.singleton(createAlbum, ...rift);
 
 }

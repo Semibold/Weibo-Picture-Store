@@ -4,9 +4,11 @@
 {
 
     const doneCode = 0;
+    const overflowCode = 11112;
+    const overflowNumber = 1000; // 相册的最大存储量
     const url = "http://photo.weibo.com/upload/photo";
 
-    Weibo.pidUpload = (obj) => {
+    Weibo.pidUpload = (obj, retry) => {
         let uid = obj.uid;
         let pid = obj.pid;
         let getAlbumId = Weibo.getAlbumId(uid);
@@ -26,7 +28,14 @@
             if (result && result.code === doneCode && result.result) {
                 return getAlbumId;
             } else {
-                return Promise.reject();
+                if (!retry && result && result.code === overflowCode) {
+                    return Utils.singleton(Weibo.getAllPhoto, null, 20, 50)
+                        .then(result => Weibo.removePhoto(result.albumId, result.list.map(item => item.photoId)))
+                        .then(result => Weibo.pidUpload(obj, true))
+                        .then(result => getAlbumId);
+                } else {
+                    return Promise.reject();
+                }
             }
         }).then(result => {
             uid && chrome.storage.sync.set({

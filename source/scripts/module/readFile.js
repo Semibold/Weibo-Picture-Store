@@ -68,7 +68,7 @@
          * Does not use `createImageBitmap` which cannot decode svg.
          */
 
-        const objectURL = URL.createObjectURL(blob);
+        let objectURL = URL.createObjectURL(blob);
 
         return new Promise((resolve, reject) => {
             let image = new Image();

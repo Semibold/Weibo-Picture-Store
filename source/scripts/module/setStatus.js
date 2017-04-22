@@ -1,13 +1,14 @@
 /**
+ * Singleton
  * Set User Login Status
  */
 {
 
     const doneCode = "100000";
-    const iframeId = "weibo-iframe-set-status";
+    const iframeId = Utils.randomString(11);
     const url = "http://weibo.com/aj/onoff/setstatus";
 
-    Weibo.setStatus = () => fetch(Utils.createURL(url), Utils.blendParams({
+    const setStatus = () => fetch(Utils.createURL(url), Utils.blendParams({
         method: "POST",
         body: Utils.createSearchParams({
             sid: 0,
@@ -30,8 +31,10 @@
         }
     }).then(result => {
         return Promise.resolve(Weibo.getStatus());
-    }).catch(reason => {
+    }, reason => {
         return Promise.reject(Weibo.getStatus());
     });
+
+    Weibo.setStatus = (...rift) => Utils.singleton(setStatus, ...rift);
 
 }

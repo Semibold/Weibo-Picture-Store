@@ -120,8 +120,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 
 
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
-    const name = "Referer";
-    const value = "http://photo.weibo.com/";
+    let name = "Referer";
+    let value = "http://photo.weibo.com/";
 
     for (let i = 0; i < details.requestHeaders.length; i++) {
         if (details.requestHeaders[i].name.toLowerCase() === name.toLowerCase()) {

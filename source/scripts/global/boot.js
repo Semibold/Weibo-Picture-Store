@@ -1,4 +1,4 @@
 /**
  * Weibo Module
  */
-let Weibo = self.Weibo = {};
+const Weibo = self.Weibo = {};
