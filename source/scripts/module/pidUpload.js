@@ -29,7 +29,7 @@
                 return getAlbumId;
             } else {
                 if (!retry && result && result.code === overflowCode) {
-                    return Utils.singleton(Weibo.getAllPhoto, null, 10, 100)
+                    return Utils.singleton(Weibo.getAllPhoto, null, 20, 50)
                         .then(result => Weibo.removePhoto(result.albumId, result.list.map(item => item.photoId)))
                         .then(result => Weibo.pidUpload(obj, true))
                         .then(result => getAlbumId);
