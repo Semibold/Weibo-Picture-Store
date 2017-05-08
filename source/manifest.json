@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "1.6.1",
+  "version": "2.0.0",
   "default_locale": "zh_CN",
   "description": "__MSG_extension_description__",
   "icons": {
@@ -18,20 +18,21 @@
     "scripts": [
       "scripts/global/boot.js",
       "scripts/global/utils.js",
-      "scripts/global/pipeline.js",
+      "scripts/global/channel.js",
       "scripts/global/register.js",
-      "scripts/module/setStatus.js",
-      "scripts/module/getStatus.js",
-      "scripts/module/pidUpload.js",
-      "scripts/module/filePurity.js",
-      "scripts/module/fileUpload.js",
-      "scripts/module/getAlbumId.js",
-      "scripts/module/createAlbum.js",
-      "scripts/module/checkAlbumId.js",
-      "scripts/module/getAllPhoto.js",
-      "scripts/module/removePhoto.js",
-      "scripts/module/readFile.js",
-
+      "scripts/module/check_album_id.js",
+      "scripts/module/create_album.js",
+      "scripts/module/file_progress.js",
+      "scripts/module/file_purity.js",
+      "scripts/module/file_upload.js",
+      "scripts/module/get_album_id.js",
+      "scripts/module/get_all_photo.js",
+      "scripts/module/get_status.js",
+      "scripts/module/pid_upload.js",
+      "scripts/module/read_file.js",
+      "scripts/module/remove_photo.js",
+      "scripts/module/set_status.js",
+      "scripts/module/transform_source.js",
       "scripts/background.js"
     ],
     "persistent": true
@@ -44,10 +45,9 @@
       "js": [
         "scripts/global/boot.js",
         "scripts/global/utils.js",
-        "scripts/global/pipeline.js",
+        "scripts/global/channel.js",
         "scripts/global/register.js",
-        "scripts/module/readFile.js",
-
+        "scripts/module/read_file.js",
         "scripts/inject.js"
       ],
       "run_at": "document_start"

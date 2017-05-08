@@ -7,10 +7,10 @@
     const slopId = Utils.randomString(16);
     const typeId = Utils.randomString(16);
 
-    Weibo.filePurity = result => {
+    Weibo.filePurity = rawData => {
         let pureData = [];
 
-        for (let item of result) {
+        for (let item of rawData) {
             if (!item) continue;
             if (!Weibo.acceptType[item.file.type]) {
                 chrome.notifications.create(typeId, {
@@ -26,7 +26,7 @@
                     type: "basic",
                     iconUrl: chrome.i18n.getMessage("64"),
                     title: chrome.i18n.getMessage("info_title"),
-                    message: chrome.i18n.getMessage("reason_size_exceeded"),
+                    message: chrome.i18n.getMessage("file_size_exceeded"),
                 });
                 continue;
             }

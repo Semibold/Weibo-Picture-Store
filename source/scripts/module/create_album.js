@@ -1,18 +1,16 @@
 /**
- * Singleton
- * Create Album
- * Referer Wanted:
- *     http://photo.weibo.com/${uid}/client
+ * Singleton: create album
+ * Referer Wanted: "http://photo.weibo.com/${uid}/client"
  */
 {
 
     const url = "http://photo.weibo.com/albums/create";
 
     const createAlbum = () => {
-        return fetch(url, Utils.blendParams({
+        return Utils.fetch(url, {
             method: "POST",
             body: Utils.createSearchParams(Weibo.distinctProp),
-        })).then(response => {
+        }).then(response => {
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {
             if (result && result.result) {

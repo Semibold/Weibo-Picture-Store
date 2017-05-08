@@ -1,6 +1,8 @@
 /**
  * Register
  */
+Weibo.rootZone = ".sinaimg.cn";
+
 Weibo.acceptType = {
     "image/jpeg": {
         type: ".jpg",
@@ -25,7 +27,7 @@ Weibo.acceptType = {
 Weibo.chromeSupportedType = new Set([
     "image/jpeg",
     "image/png",
-    "image/apng", // Chrome 59
+    "image/apng",
     "image/gif",
     "image/bmp",
     "image/webp",
@@ -47,8 +49,6 @@ Weibo.urlPrefix = [
     "wx1", "wx2", "wx3", "wx4",
 ];
 
-Weibo.rootZone = ".sinaimg.cn";
-
 Weibo.startConfig = {
     scheme: {
         1: "http://",
@@ -61,4 +61,10 @@ Weibo.startConfig = {
         3: "thumbnail",
         4: "",
     },
+};
+
+Weibo.transferId = {
+    fromUser: "WB.add_selector_listener",
+    fromBase64: "CE.data_from_base64",
+    fromBackground: "CE.data_from_background",
 };

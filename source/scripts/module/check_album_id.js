@@ -6,13 +6,9 @@
     const overflow = 100;
     const url = "http://photo.weibo.com/albums/get_all";
 
-    const erupt = (page, count) => {
-        return fetch(Utils.createURL(url, {
-            page,
-            count,
-        }), Utils.blendParams()).then(response => {
-            return response.ok ? response.json() : Promise.reject();
-        }).then(result => {
+    const erupt = (page, count) => Utils.fetch(Utils.createURL(url, {page, count}))
+        .then(response => response.ok ? response.json() : Promise.reject())
+        .then(result => {
             if (result && result.result) {
                 let dict = {
                     albumId: {},
@@ -32,8 +28,8 @@
             } else {
                 return Promise.reject();
             }
-        }).catch(Utils.noop);
-    };
+        })
+        .catch(Utils.noop);
 
     Weibo.checkAlbumId = (albumId) => {
         let count = 50;
@@ -61,7 +57,7 @@
                 }
             }
 
-            return dict.albumId ? dict : Promise.reject(Boolean(total && total !== overflow));
+            return dict.albumId ? dict : Promise.reject(total && total !== overflow);
         });
     };
 

@@ -5,30 +5,21 @@
 
     const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
+    const fileProgress = Weibo.fileProgress(Weibo.fileProgress.TYPE_UPLOAD);
 
-    Weibo.fileUpload = (hybrid, replay) => {
+    Weibo.fileUpload = (hybrid, doneCallback, failCallback) => {
         let uid = null;
         let buffer = [];
-        let waitRevokeURL = [];
-        let total = hybrid.length;
-        let revokeUselessURL = () => {
-            for (let objectURL of waitRevokeURL) {
-                URL.revokeObjectURL(objectURL);
-            }
-        };
-
-        for (let item of hybrid) {
-            let oneline = Pipeline[item.readType];
-            let promise = fetch(Utils.createURL(url, oneline.getParam({
-                mime: item.file.type,
-            })), Utils.blendParams({
+        let requestUpload = (item, replay) => {
+            let oneline = Channel[item.readType];
+            let promise = Utils.fetch(Utils.createURL(url, oneline.param({mime: item.file.type})), {
                 method: "POST",
-                body: oneline.getBody(item.result),
-            })).then(response => {
+                body: oneline.body(item.result),
+            }).then(response => {
                 return response.ok ? response.text() : Promise.reject();
             }).then(text => {
                 if (text) {
-                    let tree = new DOMParser().parseFromString(text, "application/xml");
+                    let tree = new DOMParser().parseFromString(text, "text/xml");
                     let data = tree.querySelector("root > data").textContent;
                     let pics = tree.querySelector("root > pics");
                     let pid = pics.querySelector("pic_1 > pid").textContent;
@@ -53,41 +44,52 @@
                     return Promise.reject();
                 }
             }).catch(reason => {
-                item.objectURL && waitRevokeURL.push(item.objectURL);
-            });
-
-            buffer.push(promise);
-        }
-
-        return Promise.all(buffer).then(rawData => {
-            let pureData = [];
-            for (let item of rawData) {
-                item && pureData.push(item);
-            }
-            if (total && !pureData.length && !replay) {
-                return Weibo.setStatus()
-                    .then(result => {
+                if (!replay) {
+                    return Weibo.setStatus().then(result => {
                         if (result.login) {
-                            return Weibo.fileUpload(hybrid, true);
+                            return requestUpload(item, true);
                         } else {
-                            revokeUselessURL();
-                            return pureData;
+                            item.objectURL && URL.revokeObjectURL(item.objectURL);
                         }
-                    })
-                    .catch(reason => {
+                    }).catch(reason => {
                         reason.login && chrome.notifications.create(failId, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("64"),
                             title: chrome.i18n.getMessage("fail_title"),
                             message: chrome.i18n.getMessage("file_upload_failed"),
                         });
-                        revokeUselessURL();
-                        return pureData;
+                        item.objectURL && URL.revokeObjectURL(item.objectURL);
                     });
-            } else {
-                revokeUselessURL();
-                return pureData;
-            }
+                } else {
+                    item.objectURL && URL.revokeObjectURL(item.objectURL);
+                }
+            });
+
+            buffer.push(promise);
+            return promise;
+        };
+
+        fileProgress.addNextWave(hybrid.length);
+        fileProgress.triggerProgress();
+
+        for (let item of hybrid) {
+            requestUpload(item)
+                .then(result => {
+                    fileProgress.accumulator();
+                    typeof doneCallback === "function" && doneCallback(result);
+                    return Promise.resolve(result);
+                })
+                .catch(reason => {
+                    fileProgress.accumulator();
+                    typeof failCallback === "function" && failCallback(reason);
+                    return Promise.reject(reason);
+                });
+        }
+
+        return Promise.all(buffer).then(rawData => {
+            return rawData.filter(item => {
+                if (item) return item;
+            });
         });
     };
 
