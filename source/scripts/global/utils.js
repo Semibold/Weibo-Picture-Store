@@ -6,11 +6,32 @@ const Utils = {
     [Symbol.for("guid")]: 1,
     [Symbol.for("sole")]: new Map(),
 
-    get guid() {
+    noop() {},
+
+    guid() {
         return String(this[Symbol.for("guid")]++);
     },
 
-    noop() {},
+    fetch(url, obj) {
+        return fetch(url, this.blendParams(obj));
+    },
+
+    fetchBlob(url) {
+        return this.fetch(url, {
+            credentials: "omit",
+        }).then(response => {
+            return response.ok ? response.blob() : Promise.reject();
+        });
+    },
+
+    checkURL(maybeURL) {
+        try {
+            new URL(maybeURL);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
 
     singleton(fn, ...params) {
         let sole = this[Symbol.for("sole")];
@@ -58,51 +79,39 @@ const Utils = {
         }, obj);
     },
 
-    randomString(length) {
+    parseHTML(html) {
+        let parser = new DOMParser();
+        let context = parser.parseFromString(html, "text/html");
+        let children = context.body.children;
+        let fragment = new DocumentFragment();
+
+        for (let i = children.length; i > 0; i--) {
+            fragment.prepend(children[i - 1]);
+        }
+
+        return fragment;
+    },
+
+    randomString(n) {
         let buffer = [];
-        let len = Math.abs(length) || 0;
+        let length = Math.abs(n) || 0;
         let charPool = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-        while (len--) {
+        while (length--) {
             buffer.push(charPool[Math.floor(Math.random() * charPool.length)]);
         }
 
         return buffer.join("");
     },
 
-    fetchImage(imageURL) {
-        return fetch(imageURL, {
-            method: "GET",
-            mode: "cors",
-            cache: "no-cache",
-            redirect: "follow",
-            referrer: "client",
-        }).then(response => {
-            return response.ok ? response.blob() : Promise.reject();
-        });
-    },
-
-    checkImageURL(str, force) {
-        try {
-            let url = new URL(str);
-            if (force) {
-                return true;
-            } else {
-                return !url.origin.includes(Weibo.rootZone);
-            }
-        } catch (e) {
-            return false;
-        }
-    },
-
-    writeToClipboard(text, doneCallback, failCallback) {
-        let pre = document.createElement("pre");
+    writeToClipboard(content, doneCallback, failCallback) {
         let range = document.createRange();
         let selection = document.getSelection();
+        let container = document.createElement("pre");
 
-        pre.textContent = text;
-        document.body.append(pre);
-        range.selectNodeContents(pre);
+        container.textContent = content;
+        document.body.append(container);
+        range.selectNodeContents(container);
         selection.removeAllRanges();
         selection.addRange(range);
         if (document.execCommand("copy")) {
@@ -110,7 +119,7 @@ const Utils = {
         } else {
             typeof failCallback === "function" && failCallback();
         }
-        pre.remove();
+        container.remove();
     },
 
 };

@@ -1,14 +1,14 @@
 /**
- * User Login Status
+ * User Login Status: get status
  */
 {
 
     const doneCode = "100000";
     const loginURL = "http://weibo.com/login.php?url=" + encodeURIComponent("http://weibo.com");
-    const url = "http://weibo.com/aj/onoff/getstatus";
+    const url = Utils.createURL("http://weibo.com/aj/onoff/getstatus", {sid: 0});
     const notifyId = Utils.randomString(16);
 
-    Weibo.getStatus = () => fetch(Utils.createURL(url, {sid: 0}), Utils.blendParams())
+    Weibo.getStatus = () => Utils.fetch(url)
         .then(response => response.ok ? response.json() : Promise.reject())
         .then(result => {
             let login = result && result.code === doneCode;
@@ -34,9 +34,9 @@
         });
 
     chrome.notifications.onClicked.addListener(notificationId => {
-        notificationId === notifyId && chrome.tabs.create({
-            url: loginURL,
-        }, tab => chrome.notifications.clear(notifyId));
+        if (notificationId === notifyId) {
+            chrome.tabs.create({url: loginURL}, tab => chrome.notifications.clear(notifyId));
+        }
     });
 
 }

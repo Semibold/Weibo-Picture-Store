@@ -6,7 +6,7 @@
     Weibo.readFile = (files, readType, previewURL) => {
         let buffer = [];
         let incongruent = [];
-        let oneline = Pipeline[readType];
+        let oneline = Channel[readType];
         let pushStack = file => {
             let promise = new Promise((resolve, reject) => {
                 let fileReader = new FileReader();
@@ -49,66 +49,6 @@
         }
 
         return Promise.all(incongruent).then(result => Promise.all(buffer));
-    };
-
-}
-
-
-/**
- * Transform Source
- * Does not split this function from this file
- */
-{
-
-    const MAX_EDGE = 2 ** 15 - 1;
-
-    Weibo.transformSource = (blob) => {
-
-        /**
-         * Does not use `createImageBitmap` which cannot decode svg.
-         */
-
-        let objectURL = URL.createObjectURL(blob);
-
-        return new Promise((resolve, reject) => {
-            let image = new Image();
-            image.onload = e => {
-                image.onload = null;
-                image.onerror = null;
-                resolve(image);
-            };
-            image.onerror = e => {
-                image.onload = null;
-                image.onerror = null;
-                reject();
-            };
-            image.src = objectURL;
-        }).then(image => {
-            let width = Math.ceil(image.width);
-            let height = Math.ceil(image.height);
-
-            if (width > MAX_EDGE || height > MAX_EDGE) {
-                return Promise.reject("Beyond the border");
-            }
-
-            let canvas = document.createElement("canvas");
-            let context = canvas.getContext("2d");
-
-            canvas.width = width;
-            canvas.height = height;
-            context.drawImage(image, 0, 0, width, height);
-
-            return new Promise((resolve, reject) => {
-                canvas.toBlob(blob => resolve(blob), "image/png");
-            });
-        }).then(result => {
-            URL.revokeObjectURL(objectURL);
-            return Promise.resolve(result);
-        }, reason => {
-            console.warn("Transform Source:", reason);
-            URL.revokeObjectURL(objectURL);
-            return Promise.reject(reason);
-        });
     };
 
 }

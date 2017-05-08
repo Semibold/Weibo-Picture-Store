@@ -1,9 +1,12 @@
 {
   "extension_name": {
-    "message": "新浪微博图床"
+    "message": "微博图床"
   },
   "extension_description": {
-    "message": "新浪微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
+    "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
+  },
+  "16": {
+    "message": "icons/16.png"
   },
   "32": {
     "message": "icons/32.png"
@@ -13,6 +16,9 @@
   },
   "128": {
     "message": "icons/128.png"
+  },
+  "image_placeholder": {
+    "message": "assets/transparent.gif"
   },
   "info_title": {
     "message": "普通提示"
@@ -35,7 +41,7 @@
   "file_upload_failed": {
     "message": "微博登录信息校验成功，可是。。。图片上传失败了呢"
   },
-  "reason_size_exceeded": {
+  "file_size_exceeded": {
     "message": "检测到某些图片的大小超过20M，自动丢弃这些图片"
   },
   "upload_progress_message": {
@@ -44,6 +50,12 @@
   "upload_progress_hinter": {
     "message": "加速上传中，请耐心等候"
   },
+  "download_progress_message": {
+    "message": "当前提示在下载完成后会自动关闭"
+  },
+  "download_progress_hinter": {
+    "message": "正在获取远程的图片，请耐心等候"
+  },
   "file_upload_ended": {
     "message": "图片上传流程结束啦！"
   },
@@ -51,7 +63,7 @@
     "message": "复制成功：链接已经复制到剪切板了呦~"
   },
   "copy_to_clipboard_hinter": {
-    "message": "粘贴即可使用剪切板中的图片链接"
+    "message": "粘贴即可使用剪切板中的图片地址"
   },
   "image_type_mismatch": {
     "message": "暂不支持当前选中的图片格式"
@@ -65,7 +77,7 @@
   "page_no_data": {
     "message": "没有分页数据，欸嘿~"
   },
-  "copy_image_url": {
+  "upload_image_url": {
     "message": "把这张图片上传到微相册"
   },
   "get_image_url_fail": {

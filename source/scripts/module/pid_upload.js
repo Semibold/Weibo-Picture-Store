@@ -14,14 +14,14 @@
         let getAlbumId = Weibo.getAlbumId(uid);
 
         getAlbumId.then(result => {
-            return fetch(url, Utils.blendParams({
+            return Utils.fetch(url, {
                 method: "POST",
                 body: Utils.createSearchParams({
                     pid: pid,
                     isOrig: 1,
                     album_id: result.albumId,
                 }),
-            }));
+            });
         }).then(response => {
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {
@@ -38,12 +38,12 @@
                 }
             }
         }).then(result => {
-            uid && chrome.storage.sync.set({
+            uid && chrome.storage.local.set({
                 [uid]: {uid: uid, albumId: result.albumId},
             }, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
             console.info("Workflow Ended: done");
         }, reason => {
-            uid && chrome.storage.sync.remove(uid, () => {
+            uid && chrome.storage.local.remove(uid, () => {
                 chrome.runtime.lastError && console.warn(chrome.runtime.lastError);
             });
             console.warn("Workflow Ended: fail");

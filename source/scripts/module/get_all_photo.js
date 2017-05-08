@@ -12,11 +12,11 @@
         }).catch(reason => {
             return Weibo.getAlbumId();
         }).then(result => {
-            return fetch(Utils.createURL(url, {
+            return Utils.fetch(Utils.createURL(url, {
                 page: page || 1,
                 count: count || 20,
                 album_id: result.albumId,
-            }), Utils.blendParams());
+            }));
         }).then(response => {
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {

@@ -12,13 +12,13 @@
 
         let pretty = Array.isArray(photoId) ? photoId : [photoId];
 
-        return fetch(url, Utils.blendParams({
+        return Utils.fetch(url, {
             method: "POST",
             body: Utils.createSearchParams({
                 album_id: albumId,
                 photo_id: pretty.join(","),
             }),
-        })).then(response => {
+        }).then(response => {
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {
             if (result && result.code === doneCode && result.result) {
