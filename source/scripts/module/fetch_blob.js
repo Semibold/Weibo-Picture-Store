@@ -3,13 +3,14 @@
  */
 {
 
+    const delay = 300;
     const notifyId = Utils.randomString(16);
 
     Weibo.fetchBlob = url => {
         let fileProgress = Weibo.fileProgress(Weibo.fileProgress.TYPE_DOWNLOAD);
 
         fileProgress.addNextWave(1);
-        fileProgress.triggerProgress();
+        let delayRequestId = setTimeout(() => fileProgress.triggerProgress(), delay);
 
         return Utils.fetch(url, {
             cache: "default",
@@ -17,9 +18,11 @@
         }).then(response => {
             return response.ok ? response.blob() : Promise.reject();
         }).then(result => {
+            clearTimeout(delayRequestId);
             fileProgress.accumulator();
             return Promise.resolve(result);
         }).catch(reason => {
+            clearTimeout(delayRequestId);
             fileProgress.accumulator();
             chrome.notifications.create(notifyId, {
                 type: "basic",
