@@ -7,23 +7,18 @@ class Dispatcher {
         this.batch = false;
         this.config = null;
         this.buffer = new Map();
-        this.copier = document.querySelector("#copy-to-clipboard");
+        this.main = document.querySelector("#main");
+        this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clip-size");
-        this.content = document.querySelector("#content");
         this.fragment = document.createDocumentFragment();
         this.copyId = Utils.randomString(16);
         this.notifyId = Utils.randomString(16);
         this.external = Weibo.startConfig.clipSize;
         this.urlPrefix = null;
-        this.requestID = null;
         this.checkout = {total: 0, settle: 0, clear: true};
         this.detailKey = "WB.detail";
         this.configKey = "WB.config";
         this.decorator();
-
-        return {
-            actuator: this.actuator.bind(this),
-        };
     }
 
     decorator() {
@@ -43,7 +38,7 @@ class Dispatcher {
         }
         if (config) {
             for (let name of Object.keys(padding)) {
-                if (Weibo.startConfig[name][config[name]] != null) {
+                if (typeof Weibo.startConfig[name][config[name]] === "string") {
                     padding[name] = config[name];
                 }
             }
@@ -76,12 +71,12 @@ class Dispatcher {
         for (let [name, value] of Object.entries(this.config)) {
             document.querySelector(`[name="${name}"][value="${value}"]`).checked = true;
         }
-        document.querySelector("a.copy-mode").dataset.batch = this.batch;
+        document.querySelector("a.head-copy-mode").dataset.batch = this.batch;
     }
 
     startEvent() {
         let link = document.querySelector(`[name="clipSize"][value="4"]`);
-        let copy = document.querySelector("a.copy-mode");
+        let copy = document.querySelector("a.head-copy-mode");
 
         copy.addEventListener("click", e => {
             this.batch = copy.dataset.batch = !this.batch;
@@ -93,6 +88,7 @@ class Dispatcher {
             this.clipSize();
             Utils.local.set(this.detailKey, e.target.value);
         });
+
         this.linker.addEventListener("focus", e => {
             if (!link.checked) {
                 link.checked = true;
@@ -114,37 +110,39 @@ class Dispatcher {
         }
 
         document.addEventListener("click", e => {
-            if (!e.target.classList.contains("button-copy")) return;
-            let type = e.target.dataset.type;
-            let prev = document.activeElement;
+            let buttonCopy = e.target.closest(".button-copy");
+            if (buttonCopy) {
+                let type = buttonCopy.dataset.type;
+                let prev = document.activeElement;
 
-            if (this.batch) {
-                let data = [];
-                for (let hybrid of this.buffer.values()) {
-                    data.push(this.transformRaw(hybrid.item)[type]);
+                if (this.batch) {
+                    let data = [];
+                    for (let hybrid of this.buffer.values()) {
+                        data.push(this.transformRaw(hybrid.item)[type]);
+                    }
+                    this.copier.value = data.join("\n");
+                } else {
+                    let section = buttonCopy.closest("section");
+                    let guid = section.dataset.guid;
+                    let input = this.buffer.get(guid).boot.domNodes[`input${type}`];
+                    this.copier.value = input.value;
                 }
-                this.copier.value = data.join("\n");
-            } else {
-                let section = e.target.closest("section.item");
-                let guid = section.dataset.guid;
-                let input = this.buffer.get(guid).boot.domNodes[`input${type}`];
-                this.copier.value = input.value;
+
+                this.copier.focus();
+                this.copier.select();
+
+                if (document.execCommand("copy")) {
+                    chrome.notifications.create(this.copyId, {
+                        type: "basic",
+                        iconUrl: chrome.i18n.getMessage("64"),
+                        title: chrome.i18n.getMessage("info_title"),
+                        message: chrome.i18n.getMessage("copy_to_clipboard"),
+                    });
+                }
+
+                this.copier.blur();
+                prev.focus();
             }
-
-            this.copier.focus();
-            this.copier.select();
-
-            if (document.execCommand("copy")) {
-                chrome.notifications.create(this.copyId, {
-                    type: "basic",
-                    iconUrl: chrome.i18n.getMessage("64"),
-                    title: chrome.i18n.getMessage("info_title"),
-                    message: chrome.i18n.getMessage("copy_to_clipboard"),
-                });
-            }
-
-            this.copier.blur();
-            prev.focus();
         });
     }
 
@@ -169,7 +167,7 @@ class Dispatcher {
     }
 
     fillMode(section) {
-        let nodes = section.querySelectorAll("a.button-copy");
+        let nodes = section.querySelectorAll(".button-copy");
         for (let node of nodes) {
             node.textContent = this.batch ? "Copy All" : "Copy";
         }
@@ -188,7 +186,7 @@ class Dispatcher {
         }
 
         for (let item of pretty) {
-            let guid = item.guid = Utils.guid;
+            let guid = item.guid = Utils.guid();
             let data = this.transformRaw(item);
             let boot = new BuildItem(data);
 
@@ -197,7 +195,7 @@ class Dispatcher {
             this.buffer.set(guid, {item, boot});
         }
 
-        this.content.append(this.fragment);
+        this.main.append(this.fragment);
     }
 
     transformRaw(raw) {
@@ -228,63 +226,15 @@ class Dispatcher {
     }
 
     actuator(result) {
-        if (!Array.isArray(result) || !result.length) return;
-
-        this.checkout.total += result.length;
-        this.progress();
-
-        for (let item of result) {
-            backWindow.Weibo.fileUpload([item]).then(raw => {
-                this.addItems(raw, this.checkout.clear);
+        if (Array.isArray(result) && result.length) {
+            this.checkout.total += result.length;
+            backWindow.Weibo.fileUpload(result, raw => {
+                raw && this.addItems(raw, this.checkout.clear);
                 if (++this.checkout.settle === this.checkout.total) {
                     this.checkout.clear = true;
                 }
             });
         }
-    }
-
-    progress() {
-        let sec = 3 * this.checkout.total;
-        let fps = 60;
-        let pio = sec * fps;
-        let max = 0.9;
-        let gap = 100 / this.checkout.total;
-        let step = gap * max / sec / fps;
-        let time = 0;
-        let loop = (timeStamp) => {
-            let next = Math.floor(this.checkout.settle * gap + (this.checkout.total - this.checkout.settle) * time * step);
-
-            if (next < 10) next = 10;
-            if (next > 100) next = 100;
-            time > pio ? time = pio : time++;
-
-            chrome.notifications.create(this.notifyId, {
-                type: "progress",
-                iconUrl: chrome.i18n.getMessage("64"),
-                title: chrome.i18n.getMessage("info_title"),
-                message: chrome.i18n.getMessage("upload_progress_message"),
-                contextMessage: chrome.i18n.getMessage("upload_progress_hinter"),
-                progress: next,
-                requireInteraction: true,
-            }, notificationId => {
-                if (this.checkout.settle === this.checkout.total) {
-                    this.requestID && cancelAnimationFrame(this.requestID);
-                    chrome.notifications.clear(notificationId, wasCleared => {
-                        wasCleared && chrome.notifications.create(this.notifyId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("file_upload_ended"),
-                        });
-                    });
-                }
-            });
-
-            this.requestID = requestAnimationFrame(loop);
-        };
-
-        this.requestID && cancelAnimationFrame(this.requestID);
-        this.requestID = requestAnimationFrame(loop);
     }
 
 }

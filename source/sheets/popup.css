@@ -1,3 +1,6 @@
+@import "module/global.css";
+@import "module/scrollbar.css";
+
 #controller {
     --margin-bottom: 2.5em;
     position: relative;
@@ -10,7 +13,7 @@
     background-color: #fff;
 }
 
-#header {
+#head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -25,27 +28,27 @@
     z-index: 1000;
 }
 
-.option-wrapper > div {
+.head-setting > div {
     display: inline-block;
     vertical-align: middle;
 }
 
-.parting-line {
+.head-split-line {
     margin-left: 1em;
     width: 1px;
     height: 1.8em;
     background-color: #e5e9ef;
 }
 
-.network-protocol > label,
-.picture-clip > label {
+.head-network-protocol > label,
+.head-clip-size > label {
     display: inline-block;
     vertical-align: middle;
     margin-left: 0.8em;
 }
 
-.network-protocol > label > input,
-.picture-clip > label > input {
+.head-network-protocol > label > input,
+.head-clip-size > label > input {
     display: inline-block;
     vertical-align: middle;
     cursor: default;
@@ -65,8 +68,8 @@
     border-bottom: 1px solid #21b3a3;
 }
 
-.copy-mode,
-.browsing-history {
+.head-copy-mode,
+.head-browsing-history {
     display: inline-block;
     vertical-align: middle;
     margin-right: 0.8em;
@@ -75,41 +78,41 @@
     cursor: pointer;
 }
 
-.copy-mode:hover,
-.browsing-history:hover {
+.head-copy-mode:hover,
+.head-browsing-history:hover {
     color: #333;
 }
 
-.copy-mode > .fa,
-.browsing-history > .fa {
+.head-copy-mode > .fa,
+.head-browsing-history > .fa {
     display: inline-block;
     vertical-align: middle;
     font-size: 1.6em;
 }
 
-.copy-mode > .fa {
+.head-copy-mode > .fa {
     display: none;
 }
 
-.copy-mode[data-batch="true"] > .fa-check,
-.copy-mode[data-batch="false"] > .fa-times {
+.head-copy-mode[data-batch="true"] > .fa-check,
+.head-copy-mode[data-batch="false"] > .fa-times {
     display: inline-block;
 }
 
-#content {
+#main {
     margin: 0 auto;
     max-width: 1440px;
     width: 100%;
 }
 
-#content > .item {
+#main > section {
     display: flex;
     justify-content: center;
     margin-top: var(--margin-bottom);
     padding: 0 1em;
 }
 
-#content > .item > div {
+#main > section > div {
     margin: 0 1em;
 }
 
@@ -139,8 +142,6 @@
     width: 100%;
     height: 100%;
     background-size: 20px 20px;
-    background: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%), linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%) 0 0, 10px 10px;
-    /* Overload */
     background: #fefefe;
     object-fit: cover;
 }
@@ -206,7 +207,7 @@
     background-color: #00b5e5;
 }
 
-#copy-to-clipboard {
+#transfer-to-clipboard {
     position: fixed;
     top: 0;
     right: 0;

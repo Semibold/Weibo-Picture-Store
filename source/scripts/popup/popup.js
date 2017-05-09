@@ -5,7 +5,7 @@ document.title = chrome.i18n.getMessage("extension_name");
 
 const backWindow = chrome.extension.getBackgroundPage();
 const fileInput = document.querySelector("#file-input");
-const browsingHistory = document.querySelector(".browsing-history");
+const browsingHistory = document.querySelector(".head-browsing-history");
 const dispatcher = new Dispatcher();
 const Resolve = files => {
     return backWindow.Weibo

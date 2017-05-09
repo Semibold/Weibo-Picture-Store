@@ -8,10 +8,6 @@ class BuildEvent {
         this.section = section;
         this.notifyId = Utils.randomString(16);
         this.decorator();
-
-        return {
-            destroy: this.destroy.bind(this),
-        };
     }
 
     decorator() {
@@ -24,7 +20,7 @@ class BuildEvent {
         this.duplex.add({
             node: this.section.querySelectorAll("table"),
             type: "paste",
-            call: e => {
+            func: e => {
                 let inputs = this.section.querySelectorAll("table input");
 
                 for (let input of inputs) {
@@ -45,19 +41,17 @@ class BuildEvent {
                                         let multipleBuffer = [];
 
                                         while (multiple.length) {
-                                            let str = multiple.shift();
+                                            let url = multiple.shift();
 
-                                            if (Utils.checkImageURL(str)) {
-                                                multipleBuffer.push(Utils.fetchImage(str)
-                                                    .then(blob => buffer.push(blob), reason => {
-                                                        chrome.notifications.create(notifyId, {
-                                                            type: "basic",
-                                                            iconUrl: chrome.i18n.getMessage("64"),
-                                                            title: chrome.i18n.getMessage("warn_title"),
-                                                            message: chrome.i18n.getMessage("get_image_url_fail"),
-                                                        });
-                                                    }));
-                                            }
+                                            Utils.checkURL(url) && multipleBuffer.push(backWindow.Weibo.fetchBlob(url)
+                                                .then(blob => buffer.push(blob), reason => {
+                                                    chrome.notifications.create(notifyId, {
+                                                        type: "basic",
+                                                        iconUrl: chrome.i18n.getMessage("64"),
+                                                        title: chrome.i18n.getMessage("warn_title"),
+                                                        message: chrome.i18n.getMessage("get_image_url_fail"),
+                                                    });
+                                                }));
                                         }
 
                                         Promise.all(multipleBuffer).then(result => resolve());
@@ -78,7 +72,7 @@ class BuildEvent {
         this.duplex.add({
             node: this.section.querySelectorAll(".image-holder"),
             type: "click",
-            call: e => fileInput.click(),
+            func: e => fileInput.click(),
         });
     }
 
@@ -86,9 +80,9 @@ class BuildEvent {
         for (let item of this.duplex) {
             let node = item.node;
             let type = item.type;
-            let call = item.call;
+            let func = item.func;
             for (let target of node) {
-                target.addEventListener(type, call);
+                target.addEventListener(type, func);
             }
         }
     }
@@ -97,9 +91,9 @@ class BuildEvent {
         for (let item of this.duplex) {
             let node = item.node;
             let type = item.type;
-            let call = item.call;
+            let func = item.func;
             for (let target of node) {
-                target.removeEventListener(type, call);
+                target.removeEventListener(type, func);
             }
         }
         this.duplex.clear();
