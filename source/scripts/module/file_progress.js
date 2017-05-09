@@ -3,8 +3,9 @@
  */
 {
 
-    const types = new Set(["TYPE_UPLOAD", "TYPE_DOWNLOAD"]);
+    const types = new Map();
     const Store = new Map();
+
     const BuildStore = class {
         constructor() {
             this.total = 0;
@@ -22,10 +23,7 @@
         }
     };
 
-    Weibo.fileProgress = (tid) => {
-        if (!types.has(tid)) {
-            tid = 1;
-        }
+    const fileProgress = (tid) => {
         let dtd = Store.get(tid);
         let end = tid === Weibo.fileProgress.TYPE_UPLOAD;
         let avr = 3;
@@ -82,19 +80,23 @@
             dtd.requestId = requestAnimationFrame(loop);
         };
 
+        dtd.requestId && cancelAnimationFrame(dtd.requestId);
+        dtd.requestId = requestAnimationFrame(loop);
+    };
+
+    Weibo.fileProgress = (tid) => {
+        let dtd = Store.get(tid);
         return {
-            accumulator: dtd.accumulator.bind(dtd),
-            addNextWave: dtd.addNextWave.bind(dtd),
-            triggerProgress: () => {
-                dtd.requestId && cancelAnimationFrame(dtd.requestId);
-                dtd.requestId = requestAnimationFrame(loop);
-            },
+            accumulator: () => dtd.accumulator(),
+            addNextWave: (n) => dtd.addNextWave(n),
+            triggerProgress: () => fileProgress(tid),
         };
     };
 
-    types.forEach((item, index) => {
-        Weibo.fileProgress[item] = index + 1;
-        Store.set(Weibo.fileProgress[item], new BuildStore());
+    types.set("TYPE_UPLOAD", 1).set("TYPE_DOWNLOAD", 2);
+    types.forEach((value, key, map) => {
+        Weibo.fileProgress[key] = value;
+        Store.set(Weibo.fileProgress[key], new BuildStore());
     });
 
 }
