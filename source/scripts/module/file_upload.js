@@ -6,7 +6,7 @@
     const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
 
-    Weibo.fileUpload = (hybrid, doneCallback, failCallback) => {
+    Weibo.fileUpload = (hybrid, endedCallback) => {
         let uid = null;
         let buffer = [];
         let fileProgress = Weibo.fileProgress(Weibo.fileProgress.TYPE_UPLOAD);
@@ -76,13 +76,8 @@
             requestUpload(item)
                 .then(result => {
                     fileProgress.accumulator();
-                    typeof doneCallback === "function" && doneCallback(result);
+                    typeof endedCallback === "function" && endedCallback(result);
                     return Promise.resolve(result);
-                })
-                .catch(reason => {
-                    fileProgress.accumulator();
-                    typeof failCallback === "function" && failCallback(reason);
-                    return Promise.reject(reason);
                 });
         }
 
