@@ -5,11 +5,11 @@
 
     const failId = Utils.randomString(16);
     const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
-    const fileProgress = Weibo.fileProgress(Weibo.fileProgress.TYPE_UPLOAD);
 
     Weibo.fileUpload = (hybrid, doneCallback, failCallback) => {
         let uid = null;
         let buffer = [];
+        let fileProgress = Weibo.fileProgress(Weibo.fileProgress.TYPE_UPLOAD);
         let requestUpload = (item, replay) => {
             let oneline = Channel[item.readType];
             let promise = Utils.fetch(Utils.createURL(url, oneline.param({mime: item.file.type})), {

@@ -16,14 +16,6 @@ const Utils = {
         return fetch(url, this.blendParams(obj));
     },
 
-    fetchBlob(url) {
-        return this.fetch(url, {
-            credentials: "omit",
-        }).then(response => {
-            return response.ok ? response.blob() : Promise.reject();
-        });
-    },
-
     checkURL(maybeURL) {
         try {
             new URL(maybeURL);
