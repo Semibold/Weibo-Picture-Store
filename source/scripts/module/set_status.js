@@ -8,7 +8,7 @@
     const iframeId = `iframe-${Utils.randomString(6)}`;
     const url = "http://weibo.com/aj/onoff/setstatus";
 
-    const setStatus = () => Utils.fetch(url,{
+    const setStatus = () => Utils.fetch(url, {
         method: "POST",
         body: Utils.createSearchParams({sid: 0, state: 0}),
     }).then(response => {
