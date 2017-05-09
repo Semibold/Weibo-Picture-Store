@@ -4,6 +4,36 @@
 const notifyId = Utils.randomString(16);
 const popupState = new Map();
 
+const Referrer = (srcUrl, pageUrl) => {
+    let refererHandler = details => {
+        let name = "Referer";
+        let value = pageUrl;
+
+        for (let i = 0; i < details.requestHeaders.length; i++) {
+            if (details.requestHeaders[i].name.toLowerCase() === name.toLowerCase()) {
+                details.requestHeaders.splice(i, 1);
+                break;
+            }
+        }
+
+        details.requestHeaders.push({name, value});
+        return {requestHeaders: details.requestHeaders};
+    };
+
+    return {
+        addListener: () => {
+            chrome.webRequest.onBeforeSendHeaders.addListener(refererHandler, {
+                urls: [srcUrl],
+            }, ["requestHeaders", "blocking"]);
+        },
+        removeListener: () => {
+            if (chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
+                chrome.webRequest.onBeforeSendHeaders.removeListener(refererHandler);
+            }
+        }
+    };
+};
+
 
 chrome.browserAction.onClicked.addListener(tab => {
     if (!popupState.get("locked")) {
@@ -44,7 +74,20 @@ chrome.contextMenus.create({
     title: chrome.i18n.getMessage("upload_image_url"),
     contexts: ["image"],
     onclick: (obj, tab) => {
+        let controller = null;
+        if (Utils.checkURL(obj.srcUrl) && Utils.checkURL(obj.pageUrl)) {
+            controller = Referrer(obj.srcUrl, obj.pageUrl);
+            controller.addListener();
+        }
         Weibo.fetchBlob(obj.srcUrl)
+            .then(result => {
+                controller && controller.removeListener();
+                return Promise.resolve(result);
+            })
+            .catch(reason => {
+                controller && controller.removeListener();
+                return Promise.reject(reason);
+            })
             .then(blob => Weibo.readFile([blob]))
             .then(result => Weibo.filePurity(result))
             .then(result => Weibo.fileUpload(result))
@@ -62,7 +105,8 @@ chrome.contextMenus.create({
                         });
                     });
                 }
-            });
+            })
+            .catch(Utils.noop);
     },
 }, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
 
