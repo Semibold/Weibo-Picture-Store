@@ -1,8 +1,10 @@
 /**
  * File Progress
+ * Notice: `requestAnimationFrame` has no effect on chrome background page
  */
 {
 
+    const fps = 25;
     const types = new Map();
     const Store = new Map();
 
@@ -27,11 +29,12 @@
 
     };
 
+    const nextFrame = callback => setTimeout(callback, 1000 / fps);
+
     const fileProgress = (tid) => {
         let dtd = Store.get(tid);
         let end = tid === Weibo.fileProgress.TYPE_UPLOAD;
         let avr = 3;
-        let fps = 60;
         let max = 0.9;
         let sec = avr * dtd.total;
         let bio = sec * fps;
@@ -69,7 +72,7 @@
                 requireInteraction: true,
             }, notificationId => {
                 if (dtd.settle === dtd.total) {
-                    dtd.requestId && cancelAnimationFrame(dtd.requestId);
+                    dtd.requestId && clearTimeout(dtd.requestId);
                     chrome.notifications.clear(notificationId, wasCleared => {
                         wasCleared && end && chrome.notifications.create(dtd.notifyId, {
                             type: "basic",
@@ -81,11 +84,11 @@
                 }
             });
 
-            dtd.requestId = requestAnimationFrame(loop);
+            dtd.requestId = nextFrame(loop);
         };
 
-        dtd.requestId && cancelAnimationFrame(dtd.requestId);
-        dtd.requestId = requestAnimationFrame(loop);
+        dtd.requestId && clearTimeout(dtd.requestId);
+        dtd.requestId = nextFrame(loop);
     };
 
     Weibo.fileProgress = (tid) => {
