@@ -28,7 +28,7 @@ class BuildItem {
         this.domNodes.inputUBB = this.section.querySelector(".type-3 input");
         this.domNodes.inputMarkdown = this.section.querySelector(".type-4 input");
 
-        if (this.repaint()) {
+        if (this.repaint(this.item)) {
             if (this.item.objectURL) {
                 this.objectURL = image.src = this.item.objectURL;
                 this.domNodes.imageHolder.append(image);
@@ -42,12 +42,12 @@ class BuildItem {
         this.duplex = new BuildEvent(this.section);
     }
 
-    repaint() {
-        if (this.item && this.item.URL) {
-            this.domNodes.inputURL.value = this.item.URL;
-            this.domNodes.inputHTML.value = this.item.HTML;
-            this.domNodes.inputUBB.value = this.item.UBB;
-            this.domNodes.inputMarkdown.value = this.item.Markdown;
+    repaint(item) {
+        if (item && item.URL) {
+            this.domNodes.inputURL.value = item.URL;
+            this.domNodes.inputHTML.value = item.HTML;
+            this.domNodes.inputUBB.value = item.UBB;
+            this.domNodes.inputMarkdown.value = item.Markdown;
             return true;
         } else {
             return false;
