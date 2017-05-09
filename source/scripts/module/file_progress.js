@@ -7,20 +7,24 @@
     const Store = new Map();
 
     const BuildStore = class {
+
         constructor() {
             this.total = 0;
             this.settle = 0;
             this.notifyId = Utils.randomString(16);
             this.requestId = null;
         }
+
         accumulator() {
             this.settle++;
         }
+
         addNextWave(n) {
             if (Number.isInteger(n) && n > 0) {
                 this.total += n;
             }
         }
+
     };
 
     const fileProgress = (tid) => {
