@@ -1,8 +1,7 @@
 /**
  * Inject into Web Page
  */
-const EventMap = {drop: 1, click: 1, paste: 1};
-const ReceiverType = "WB.add_selector_listener";
+const EventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
 
 fileInput.type = "file";
@@ -13,7 +12,7 @@ fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
 const Resolve = (files, item, prefix, postfix) => {
     Weibo.readFile(files)
         .then(result => chrome.runtime.sendMessage({
-            type: "CE.base64_data_sender",
+            type: Weibo.transferId.fromBase64,
             item: item,
             result: result,
             prefix: prefix,
@@ -26,7 +25,10 @@ const EventRegister = {
     drop(item, prefix, postfix) {
         let target = document.querySelector(item.selector);
         if (target) {
-            target.addEventListener("dragover", e => e.preventDefault());
+            target.addEventListener("dragover", e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
             target.addEventListener("drop", e => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -71,7 +73,7 @@ const EventRegister = {
 
 chrome.runtime.onMessage.addListener(message => {
     try {
-        if (message && message.type === "CE.file_upload_sender" && message.item.writeln !== "clipboard") {
+        if (message && message.type === Weibo.transferId.fromBackground && message.item.writeln !== "clipboard") {
             let target = document.querySelector(message.item.writeln || message.item.selector);
             if (target) {
                 let start = target.selectionStart;
@@ -86,15 +88,15 @@ chrome.runtime.onMessage.addListener(message => {
 });
 
 self.addEventListener("message", e => {
-    if (e.data && e.data.type === ReceiverType && Array.isArray(e.data.note)) {
+    if (e.data && e.data.type === Weibo.transferId.fromUser && Array.isArray(e.data.note)) {
         for (let item of e.data.note) {
-            if (item && EventMap[item.eventType]) {
+            if (item && EventMap.has(item.eventType)) {
                 let prefix = String(e.data.prefix || "");
                 let postfix = String(e.data.postfix || "");
                 try {
                     EventRegister[item.eventType](item, prefix, postfix);
                 } catch (e) {
-                    console.warn("EventRegister:", e.message);
+                    console.warn("Event Register:", e.message);
                 }
             }
         }

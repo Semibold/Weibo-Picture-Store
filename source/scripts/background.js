@@ -2,18 +2,18 @@
  * chrome background file
  */
 const notifyId = Utils.randomString(16);
-const popupState = {id: null, locked: false};
+const popupState = new Map();
 
 
 chrome.browserAction.onClicked.addListener(tab => {
-    if (!popupState.locked) {
-        if (popupState.id == null) {
+    if (!popupState.get("locked")) {
+        if (!popupState.has("id")) {
             let width = 860;
             let height = 600;
             let top = Math.floor(screen.availHeight / 2 - height / 2);
             let left = Math.floor(screen.availWidth / 2 - width / 2);
 
-            popupState.locked = true;
+            popupState.set("locked", true);
             chrome.windows.create({
                 top,
                 left,
@@ -24,68 +24,51 @@ chrome.browserAction.onClicked.addListener(tab => {
                 type: "popup",
                 url: "popup.html",
             }, result => {
-                popupState.id = result.id;
-                popupState.locked = false;
+                popupState.set("id", result.id);
+                popupState.set("locked", false);
             });
         } else {
-            chrome.windows.update(popupState.id, {drawAttention: true});
+            chrome.windows.update(popupState.get("id"), {drawAttention: true});
         }
     }
 });
 
 
-chrome.runtime.onInstalled.addListener(details => chrome.tabs.create({url: "readme.html#changelog"}));
+chrome.runtime.onInstalled.addListener(details => chrome.tabs.create({url: "recorder.html#changelog"}));
 chrome.windows.onRemoved.addListener(windowId => {
-    if (windowId === popupState.id) popupState.id = null;
+    windowId === popupState.get("id") && popupState.delete("id");
 });
 
 
-const uploadMenuEntryId = chrome.contextMenus.create({
+chrome.contextMenus.create({
+    title: chrome.i18n.getMessage("upload_image_url"),
     contexts: ["image"],
-    title: chrome.i18n.getMessage("copy_image_url"),
     onclick: (obj, tab) => {
-        if (Utils.checkImageURL(obj.srcUrl, true)) {
-            Utils.fetchImage(obj.srcUrl)
-                .catch(reason => {
-                    chrome.notifications.create(notifyId, {
-                        type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
-                        title: chrome.i18n.getMessage("warn_title"),
-                        message: chrome.i18n.getMessage("get_image_url_fail"),
-                    });
-                    return Promise.reject(reason);
-                })
-                .then(blob => Weibo.readFile([blob]))
-                .then(result => Weibo.filePurity(result))
-                .then(result => Weibo.fileUpload(result))
-                .then(result => {
-                    if (result[0]) {
-                        let url = `https://${Weibo.urlPrefix[0] + Weibo.rootZone}/large/${result[0].pid + Weibo.acceptType[result[0].file.type].typo}`;
-                        Utils.writeToClipboard(url, () => {
-                            chrome.notifications.create(notifyId, {
-                                type: "basic",
-                                iconUrl: chrome.i18n.getMessage("64"),
-                                title: chrome.i18n.getMessage("info_title"),
-                                message: chrome.i18n.getMessage("copy_to_clipboard"),
-                                contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
-                            });
+        Weibo.fetchBlob(obj.srcUrl)
+            .then(blob => Weibo.readFile([blob]))
+            .then(result => Weibo.filePurity(result))
+            .then(result => Weibo.fileUpload(result))
+            .then(result => {
+                if (result[0]) {
+                    let item = result[0];
+                    let url = `https://${Weibo.urlPrefix[0] + Weibo.rootZone}/large/${item.pid + Weibo.acceptType[item.file.type].typo}`;
+                    Utils.writeToClipboard(url, () => {
+                        chrome.notifications.create(notifyId, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("64"),
+                            title: chrome.i18n.getMessage("info_title"),
+                            message: chrome.i18n.getMessage("copy_to_clipboard"),
+                            contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
                         });
-                    }
-                });
-        } else {
-            chrome.notifications.create(notifyId, {
-                type: "basic",
-                iconUrl: chrome.i18n.getMessage("64"),
-                title: chrome.i18n.getMessage("info_title"),
-                message: chrome.i18n.getMessage("image_type_mismatch"),
+                    });
+                }
             });
-        }
     },
 }, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
 
 
 chrome.runtime.onMessage.addListener((message, sender) => {
-    if (message && message.type === "CE.base64_data_sender") {
+    if (message && message.type === Weibo.transferId.fromBase64) {
         Weibo.filePurity(message.result)
             .then(result => Weibo.fileUpload(result))
             .then(result => {
@@ -107,7 +90,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                     })
                 }
                 chrome.tabs.sendMessage(sender.tab.id, {
-                    type: "CE.file_upload_sender",
+                    type: Weibo.transferId.fromBackground,
                     item: message.item,
                     buffer: buffer,
                     result: result,
