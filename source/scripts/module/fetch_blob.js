@@ -12,6 +12,7 @@
         fileProgress.triggerProgress();
 
         return Utils.fetch(url, {
+            cache: "default",
             credentials: "omit",
         }).then(response => {
             return response.ok ? response.blob() : Promise.reject();
