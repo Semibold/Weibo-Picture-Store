@@ -1,7 +1,9 @@
-@import "animation.css";
+@import "module/global.css";
+@import "module/scrollbar.css";
+@import "module/animation.css";
 
 body {
-    background-color: rgb(242, 242, 242);
+    background: rgb(242, 242, 242) url("../assets/texture.png") repeat center;
 }
 
 #controller {
@@ -14,7 +16,7 @@ body {
     box-sizing: border-box;
 }
 
-#header h1 {
+#head h1 {
     margin: 0.5em 1em 1em;
     font-size: 2em;
     line-height: 2;
@@ -24,13 +26,13 @@ body {
     box-sizing: border-box;
 }
 
-#content {
+#main {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
-#content > section {
+#main > section {
     --gap: 4px;
     position: relative;
     flex: 1 0 16em;
@@ -41,7 +43,7 @@ body {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
 }
 
-#content > section:empty {
+#main > section:empty {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 0;
@@ -51,7 +53,11 @@ body {
     pointer-events: none;
 }
 
-.img-label {
+#main > section[data-remove-cue="true"] img[alt="preview"] {
+    filter: blur(0.2em) grayscale(100%);
+}
+
+.image-label {
     margin-top: var(--gap);
     padding-top: var(--gap);
     padding-bottom: 1px;
@@ -60,16 +66,16 @@ body {
     border-top: 1px dotted #e5e9ef;
 }
 
-.img-body {
+.image-body {
     user-select: none;
 }
 
-.img-body:hover .remove-item {
+.image-body:hover .image-remove {
     opacity: 1;
     visibility: visible;
 }
 
-.remove-item {
+.image-remove {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -91,11 +97,11 @@ body {
     z-index: 10;
 }
 
-.remove-item:hover {
+.image-remove:hover {
     animation: shake-little 2000ms 150ms infinite;
 }
 
-.remove-item .fa {
+.image-remove .fa {
     font-size: 1.2em;
     line-height: 1;
     color: #ffffff;
@@ -110,7 +116,7 @@ body {
     overflow: hidden;
 }
 
-.img-body:hover img {
+.image-body:hover img {
     transform: scale(1.2);
 }
 
@@ -123,36 +129,36 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.25s 100ms;
+    transition: transform 0.25s 100ms, filter 0.15s 50ms;
 }
 
-.create-date {
+.image-create {
     color: #99a2aa;
     cursor: default;
 }
 
-#footer {
+#foot {
     margin-bottom: 1em;
 }
 
-.post-nav {
+.foot-navigator {
     display: flex;
     justify-content: space-around;
     color: #bbb;
     user-select: none;
 }
 
-.post-nav .hint {
+.foot-navigator .hint {
     align-self: center;
 }
 
-.post-nav .hint > span {
+.foot-navigator .hint > span {
     display: block;
     text-align: center;
 }
 
-.post-nav .prev,
-.post-nav .next {
+.foot-navigator .prev,
+.foot-navigator .next {
     display: inline-block;
     width: 4em;
     height: 2em;
@@ -162,37 +168,37 @@ body {
     transition: color 0.2s;
 }
 
-.post-nav .prev[data-disabled="false"],
-.post-nav .next[data-disabled="false"] {
+.foot-navigator .prev[data-disabled="false"],
+.foot-navigator .next[data-disabled="false"] {
     cursor: pointer;
 }
 
-.post-nav .prev[data-disabled="false"]:hover,
-.post-nav .next[data-disabled="false"]:hover {
+.foot-navigator .prev[data-disabled="false"]:hover,
+.foot-navigator .next[data-disabled="false"]:hover {
     color: #555;
 }
 
-.post-nav .prev[data-disabled="true"],
-.post-nav .next[data-disabled="true"] {
+.foot-navigator .prev[data-disabled="true"],
+.foot-navigator .next[data-disabled="true"] {
     color: #e9e9e9;
     cursor: default;
 }
 
-.footer-bottom {
+.foot-bottom {
     margin-top: 2em;
 }
 
-.split-line {
+.foot-line {
     width: 100%;
     height: 1px;
-    background: linear-gradient(to right, transparent 0%, #ccc 50%, transparent 100%);
+    background: linear-gradient(to right, transparent 10%, #ccc 50%, transparent 90%);
 }
 
-.menu-nav {
+.foot-menu {
     text-align: center;
 }
 
-.menu-nav a {
+.foot-menu a {
     display: inline-block;
     padding: 0 0.8em;
     line-height: 2.5;
@@ -201,11 +207,11 @@ body {
     cursor: pointer;
 }
 
-.menu-nav a:hover {
+.foot-menu a:hover {
     color: #e8554e;
 }
 
-.pio-throw-message {
+.bio-throw-message {
     margin: 10% 0;
     padding-bottom: 1em;
     width: 100%;
@@ -217,7 +223,7 @@ body {
     user-select: none;
 }
 
-.pio-loading {
+.bio-loading {
     margin: 10% 0;
     padding-bottom: 1em;
     width: 100%;
@@ -226,7 +232,7 @@ body {
     text-align: center;
 }
 
-.pio-loading::before {
+.bio-loading::before {
     content: "";
     display: block;
     margin: auto;
@@ -236,7 +242,7 @@ body {
     background-size: cover;
 }
 
-.pio-loading::after {
+.bio-loading::after {
     content: "loading";
     line-height: 1.5;
 }
