@@ -44,6 +44,10 @@
         let message = "";
         let contextMessage = "";
 
+        if (dtd.settle === dtd.total) {
+            return false;
+        }
+
         switch (tid) {
             case Weibo.fileProgress.TYPE_UPLOAD:
                 message = chrome.i18n.getMessage("upload_progress_message");
@@ -55,12 +59,12 @@
                 break;
         }
 
-        let loop = (timeStamp) => {
+        let loop = () => {
             let next = Math.floor(dtd.settle * gap + (dtd.total - dtd.settle) * time * step);
 
             if (next < 10) next = 10;
             if (next > 100) next = 100;
-            time > bio ? time = bio : time++;
+            time >= bio ? time = bio : time++;
 
             chrome.notifications.create(dtd.notifyId, {
                 type: "progress",
@@ -89,6 +93,7 @@
 
         dtd.requestId && clearTimeout(dtd.requestId);
         dtd.requestId = nextFrame(loop);
+        return true;
     };
 
     Weibo.fileProgress = (tid) => {
