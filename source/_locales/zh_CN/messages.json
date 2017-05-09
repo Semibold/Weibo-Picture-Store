@@ -80,8 +80,8 @@
   "upload_image_url": {
     "message": "把这张图片上传到微相册"
   },
-  "get_image_url_fail": {
-    "message": "无法读取远程的图片"
+  "get_file_url_fail": {
+    "message": "无法读取远程文件"
   },
   "micro_album_text": {
     "message": "微相册"

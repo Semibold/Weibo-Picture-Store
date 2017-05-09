@@ -6,7 +6,6 @@ class BuildEvent {
     constructor(section) {
         this.duplex = new Set();
         this.section = section;
-        this.notifyId = Utils.randomString(16);
         this.decorator();
     }
 
@@ -44,14 +43,7 @@ class BuildEvent {
                                             let url = multiple.shift();
 
                                             Utils.checkURL(url) && multipleBuffer.push(backWindow.Weibo.fetchBlob(url)
-                                                .then(blob => buffer.push(blob), reason => {
-                                                    chrome.notifications.create(notifyId, {
-                                                        type: "basic",
-                                                        iconUrl: chrome.i18n.getMessage("64"),
-                                                        title: chrome.i18n.getMessage("warn_title"),
-                                                        message: chrome.i18n.getMessage("get_image_url_fail"),
-                                                    });
-                                                }));
+                                                .then(blob => buffer.push(blob), Utils.noop));
                                         }
 
                                         Promise.all(multipleBuffer).then(result => resolve());
