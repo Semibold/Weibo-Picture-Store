@@ -22,6 +22,7 @@
       "scripts/global/register.js",
       "scripts/module/check_album_id.js",
       "scripts/module/create_album.js",
+      "scripts/module/fetch_blob.js",
       "scripts/module/file_progress.js",
       "scripts/module/file_purity.js",
       "scripts/module/file_upload.js",
