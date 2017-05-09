@@ -54,7 +54,7 @@
     "message": "当前提示在下载完成后会自动关闭"
   },
   "download_progress_hinter": {
-    "message": "正在获取远程的图片，请耐心等候"
+    "message": "正在获取远程文件，请耐心等候"
   },
   "file_upload_ended": {
     "message": "图片上传流程结束啦！"
