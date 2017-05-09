@@ -1,3 +1,5 @@
+@import "module/scrollbar.css";
+
 body {
     margin: 0;
     font-size: 1rem;
@@ -8,7 +10,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
-    font-family: "Helvetica Neue", "Segoe UI", Arial, "等线", "Microsoft JhengHei", sans-serif;
+    font-family: "Helvetica Neue", "Segoe UI", Arial, "Microsoft JhengHei", sans-serif;
 }
 
 a {
@@ -20,6 +22,10 @@ a {
 
 a:hover {
     color: #e8554e;
+}
+
+#changelog:target {
+    background-color: #fff5cc;
 }
 
 #controller {
@@ -36,10 +42,6 @@ a:hover {
 
 .faq ul li:nth-of-type(even) {
     list-style-type: none;
-}
-
-#changelog:target {
-    background-color: #fff5cc;
 }
 
 .changelog {

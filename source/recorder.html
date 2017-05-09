@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>简要指南及更新日志 - 微博图床</title>
-    <link rel="stylesheet" href="sheets/scrollbar.css">
-    <link rel="stylesheet" href="sheets/readme.css">
+    <link rel="stylesheet" href="sheets/recorder.css">
 </head>
 
 <body>
@@ -54,8 +53,6 @@
             <li>A：裁剪适用于 JPEG 格式的图片。PNG 图片裁剪后会丢失透明通道，GIF 则会变成静态图片</li>
             <li>Q：删除一张图片且页面刷新后，页面上的图片数量少了一个？</li>
             <li>A：属于正常情况，服务器返回的数据时效性不足，脚本做了些弥补，因此会出现这种情况</li>
-            <li>Q：关于其它图片格式有损转换的问题？</li>
-            <li>A：发生有损转换时，SVG 的样式会被丢弃。转换后的图片大小不固定，因此容易出现超出大小限制的警告提示</li>
             <li>Q：微相册同步图片的最大数量是多少？</li>
             <li>A：1000 张。如果达到这个数量后继续使用，则会删除早前的 50 张图片。</li>
         </ul>
@@ -76,6 +73,11 @@
 
     <h2>更新日志</h2>
     <section id="changelog" class="changelog">
+        <h4>2.0.0</h4>
+        <ul>
+            <li>改版：2.0.0</li>
+            <li>完善：所有上传图片的操作均支持显示上传进度</li>
+        </ul>
         <h4>1.6.1</h4>
         <ul>
             <li>修复：微相册达到存储上限后不能添加图片（现在自动移除最前的 50 张图片）</li>
