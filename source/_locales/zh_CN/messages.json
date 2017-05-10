@@ -65,8 +65,8 @@
   "copy_to_clipboard_hinter": {
     "message": "粘贴即可使用剪切板中的图片地址"
   },
-  "image_type_mismatch": {
-    "message": "暂不支持当前选中的图片格式"
+  "file_type_mismatch": {
+    "message": "暂不支持当前选中的文件格式"
   },
   "remove_failed_message": {
     "message": "操作失败：从相册中移除图片没有成功哈~"
