@@ -17,7 +17,7 @@
                     type: "basic",
                     iconUrl: chrome.i18n.getMessage("64"),
                     title: chrome.i18n.getMessage("info_title"),
-                    message: chrome.i18n.getMessage("image_type_mismatch"),
+                    message: chrome.i18n.getMessage("file_type_mismatch"),
                 });
                 continue;
             }
