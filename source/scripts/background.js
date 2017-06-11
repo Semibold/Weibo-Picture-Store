@@ -30,7 +30,7 @@ const Referrer = (srcUrl, pageUrl) => {
             if (chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
                 chrome.webRequest.onBeforeSendHeaders.removeListener(refererHandler);
             }
-        }
+        },
     };
 };
 
@@ -64,7 +64,6 @@ chrome.browserAction.onClicked.addListener(tab => {
 });
 
 
-chrome.runtime.onInstalled.addListener(details => chrome.tabs.create({url: "recorder.html#changelog"}));
 chrome.windows.onRemoved.addListener(windowId => {
     windowId === popupState.get("id") && popupState.delete("id");
 });
@@ -112,13 +111,13 @@ chrome.contextMenus.create({
 
 
 chrome.runtime.onMessage.addListener((message, sender) => {
-    if (message && message.type === Weibo.transferId.fromBase64) {
+    if (message && message.type === Weibo.transferType.fromBase64) {
         Weibo.filePurity(message.result)
             .then(result => Weibo.fileUpload(result))
             .then(result => {
                 let buffer = [];
                 for (let item of result) {
-                    item.url = `${message.prefix + item.pid + Weibo.acceptType[item.file.type].typo + message.postfix}`;
+                    item.url = `${message.prefix + item.pid + Weibo.acceptType[item.file.type].typo + message.suffix}`;
                     buffer.push(item.url);
                 }
                 if (message.item.writeln === "clipboard") {
@@ -134,12 +133,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                     })
                 }
                 chrome.tabs.sendMessage(sender.tab.id, {
-                    type: Weibo.transferId.fromBackground,
+                    type: Weibo.transferType.fromBackground,
                     item: message.item,
                     buffer: buffer,
                     result: result,
                     prefix: message.prefix,
-                    postfix: message.postfix,
+                    suffix: message.suffix,
                 });
             });
     }

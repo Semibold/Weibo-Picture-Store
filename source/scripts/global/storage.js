@@ -1,33 +1,38 @@
 /**
  * Options: Utils.local / Utils.session
  */
-["local", "session"].reduce((accumulator, currentValue) => {
-    accumulator[currentValue] = {
-        get(key) {
+["localStorage", "sessionStorage"].reduce((accumulator, currentValue) => {
+    accumulator[currentValue.slice(0, -7)] = {
+        get length() {
+            return self[currentValue].length;
+        },
+        key() {
+            return self[currentValue].key(...arguments);
+        },
+        getItem() {
             try {
-                return JSON.parse(self[`${currentValue}Storage`].getItem(key));
+                return JSON.parse(self[currentValue].getItem(...arguments));
             } catch (e) {
-                console.warn(e);
+                console.warn(e.message);
                 return null;
             }
         },
-        set(key, value) {
-            try {
-                self[`${currentValue}Storage`].setItem(key, JSON.stringify(value));
-                return true;
-            } catch (e) {
-                console.warn(e);
-                return false;
+        setItem() {
+            if (arguments.length < 2) {
+                self[currentValue].setItem(...arguments);
+            } else {
+                try {
+                    self[currentValue].setItem(arguments[0], JSON.stringify(arguments[1]));
+                } catch (e) {
+                    console.warn(e.message);
+                }
             }
         },
-        remove(key) {
-            try {
-                self[`${currentValue}Storage`].removeItem(key);
-                return true;
-            } catch (e) {
-                console.warn(e);
-                return false;
-            }
+        removeItem() {
+            self[currentValue].removeItem(...arguments);
+        },
+        clear() {
+            self[currentValue].clear(...arguments);
         },
     };
 

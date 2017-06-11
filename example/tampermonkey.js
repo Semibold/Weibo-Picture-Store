@@ -1,5 +1,5 @@
 /**
- * Example Tampermonkey
+ * Example for Tampermonkey
  */
 
 // ==UserScript==
@@ -19,23 +19,22 @@
      */
 
     // 在执行的时候要保证 selector 可以获取到
-    // 如果 selector 是后面动态添加的，你需要控制代码的执行时机
+    // 如果 selector 是动态添加的，你需要控制代码的执行时机
     self.postMessage({
 
-        // 固定类型值
+        // 固定类型
         type: "WB.add_selector_listener",
 
         // 要监听的事件类型
         // 目前支持：drop（拖拽）、click（点击）、paste（粘贴）
         note: [
             {
-                // writeln: "clipboard",
                 selector: "#reply_content",
                 eventType: "drop",
             },
             {
-                // 写入结果到这个位置
-                // 如果此值为 clipboard，则结果会写入剪切板，不写入页面中（相当通用的方法）
+                // 结果写入到这个位置
+                // 如果此值为 clipboard，则结果会写入剪切板，不写入页面中
                 // 如果此值为其它值，则当作 querySelector 选择器来用
                 // 如果此值不存在，则把 selector 用作 writeln
                 // 目前只支持带有 value 属性的节点，比如：textarea、input
@@ -49,17 +48,16 @@
                 eventType: "click",
             },
             {
-                // writeln: "clipboard",
                 selector: "#reply_content",
                 eventType: "paste",
             },
         ],
 
-        // 图片的前缀和后缀，可以用来和 CE_value 随意组合
-        // 得到的图片地址是：prefix + CE_value + postfix
-        // CE_value 是图片的 pid 加后缀名，比如：006G4xsfgy1fdyyqh94oij308c06bq32.jpg
+        // 得到的 CE_value 是图片的 pid 加后缀名，比如：006G4xsfgy1fdyyqh94oij308c06bq32.jpg
+        // 得到的图片地址是：prefix + CE_value + suffix
         prefix: "https://ws1.sinaimg.cn/large/",
-        postfix: "",
+        suffix: "",
 
     }, location.origin);
+
 }

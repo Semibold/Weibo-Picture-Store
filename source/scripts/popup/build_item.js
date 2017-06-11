@@ -3,8 +3,8 @@
  */
 class BuildItem {
 
-    constructor(item) {
-        this.item = item;
+    constructor(data) {
+        this.data = data;
         this.duplex = null;
         this.section = null;
         this.objectURL = null;
@@ -28,14 +28,12 @@ class BuildItem {
         this.domNodes.inputUBB = this.section.querySelector(".type-3 input");
         this.domNodes.inputMarkdown = this.section.querySelector(".type-4 input");
 
-        if (this.repaint(this.item)) {
-            if (this.item.objectURL) {
-                this.objectURL = image.src = this.item.objectURL;
+        if (this.repaint(this.data)) {
+            if (this.data.rawFile) {
+                this.objectURL = image.src = URL.createObjectURL(this.data.rawFile);
                 this.domNodes.imageHolder.append(image);
             }
         }
-
-        this.section.dataset.guid = this.item.guid;
     }
 
     buildEvent() {

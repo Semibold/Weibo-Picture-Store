@@ -30,8 +30,8 @@ class Dispatcher {
 
     startStore() {
         let padding = {scheme: "1", clipSize: "1"};
-        let detail = Utils.local.get(this.detailKey);
-        let config = Utils.local.get(this.configKey);
+        let detail = Utils.local.getItem(this.detailKey);
+        let config = Utils.local.getItem(this.configKey);
 
         if (typeof detail === "string") {
             this.external[4] = detail;
@@ -59,7 +59,7 @@ class Dispatcher {
                             this.clipSize();
                             break;
                     }
-                    Utils.local.set(this.configKey, this.config);
+                    Utils.local.setItem(this.configKey, this.config);
                 }
                 return result;
             },
@@ -86,7 +86,7 @@ class Dispatcher {
         this.linker.addEventListener("input", e => {
             this.external[4] = e.target.value;
             this.clipSize();
-            Utils.local.set(this.detailKey, e.target.value);
+            Utils.local.setItem(this.detailKey, e.target.value);
         });
 
         this.linker.addEventListener("focus", e => {
@@ -99,8 +99,8 @@ class Dispatcher {
         });
 
         for (let name of Object.keys(this.config)) {
-            let nodes = document.querySelectorAll(`[name="${name}"]`);
-            for (let node of nodes) {
+            let nodeList = document.querySelectorAll(`[name="${name}"]`);
+            for (let node of nodeList) {
                 node.addEventListener("change", e => {
                     if (e.target.checked) {
                         this.config[name] = e.target.value;
@@ -123,8 +123,7 @@ class Dispatcher {
                     this.copier.value = data.join("\n");
                 } else {
                     let section = buttonCopy.closest("section");
-                    let guid = section.dataset.guid;
-                    let input = this.buffer.get(guid).boot.domNodes[`input${type}`];
+                    let input = this.buffer.get(section).boot.domNodes[`input${type}`];
                     this.copier.value = input.value;
                 }
 
@@ -148,15 +147,13 @@ class Dispatcher {
 
     reScheme() {
         for (let hybrid of this.buffer.values()) {
-            let data = this.transformRaw(hybrid.item);
-            hybrid.boot.repaint(data);
+            hybrid.boot.repaint(this.transformRaw(hybrid.item));
         }
     }
 
     clipSize() {
         for (let hybrid of this.buffer.values()) {
-            let data = this.transformRaw(hybrid.item);
-            hybrid.boot.repaint(data);
+            hybrid.boot.repaint(this.transformRaw(hybrid.item));
         }
     }
 
@@ -167,15 +164,16 @@ class Dispatcher {
     }
 
     fillMode(section) {
-        let nodes = section.querySelectorAll(".button-copy");
-        for (let node of nodes) {
+        let nodeList = section.querySelectorAll(".button-copy");
+        for (let node of nodeList) {
             node.textContent = this.batch ? "Copy All" : "Copy";
         }
     }
 
     addItems(items, clear) {
-        if (!items) return;
-        if (Array.isArray(items) && !items.length) return;
+        if (!items || Array.isArray(items) && !items.length) {
+            return false;
+        }
 
         let pretty = Array.isArray(items) ? items : [items];
         this.urlPrefix = Weibo.urlPrefix[Math.floor(Math.random() * Weibo.urlPrefix.length)];
@@ -186,21 +184,21 @@ class Dispatcher {
         }
 
         for (let item of pretty) {
-            let guid = item.guid = Utils.guid();
-            let data = this.transformRaw(item);
-            let boot = new BuildItem(data);
+            let boot = new BuildItem(this.transformRaw(item));
 
             this.fillMode(boot.section);
             this.fragment.append(boot.section);
-            this.buffer.set(guid, {item, boot});
+            this.buffer.set(boot.section, {item, boot});
         }
 
         this.main.append(this.fragment);
+        return true;
     }
 
     transformRaw(raw) {
-        if (!raw) return raw;
-        if (!raw.pid) return raw;
+        if (!raw || !raw.pid) {
+            return raw;
+        }
 
         let scheme = Weibo.startConfig.scheme;
         let clipSize = Weibo.startConfig.clipSize;
@@ -208,7 +206,7 @@ class Dispatcher {
         let typo = Weibo.acceptType[raw.file.type].typo;
         let url = `${scheme[this.config.scheme] + this.urlPrefix + rootZone}/${clipSize[this.config.clipSize]}/${raw.pid + typo}`;
 
-        return Object.assign({}, raw, {
+        return Object.assign(raw, {
             URL: url,
             HTML: `<img src="${url}" alt="image">`,
             UBB: `[IMG]${url}[/IMG]`,

@@ -34,9 +34,7 @@
                             } catch (e) {}
                         }
                         Weibo.pidUpload({pid, uid});
-                        let file = item.file;
-                        let objectURL = item.objectURL;
-                        return {file, objectURL, pid, size, width, height};
+                        return Object.assign(item, {pid, size, width, height});
                     } else {
                         return Promise.reject();
                     }
@@ -48,8 +46,6 @@
                     return Weibo.setStatus().then(result => {
                         if (result.login) {
                             return requestUpload(item, true);
-                        } else {
-                            item.objectURL && URL.revokeObjectURL(item.objectURL);
                         }
                     }).catch(reason => {
                         reason.login && chrome.notifications.create(failId, {
@@ -58,10 +54,7 @@
                             title: chrome.i18n.getMessage("fail_title"),
                             message: chrome.i18n.getMessage("file_upload_failed"),
                         });
-                        item.objectURL && URL.revokeObjectURL(item.objectURL);
                     });
-                } else {
-                    item.objectURL && URL.revokeObjectURL(item.objectURL);
                 }
             });
 

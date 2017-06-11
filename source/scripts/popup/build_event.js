@@ -17,9 +17,9 @@ class BuildEvent {
 
     addPaste() {
         this.duplex.add({
-            node: this.section.querySelectorAll("table"),
             type: "paste",
-            func: e => {
+            nodeList: this.section.querySelectorAll("table"),
+            listener: e => {
                 let inputs = this.section.querySelectorAll("table input");
 
                 for (let input of inputs) {
@@ -62,30 +62,24 @@ class BuildEvent {
 
     addClick() {
         this.duplex.add({
-            node: this.section.querySelectorAll(".image-holder"),
             type: "click",
-            func: e => fileInput.click(),
+            nodeList: this.section.querySelectorAll(".image-holder"),
+            listener: e => fileInput.click(),
         });
     }
 
     buildEvent() {
         for (let item of this.duplex) {
-            let node = item.node;
-            let type = item.type;
-            let func = item.func;
-            for (let target of node) {
-                target.addEventListener(type, func);
+            for (let target of item.nodeList) {
+                target.addEventListener(item.type, item.listener);
             }
         }
     }
 
     destroy() {
         for (let item of this.duplex) {
-            let node = item.node;
-            let type = item.type;
-            let func = item.func;
-            for (let target of node) {
-                target.removeEventListener(type, func);
+            for (let target of item.nodeList) {
+                target.removeEventListener(item.type, item.listener);
             }
         }
         this.duplex.clear();

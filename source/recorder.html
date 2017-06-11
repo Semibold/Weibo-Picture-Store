@@ -21,7 +21,7 @@
         <ul>
             <li>支持点选、拖拽、粘贴以及页面右键菜单上传图片到微博并同步到微相册</li>
             <li>支持 JPEG、PNG(APNG)、GIF 三种图片格式</li>
-            <li>支持 BMP、WebP、ico、SVG 有损转换为 PNG</li>
+            <li>支持 BMP、WebP、ico 有损转换为 PNG</li>
             <li>支持查看上传记录，简单的浏览及删除操作</li>
             <li>支持生成 URL、HTML、UBB、Markdown 四种格式</li>
             <li>支持单条、多条模式的复制操作</li>
@@ -36,7 +36,7 @@
             <li>Q：图片上传到哪儿了？</li>
             <li>A：上传到微博上了</li>
             <li>Q：可以上传的最大图片大小是多少？</li>
-            <li>A：目前是 20,000,000B</li>
+            <li>A：目前是 20MB</li>
             <li>Q：如何管理已上传的图片？</li>
             <li>A：上传记录或者微相册均可以管理</li>
             <li>Q：如何删除已上传的图片？</li>
@@ -73,6 +73,12 @@
 
     <h2>更新日志</h2>
     <section id="changelog" class="changelog">
+        <h4>2.1.0</h4>
+        <ul>
+            <li>改动：用户模块中的属性变更，由 postfix 改为 suffix（breaking change）</li>
+            <li>移除：不再支持 SVG 有损转换为 PNG</li>
+            <li>优化：从字节流中读取图片正确的 MIME Type</li>
+        </ul>
         <h4>2.0.0</h4>
         <ul>
             <li>改版：2.0.0</li>

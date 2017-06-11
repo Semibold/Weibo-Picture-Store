@@ -1,5 +1,5 @@
 /**
- * User Login Status: get status
+ * User Login Status: Get User Login Status
  */
 {
 
@@ -11,7 +11,7 @@
     Weibo.getStatus = () => Utils.fetch(url)
         .then(response => response.ok ? response.json() : Promise.reject())
         .then(result => {
-            let login = result && result.code === doneCode;
+            let login = Boolean(result && result.code === doneCode);
             !login && chrome.notifications.create(notifyId, {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("64"),

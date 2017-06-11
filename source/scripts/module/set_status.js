@@ -1,6 +1,5 @@
 /**
- * Singleton
- * User Login Status: set status
+ * Singleton: Set User Login Status
  */
 {
 

@@ -3,7 +3,7 @@
  */
 {
 
-    const overflow = 20 * 1000 * 1000;
+    const overflow = 20 * 1024 * 1024 - 1;
     const slopId = Utils.randomString(16);
     const typeId = Utils.randomString(16);
 
