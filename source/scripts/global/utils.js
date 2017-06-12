@@ -109,14 +109,13 @@ const Utils = {
     bufferFromBase64(base64) {
         let [head, body = ""] = base64.split(",");
         let byteSequence = atob(body);
-        let arrayBuffer = new ArrayBuffer(byteSequence.length);
-        let bufferView = new Uint8Array(arrayBuffer);
+        let bufferView = new Uint8Array(byteSequence.length);
 
         for (let i = 0; i < byteSequence.length; i++) {
             bufferView[i] = byteSequence.codePointAt(i);
         }
 
-        return arrayBuffer;
+        return bufferView.buffer;
     },
 
     /**
