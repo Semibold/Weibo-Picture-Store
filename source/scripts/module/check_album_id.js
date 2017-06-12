@@ -32,7 +32,7 @@
         .catch(Utils.noop);
 
     Weibo.checkAlbumId = (albumId) => {
-        let count = 50;
+        let count = 100;
         let pages = Math.ceil(overflow / count);
         let buffer = [];
 
