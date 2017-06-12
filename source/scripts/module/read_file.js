@@ -3,32 +3,24 @@
  */
 {
 
-    Weibo.readFile = (files, readType, previewURL) => {
+    Weibo.readFile = (files, readType) => {
         let buffer = [];
-        let incongruent = [];
+        let congruent = [];
         let oneline = Channel[readType];
-        let pushStack = file => {
-            let promise = new Promise((resolve, reject) => {
+        let filePromise = file => {
+            return new Promise((resolve, reject) => {
                 let fileReader = new FileReader();
-                let startTime = null;
-
-                fileReader.onloadstart = e => startTime = performance.now();
                 fileReader.onloadend = e => {
-                    console.log("Elapsed:", performance.now() - startTime, "ms");
-
-                    fileReader.onloadstart = null;
-                    fileReader.onloadend = null;
-
                     if (e.target.readyState === e.target.DONE) {
                         resolve({
                             file: {
                                 name: file.name,
-                                type: file.type,
                                 size: file.size,
+                                type: oneline.mimeType(e.target.result),
                             },
+                            rawFile: file,
                             readType: readType,
                             result: e.target.result,
-                            objectURL: previewURL ? URL.createObjectURL(file) : null,
                         });
                     } else {
                         resolve();
@@ -36,19 +28,32 @@
                 };
                 fileReader[oneline.readType](file);
             });
-            buffer.push(promise);
         };
 
         for (let file of files) {
             if (!file) continue;
-            if (Weibo.chromeSupportedType.has(file.type) && !Weibo.acceptType[file.type]) {
-                incongruent.push(Weibo.transformSource(file).then(blob => pushStack(blob)).catch(Utils.noop));
-                continue;
-            }
-            pushStack(file);
+            buffer.push(filePromise(file));
         }
 
-        return Promise.all(incongruent).then(result => Promise.all(buffer));
+        return Promise.all(buffer).then(result => {
+            let buffer = [];
+            for (let i = 0; i < result.length; i++) {
+                let item = result[i];
+                if (!item) continue;
+                if (Weibo.chromeSupportedType.has(item.file.type) && !Weibo.acceptType[item.file.type]) {
+                    buffer.push(Weibo.transformSource(item.rawFile).catch(Utils.noop));
+                } else {
+                    congruent.push(item);
+                }
+            }
+            return Promise.all(buffer);
+        }).then(result => {
+            for (let file of result) {
+                if (!file) continue;
+                congruent.push(filePromise(file));
+            }
+            return Promise.all(congruent);
+        });
     };
 
 }

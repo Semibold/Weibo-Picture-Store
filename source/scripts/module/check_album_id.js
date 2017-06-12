@@ -18,7 +18,7 @@
 
                 for (let item of result.data.album_list) {
                     dict.counter++;
-                    dict.albumId[item.album_id] = item.album_id;
+                    dict.albumId[item.album_id] = item.album_id.toString();
                     if (item.description === Weibo.distinctProp.description && !dict.standby) {
                         dict.standby = item.album_id.toString();
                     }
@@ -42,22 +42,22 @@
 
         return Promise.all(buffer).then(list => {
             let total = overflow;
-            let dict = {albumId: null};
+            let albumInfo = {albumId: null};
 
             for (let item of list) {
                 if (item) {
                     total -= item.counter;
                     if (item.albumId[albumId]) {
-                        dict.albumId = item.albumId[albumId];
+                        albumInfo.albumId = item.albumId[albumId];
                         break;
                     }
                     if (item.standby) {
-                        dict.albumId = item.standby;
+                        albumInfo.albumId = item.standby;
                     }
                 }
             }
 
-            return dict.albumId ? dict : Promise.reject(total && total !== overflow);
+            return albumInfo.albumId ? albumInfo : Promise.reject(total && total !== overflow);
         });
     };
 

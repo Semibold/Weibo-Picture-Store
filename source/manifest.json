@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "default_locale": "zh_CN",
   "description": "__MSG_extension_description__",
   "icons": {
@@ -15,27 +15,7 @@
     "default_title": "__MSG_extension_name__"
   },
   "background": {
-    "scripts": [
-      "scripts/global/boot.js",
-      "scripts/global/utils.js",
-      "scripts/global/channel.js",
-      "scripts/global/register.js",
-      "scripts/module/check_album_id.js",
-      "scripts/module/create_album.js",
-      "scripts/module/fetch_blob.js",
-      "scripts/module/file_progress.js",
-      "scripts/module/file_purity.js",
-      "scripts/module/file_upload.js",
-      "scripts/module/get_album_id.js",
-      "scripts/module/get_all_photo.js",
-      "scripts/module/get_status.js",
-      "scripts/module/pid_upload.js",
-      "scripts/module/read_file.js",
-      "scripts/module/remove_photo.js",
-      "scripts/module/set_status.js",
-      "scripts/module/transform_source.js",
-      "scripts/background.js"
-    ],
+    "page": "background.html",
     "persistent": true
   },
   "content_scripts": [
@@ -56,7 +36,7 @@
   ],
   "options_page": "options.html",
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
-  "minimum_chrome_version": "56",
+  "minimum_chrome_version": "59",
   "permissions": [
     "tabs",
     "storage",

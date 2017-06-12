@@ -11,11 +11,9 @@
 {
 
     self.postMessage({
-
         type: "WB.add_selector_listener",
         note: [
             {
-                // writeln: "clipboard",
                 selector: "#reply_content",
                 eventType: "drop",
             },
@@ -25,14 +23,12 @@
                 eventType: "click",
             },
             {
-                // writeln: "clipboard",
                 selector: "#reply_content",
                 eventType: "paste",
             },
         ],
         prefix: "https://ws1.sinaimg.cn/large/",
-        postfix: "",
-
+        suffix: "",
     }, location.origin);
 
 }

@@ -6,6 +6,13 @@
     const url = "http://photo.weibo.com/photos/get_all";
     const doneCode = 0;
 
+    /**
+     * @param {Object} [albumInfo]
+     * @param {String} albumInfo.albumId
+     * @param {Number} [page = 1]
+     * @param {Number} [count = 20]
+     * @param {Boolean} [replay]
+     */
     Weibo.getAllPhoto = (albumInfo, page, count, replay) => {
         return new Promise((resolve, reject) => {
             albumInfo ? resolve(albumInfo) : reject();
@@ -21,10 +28,9 @@
             return response.ok ? response.json() : Promise.reject();
         }).then(result => {
             if (result && result.code === doneCode && result.result) {
-                let buffer = [];
-                let list = result.data.photo_list;
-                for (let item of list) {
-                    buffer.push({
+                let list = [];
+                for (let item of result.data.photo_list) {
+                    list.push({
                         pid: item.pid,
                         photoId: item.photo_id,
                         picHost: item.pic_host,
@@ -33,7 +39,7 @@
                     });
                 }
                 return {
-                    list: buffer,
+                    list: list,
                     total: result.data.total,
                     albumId: result.data.album_id,
                 };

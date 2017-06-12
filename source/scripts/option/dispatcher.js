@@ -29,7 +29,7 @@ class Dispatcher {
 
     loadStart() {
         this.loading = document.createElement("div");
-        this.loading.classList.add("bio-loading");
+        this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
     }
 
@@ -52,9 +52,9 @@ class Dispatcher {
 
     actuator() {
         // 服务器可能返回不准确的分页数据，会导致空白分页
-        backWindow.Weibo.getAllPhoto(Utils.session.get(this.albumInfoKey), this.page, this.count)
+        backWindow.Weibo.getAllPhoto(Utils.session.getItem(this.albumInfoKey), this.page, this.count)
             .then(result => {
-                Utils.session.set(this.albumInfoKey, {albumId: result.albumId});
+                Utils.session.setItem(this.albumInfoKey, {albumId: result.albumId});
                 this.checkout.pages = Math.ceil(result.total / this.count);
                 this.checkout.albumId = result.albumId;
                 this.loading.remove();
@@ -67,7 +67,7 @@ class Dispatcher {
                     this.buildItems(result.list);
                 }
             }, reason => {
-                Utils.session.remove(this.albumInfoKey);
+                Utils.session.removeItem(this.albumInfoKey);
                 this.loading.remove();
                 this.repaging();
                 this.errorInjector(chrome.i18n.getMessage("get_photo_fail_message"));
@@ -75,18 +75,13 @@ class Dispatcher {
     }
 
     errorInjector(text) {
-        if (typeof text === "string") {
-            let div = document.createElement("div");
-
-            div.classList.add("bio-throw-message");
-            div.textContent = text;
-            this.main.append(div);
-        }
+        let div = document.createElement("div");
+        div.dataset.bio = "throw-message";
+        div.textContent = text;
+        this.main.append(div);
     }
 
     addEvent() {
-        let leftArrow = 37;
-        let rightArrow = 39;
         let prevHandler = e => {
             if (this.checkout.pages && this.page > 1) {
                 this.page--;
@@ -104,43 +99,13 @@ class Dispatcher {
         this.next.addEventListener("click", nextHandler);
 
         document.addEventListener("keydown", e => {
-            if (e.ctrlKey && e.keyCode === leftArrow) {
+            if (e.ctrlKey && e.key === "ArrowLeft") {
                 e.preventDefault();
                 prevHandler(e);
             }
-            if (e.ctrlKey && e.keyCode === rightArrow) {
+            if (e.ctrlKey && e.key === "ArrowRight") {
                 e.preventDefault();
                 nextHandler(e);
-            }
-        });
-
-        this.main.addEventListener("click", e => {
-            let section = e.target.closest("section");
-            if (section) {
-                let button = section.querySelector(".image-remove");
-                if (button && button.contains(e.target)) {
-                    let albumId = section.dataset.albumId;
-                    let photoId = section.dataset.photoId;
-                    section.dataset.removeCue = true;
-                    backWindow.Weibo.removePhoto(albumId, photoId)
-                        .then(result => {
-                            // 由于服务器缓存的原因，页面数据可能刷新不及时
-                            // 可能会出现已删除的数据刷新后还存在的问题
-                            // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
-                            Utils.session.set(this.removedKey, photoId);
-                            Reflect.deleteProperty(section.dataset, "removeCue");
-                            chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
-                        })
-                        .catch(reason => {
-                            Reflect.deleteProperty(section.dataset, "removeCue");
-                            chrome.notifications.create(this.notifyId, {
-                                type: "basic",
-                                iconUrl: chrome.i18n.getMessage("64"),
-                                title: chrome.i18n.getMessage("info_title"),
-                                message: chrome.i18n.getMessage("remove_failed_message"),
-                            });
-                        });
-                }
             }
         });
     }
@@ -162,40 +127,49 @@ class Dispatcher {
     }
 
     buildItems(items) {
-        let removedPhotoId = Utils.session.get(this.removedKey);
+        let removedPhotoId = Utils.session.getItem(this.removedKey);
 
         for (let item of items) {
             if (item.photoId === removedPhotoId) continue;
-            let image = new Image();
             let fragment = Dispatcher.importNode();
             let section = fragment.querySelector("section");
             let linker = section.querySelector(".image-linker");
             let create = section.querySelector(".image-create");
+            let remove = section.querySelector(".image-remove");
             let source = linker.querySelector("img");
-            let preview = `${item.picHost}/mw690/${item.picName}`;
+            let albumId = this.checkout.albumId;
+            let photoId = item.photoId;
 
-            section.dataset.photoId = item.photoId;
-            section.dataset.albumId = this.checkout.albumId;
-            image.src = preview;
-            image.onload = e => source.src = preview;
+            source.src = `${item.picHost}/thumb300/${item.picName}`;
+            source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
             linker.href = `${item.picHost}/large/${item.picName}`;
             create.textContent = item.created;
+            remove.addEventListener("click", e => {
+                section.dataset.removeCue = true;
+                backWindow.Weibo.removePhoto(albumId, photoId)
+                    .then(result => {
+                        // 由于服务器缓存的原因，页面数据可能刷新不及时
+                        // 可能会出现已删除的数据刷新后还存在的问题
+                        // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
+                        Utils.session.setItem(this.removedKey, photoId);
+                        Reflect.deleteProperty(section.dataset, "removeCue");
+                        chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
+                    })
+                    .catch(reason => {
+                        Reflect.deleteProperty(section.dataset, "removeCue");
+                        chrome.notifications.create(this.notifyId, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("64"),
+                            title: chrome.i18n.getMessage("info_title"),
+                            message: chrome.i18n.getMessage("remove_failed_message"),
+                        });
+                    });
+            });
 
             this.fragment.append(section);
         }
 
-        this.crappyFlex();
         this.main.append(this.fragment);
-    }
-
-    crappyFlex() {
-        let minWidth = 180;
-        let maxWidth = 1440;
-        let count = Math.ceil(maxWidth / minWidth);
-
-        for (let i = 0; i < count; i++) {
-            this.fragment.append(document.createElement("section"));
-        }
     }
 
     static importNode() {

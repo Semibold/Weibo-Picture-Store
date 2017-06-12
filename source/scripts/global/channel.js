@@ -7,7 +7,7 @@ const Channel = new Proxy({
         body(arrayBuffer) {
             return arrayBuffer;
         },
-        param(obj) {
+        param(option) {
             return Object.assign({
                 s: "xml",
                 ori: "1",
@@ -16,7 +16,10 @@ const Channel = new Proxy({
                 wm: "",
                 app: "miniblog",
                 mime: "image/jpeg",
-            }, obj);
+            }, option);
+        },
+        mimeType(arrayBuffer) {
+            return Utils.parseMimeType(arrayBuffer);
         },
     },
     dataURL: {
@@ -28,7 +31,7 @@ const Channel = new Proxy({
             formData.set(name, body);
             return formData;
         },
-        param(obj) {
+        param(option) {
             return Object.assign({
                 s: "xml",
                 ori: "1",
@@ -37,7 +40,10 @@ const Channel = new Proxy({
                 wm: "",
                 app: "miniblog",
                 mime: "image/jpeg",
-            }, obj);
+            }, option);
+        },
+        mimeType(base64) {
+            return Utils.parseMimeType(Utils.bufferFromBase64(base64));
         },
     },
 }, {

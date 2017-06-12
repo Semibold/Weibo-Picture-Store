@@ -1,9 +1,9 @@
 @import "module/global.css";
 @import "module/scrollbar.css";
-@import "module/animation.css";
+@import "module/keyframes.css";
 
 body {
-    background: rgb(242, 242, 242) url("../assets/texture.png") repeat center;
+    background-color: rgb(242, 242, 242);
 }
 
 #controller {
@@ -27,30 +27,18 @@ body {
 }
 
 #main {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, [col-start] minmax(240px, 1fr) [col-end]);
 }
 
 #main > section {
     --gap: 4px;
     position: relative;
-    flex: 1 0 16em;
     margin: 0.8em 0.8em 2.4em;
     padding: var(--gap);
     transition: 0.2s;
     background-color: #f9f9f9;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
-}
-
-#main > section:empty {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    height: 0;
-    box-shadow: none;
-    pointer-events: none;
 }
 
 #main > section[data-remove-cue="true"] img[alt="preview"] {
@@ -211,7 +199,12 @@ body {
     color: #e8554e;
 }
 
-.bio-throw-message {
+[data-bio] {
+    grid-column-start: col-start 1;
+    grid-column-end: col-end -1;
+}
+
+[data-bio="throw-message"] {
     margin: 10% 0;
     padding-bottom: 1em;
     width: 100%;
@@ -223,7 +216,7 @@ body {
     user-select: none;
 }
 
-.bio-loading {
+[data-bio="loading"] {
     margin: 10% 0;
     padding-bottom: 1em;
     width: 100%;
@@ -232,7 +225,7 @@ body {
     text-align: center;
 }
 
-.bio-loading::before {
+[data-bio="loading"]::before {
     content: "";
     display: block;
     margin: auto;
@@ -242,7 +235,7 @@ body {
     background-size: cover;
 }
 
-.bio-loading::after {
+[data-bio="loading"]::after {
     content: "loading";
     line-height: 1.5;
 }

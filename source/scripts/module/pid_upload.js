@@ -8,6 +8,12 @@
     const overflowNumber = 1000; // 相册的最大存储量
     const url = "http://photo.weibo.com/upload/photo";
 
+    /**
+     * @param {Object} obj
+     * @param {String} obj.pid
+     * @param {String} [obj.uid]
+     * @param {Boolean} [retry]
+     */
     Weibo.pidUpload = (obj, retry) => {
         let uid = obj.uid;
         let pid = obj.pid;

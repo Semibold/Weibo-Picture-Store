@@ -5,33 +5,11 @@
 {
 
     const fps = 25;
-    const types = new Map();
+    const Types = new Map();
     const Store = new Map();
 
-    const BuildStore = class {
-
-        constructor() {
-            this.total = 0;
-            this.settle = 0;
-            this.notifyId = Utils.randomString(16);
-            this.requestId = null;
-        }
-
-        accumulator() {
-            this.settle++;
-        }
-
-        addNextWave(n) {
-            if (Number.isInteger(n) && n > 0) {
-                this.total += n;
-            }
-        }
-
-    };
-
     const nextFrame = callback => setTimeout(callback, 1000 / fps);
-
-    const fileProgress = (tid) => {
+    const triggerProgress = (tid) => {
         let dtd = Store.get(tid);
         let end = tid === Weibo.fileProgress.TYPE_UPLOAD;
         let avr = 3;
@@ -77,6 +55,7 @@
             }, notificationId => {
                 if (dtd.settle === dtd.total) {
                     dtd.requestId && clearTimeout(dtd.requestId);
+                    dtd.reformat();
                     chrome.notifications.clear(notificationId, wasCleared => {
                         wasCleared && end && chrome.notifications.create(dtd.notifyId, {
                             type: "basic",
@@ -96,19 +75,44 @@
         return true;
     };
 
+    const TypeEntry = class {
+
+        constructor() {
+            this.notifyId = Utils.randomString(16);
+            this.requestId = null;
+            this.reformat();
+        }
+
+        reformat() {
+            this.total = 0;
+            this.settle = 0;
+        }
+
+        accumulator() {
+            this.settle++;
+        }
+
+        addNextWave(n) {
+            if (Number.isInteger(n) && n > 0) {
+                this.total += n;
+            }
+        }
+
+    };
+
     Weibo.fileProgress = (tid) => {
         let dtd = Store.get(tid);
         return {
             accumulator: () => dtd.accumulator(),
             addNextWave: (n) => dtd.addNextWave(n),
-            triggerProgress: () => fileProgress(tid),
+            triggerProgress: () => triggerProgress(tid),
         };
     };
 
-    types.set("TYPE_UPLOAD", 1).set("TYPE_DOWNLOAD", 2);
-    types.forEach((value, key, map) => {
+    Types.set("TYPE_UPLOAD", 1).set("TYPE_DOWNLOAD", 2);
+    Types.forEach((value, key, map) => {
         Weibo.fileProgress[key] = value;
-        Store.set(Weibo.fileProgress[key], new BuildStore());
+        Store.set(Weibo.fileProgress[key], new TypeEntry());
     });
 
 }

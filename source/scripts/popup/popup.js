@@ -22,8 +22,7 @@ browsingHistory.addEventListener("click", e => {
 });
 
 document.addEventListener("keydown", e => {
-    let esc = 27;
-    e.keyCode === esc && chrome.windows.getCurrent(result => {
+    e.key === "Escape" && chrome.windows.getCurrent(result => {
         chrome.windows.remove(result.id);
     });
 });

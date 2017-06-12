@@ -209,7 +209,7 @@
 
 #transfer-to-clipboard {
     position: fixed;
-    top: 0;
+    top: -2em;
     right: 0;
     left: 0;
     margin: 0 auto;
