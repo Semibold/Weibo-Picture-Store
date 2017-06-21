@@ -1,65 +1,66 @@
-/**
- * Build Item
- */
 class BuildItem {
 
     constructor(data) {
         this.data = data;
-        this.duplex = null;
-        this.section = null;
+        this.itemEvent = null;
         this.objectURL = null;
         this.domNodes = {};
-        this.decorator();
     }
 
+    /** @public */
     decorator() {
         this.createItem();
-        this.buildEvent();
+        this.addListener();
+        return this;
     }
 
+    /** @private */
     createItem() {
-        let image = new Image();
-        let fragment = BuildItem.importNode();
+        const image = new Image();
+        const fragment = this.constructor.importNode();
 
-        this.section = fragment.querySelector("section");
-        this.domNodes.imageHolder = this.section.querySelector(".image-holder");
-        this.domNodes.inputURL = this.section.querySelector(".type-1 input");
-        this.domNodes.inputHTML = this.section.querySelector(".type-2 input");
-        this.domNodes.inputUBB = this.section.querySelector(".type-3 input");
-        this.domNodes.inputMarkdown = this.section.querySelector(".type-4 input");
+        this.domNodes.section = fragment.querySelector("section");
+        this.domNodes.imageHolder = this.domNodes.section.querySelector(".image-holder");
+        this.domNodes.inputURL = this.domNodes.section.querySelector(".type-1 input");
+        this.domNodes.inputHTML = this.domNodes.section.querySelector(".type-2 input");
+        this.domNodes.inputUBB = this.domNodes.section.querySelector(".type-3 input");
+        this.domNodes.inputMarkdown = this.domNodes.section.querySelector(".type-4 input");
 
         if (this.repaint(this.data)) {
-            if (this.data.rawFile) {
-                this.objectURL = image.src = URL.createObjectURL(this.data.rawFile);
+            if (this.data.blob) {
+                this.objectURL = image.src = URL.createObjectURL(this.data.blob);
                 this.domNodes.imageHolder.append(image);
             }
         }
     }
 
-    buildEvent() {
-        this.duplex = new BuildEvent(this.section);
+    /** @private */
+    addListener() {
+        this.itemEvent = new BuildEvent(this).decorator();
     }
 
-    repaint(item) {
-        if (item && item.URL) {
-            this.domNodes.inputURL.value = item.URL;
-            this.domNodes.inputHTML.value = item.HTML;
-            this.domNodes.inputUBB.value = item.UBB;
-            this.domNodes.inputMarkdown.value = item.Markdown;
+    /** @public */
+    repaint(data) {
+        if (data && data.URL) {
+            this.domNodes.inputURL.value = data.URL;
+            this.domNodes.inputHTML.value = data.HTML;
+            this.domNodes.inputUBB.value = data.UBB;
+            this.domNodes.inputMarkdown.value = data.Markdown;
             return true;
         } else {
             return false;
         }
     }
 
+    /** @public */
     destroy() {
-        this.duplex.destroy();
-        this.section.remove();
+        this.itemEvent.destroy();
+        this.domNodes.section.remove();
         this.objectURL && URL.revokeObjectURL(this.objectURL);
     }
 
     static importNode() {
-        let html = `
+        const html = `
             <section>
                 <div class="holder-wrapper">
                     <div class="image-holder" title="上传图片到微博相册"></div>

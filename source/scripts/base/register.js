@@ -1,6 +1,3 @@
-/**
- * Register
- */
 Weibo.rootZone = ".sinaimg.cn";
 
 Weibo.acceptType = {
@@ -54,7 +51,7 @@ Weibo.startConfig = {
         2: "https://",
         3: "//",
     },
-    clipSize: {
+    clipsize: {
         1: "large",
         2: "mw690",
         3: "thumbnail",

@@ -1,6 +1,3 @@
-/**
- * Init Foot Structure
- */
 {
 
     const foot = document.getElementById("foot");

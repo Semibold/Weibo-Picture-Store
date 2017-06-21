@@ -1,17 +1,14 @@
 /**
- * File Progress
  * Notice: `requestAnimationFrame` has no effect on chrome background page
  */
 {
 
     const fps = 25;
-    const Types = new Map();
     const Store = new Map();
-
     const nextFrame = callback => setTimeout(callback, 1000 / fps);
+
     const triggerProgress = (tid) => {
         let dtd = Store.get(tid);
-        let end = tid === Weibo.fileProgress.TYPE_UPLOAD;
         let avr = 3;
         let max = 0.9;
         let sec = avr * dtd.total;
@@ -35,6 +32,8 @@
                 message = chrome.i18n.getMessage("download_progress_message");
                 contextMessage = chrome.i18n.getMessage("download_progress_hinter");
                 break;
+            default:
+                return false;
         }
 
         let loop = () => {
@@ -42,6 +41,7 @@
 
             if (next < 10) next = 10;
             if (next > 100) next = 100;
+
             time >= bio ? time = bio : time++;
 
             chrome.notifications.create(dtd.notifyId, {
@@ -56,14 +56,7 @@
                 if (dtd.settle === dtd.total) {
                     dtd.requestId && clearTimeout(dtd.requestId);
                     dtd.reformat();
-                    chrome.notifications.clear(notificationId, wasCleared => {
-                        wasCleared && end && chrome.notifications.create(dtd.notifyId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("file_upload_ended"),
-                        });
-                    });
+                    chrome.notifications.clear(notificationId);
                 }
             });
 
@@ -80,7 +73,8 @@
         constructor() {
             this.notifyId = Utils.randomString(16);
             this.requestId = null;
-            this.reformat();
+            this.total = 0;
+            this.settle = 0;
         }
 
         reformat() {
@@ -88,11 +82,13 @@
             this.settle = 0;
         }
 
-        accumulator() {
-            this.settle++;
+        consume() {
+            if (this.settle < this.total) {
+                this.settle++;
+            }
         }
 
-        addNextWave(n) {
+        padding(n) {
             if (Number.isInteger(n) && n > 0) {
                 this.total += n;
             }
@@ -101,18 +97,21 @@
     };
 
     Weibo.fileProgress = (tid) => {
-        let dtd = Store.get(tid);
+        const dtd = Store.get(tid);
         return {
-            accumulator: () => dtd.accumulator(),
-            addNextWave: (n) => dtd.addNextWave(n),
-            triggerProgress: () => triggerProgress(tid),
+            consume() {
+                return dtd.consume();
+            },
+            padding(n) {
+                return dtd.padding(n);
+            },
+            triggerProgress() {
+                return triggerProgress(tid);
+            },
         };
     };
 
-    Types.set("TYPE_UPLOAD", 1).set("TYPE_DOWNLOAD", 2);
-    Types.forEach((value, key, map) => {
-        Weibo.fileProgress[key] = value;
-        Store.set(Weibo.fileProgress[key], new TypeEntry());
-    });
+    Store.set(Weibo.fileProgress.TYPE_UPLOAD = 1, new TypeEntry());
+    Store.set(Weibo.fileProgress.TYPE_DOWNLOAD = 2, new TypeEntry());
 
 }

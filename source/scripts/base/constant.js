@@ -1,8 +1,7 @@
-/**
- * Boot Module
- */
-const Weibo = self.Weibo = {};
+const SINGLETON_MODULE = new Map();
+const MULTIPLE_USER_CACHE = new Map();
 
+const UNKNOW_BITMAP_MIME_TYPE = "";
 const BITMAP_PATTERN_TABLE = [
     {
         pattern: [0x00, 0x00, 0x01, 0x00],

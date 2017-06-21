@@ -1,6 +1,3 @@
-/**
- * Dispatcher
- */
 class Dispatcher {
 
     constructor() {
@@ -15,80 +12,69 @@ class Dispatcher {
         this.checkout = {albumId: null, pages: null};
         this.searchParams = new URLSearchParams(location.search);
         this.loading = null;
-        this.removedKey = "removedPhotoId";
-        this.albumInfoKey = "albumInfo";
-        this.decorator();
+        this.albumIdStorageKey = "album_id";
+        this.removedPhotoIdStorageKey = "removed_photo_id";
     }
 
+    /** @public */
     decorator() {
-        this.loadStart();
-        this.parsePage();
-        this.actuator();
-        this.addEvent();
+        this.buildLoadingHinter();
+        this.resolveQueryString();
+        this.fetchSpecialAlbum();
+        this.addGlobalListener();
+        return this;
     }
 
-    loadStart() {
+    /** @private */
+    buildLoadingHinter() {
         this.loading = document.createElement("div");
         this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
     }
 
-    parsePage() {
-        let page = Number(this.searchParams.get("page"));
-        let count = Number(this.searchParams.get("count"));
+    /** @private */
+    resolveQueryString() {
+        const page = Number(this.searchParams.get("page"));
+        const count = Number(this.searchParams.get("count"));
         if (Number.isInteger(page) && page > 0) this.page = page;
         if (Number.isInteger(count) && count > 0) this.count = count;
     }
 
-    createMicroAlbum() {
-        let a = document.createElement("a");
-        let footMenu = document.querySelector(".foot-menu");
-        a.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
-        a.title = chrome.i18n.getMessage("micro_album_hinter");
-        a.target = "_blank";
-        a.textContent = chrome.i18n.getMessage("micro_album_text");
-        footMenu.prepend(a);
-    }
+    /** @private */
+    fetchSpecialAlbum() {
+        const albumId = sessionStorage.getItem(this.albumIdStorageKey);
+        const albumInfo = albumId ? {albumId} : null;
 
-    actuator() {
         // 服务器可能返回不准确的分页数据，会导致空白分页
-        backWindow.Weibo.getAllPhoto(Utils.session.getItem(this.albumInfoKey), this.page, this.count)
-            .then(result => {
-                Utils.session.setItem(this.albumInfoKey, {albumId: result.albumId});
-                this.checkout.pages = Math.ceil(result.total / this.count);
-                this.checkout.albumId = result.albumId;
-                this.loading.remove();
-                this.repaging();
-                this.createMicroAlbum();
-
-                if (!result.list.length) {
-                    this.errorInjector(chrome.i18n.getMessage("page_no_data"));
-                } else {
-                    this.buildItems(result.list);
-                }
-            }, reason => {
-                Utils.session.removeItem(this.albumInfoKey);
-                this.loading.remove();
-                this.repaging();
-                this.errorInjector(chrome.i18n.getMessage("get_photo_fail_message"));
-            });
+        backWindow.Weibo.getAllPhoto(albumInfo, this.page, this.count).then(json => {
+            sessionStorage.setItem(this.albumIdStorageKey, json.albumId);
+            this.checkout.pages = Math.ceil(json.total / this.count);
+            this.checkout.albumId = json.albumId;
+            this.loading.remove();
+            this.renderPaging();
+            this.buildMicroAlbumLink();
+            if (!json.list.length) {
+                this.errorInjector(chrome.i18n.getMessage("page_with_no_data_available"));
+            } else {
+                this.buildListFragment(json.list);
+            }
+        }).catch(reason => {
+            sessionStorage.removeItem(this.albumIdStorageKey);
+            this.loading.remove();
+            this.renderPaging();
+            this.errorInjector(chrome.i18n.getMessage("fetch_album_info_failed"));
+        });
     }
 
-    errorInjector(text) {
-        let div = document.createElement("div");
-        div.dataset.bio = "throw-message";
-        div.textContent = text;
-        this.main.append(div);
-    }
-
-    addEvent() {
-        let prevHandler = e => {
+    /** @private */
+    addGlobalListener() {
+        const prevHandler = () => {
             if (this.checkout.pages && this.page > 1) {
                 this.page--;
                 this.flipPage();
             }
         };
-        let nextHandler = e => {
+        const nextHandler = () => {
             if (this.checkout.pages && this.page < this.checkout.pages) {
                 this.page++;
                 this.flipPage();
@@ -101,21 +87,80 @@ class Dispatcher {
         document.addEventListener("keydown", e => {
             if (e.ctrlKey && e.key === "ArrowLeft") {
                 e.preventDefault();
-                prevHandler(e);
+                prevHandler();
             }
             if (e.ctrlKey && e.key === "ArrowRight") {
                 e.preventDefault();
-                nextHandler(e);
+                nextHandler();
             }
         });
     }
 
+    /** @private */
+    buildMicroAlbumLink() {
+        const a = document.createElement("a");
+        const footMenu = document.querySelector(".foot-menu");
+        a.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
+        a.title = chrome.i18n.getMessage("goto_micro_album_hinter");
+        a.target = "_blank";
+        a.textContent = chrome.i18n.getMessage("micro_album_text_content");
+        footMenu.prepend(a);
+    }
+
+    /** @private */
+    buildListFragment(items) {
+        const removedPhotoId = sessionStorage.getItem(this.removedPhotoIdStorageKey);
+
+        for (const item of items) {
+            if (item.photoId === removedPhotoId) continue;
+            const fragment = this.constructor.importNode();
+            const section = fragment.querySelector("section");
+            const linker = section.querySelector(".image-linker");
+            const create = section.querySelector(".image-create");
+            const remove = section.querySelector(".image-remove");
+            const source = linker.querySelector("img");
+            const albumId = this.checkout.albumId;
+            const photoId = item.photoId;
+
+            source.src = `${item.picHost}/thumb300/${item.picName}`;
+            source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
+            linker.href = `${item.picHost}/large/${item.picName}`;
+            create.textContent = item.created;
+
+            remove.addEventListener("click", e => {
+                section.dataset.removing = true;
+                backWindow.Weibo.removePhoto(albumId, [photoId]).then(json => {
+                    // 由于服务器缓存的原因，页面数据可能刷新不及时
+                    // 可能会出现已删除的数据刷新后还存在的问题
+                    // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
+                    sessionStorage.setItem(this.removedPhotoIdStorageKey, photoId);
+                    Reflect.deleteProperty(section.dataset, "removing");
+                    chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
+                }).catch(reason => {
+                    Reflect.deleteProperty(section.dataset, "removing");
+                    chrome.notifications.create(this.notifyId, {
+                        type: "basic",
+                        iconUrl: chrome.i18n.getMessage("64"),
+                        title: chrome.i18n.getMessage("info_title"),
+                        message: chrome.i18n.getMessage("remove_photo_failed"),
+                    });
+                });
+            });
+
+            this.fragment.append(section);
+        }
+
+        this.main.append(this.fragment);
+    }
+
+    /** @private */
     flipPage() {
         this.searchParams.set("page", this.page.toString());
         location.search = this.searchParams.toString();
     }
 
-    repaging() {
+    /** @private */
+    renderPaging() {
         if (!this.checkout.pages) {
             this.prev.dataset.disabled = true;
             this.next.dataset.disabled = true;
@@ -126,54 +171,16 @@ class Dispatcher {
         }
     }
 
-    buildItems(items) {
-        let removedPhotoId = Utils.session.getItem(this.removedKey);
-
-        for (let item of items) {
-            if (item.photoId === removedPhotoId) continue;
-            let fragment = Dispatcher.importNode();
-            let section = fragment.querySelector("section");
-            let linker = section.querySelector(".image-linker");
-            let create = section.querySelector(".image-create");
-            let remove = section.querySelector(".image-remove");
-            let source = linker.querySelector("img");
-            let albumId = this.checkout.albumId;
-            let photoId = item.photoId;
-
-            source.src = `${item.picHost}/thumb300/${item.picName}`;
-            source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
-            linker.href = `${item.picHost}/large/${item.picName}`;
-            create.textContent = item.created;
-            remove.addEventListener("click", e => {
-                section.dataset.removeCue = true;
-                backWindow.Weibo.removePhoto(albumId, photoId)
-                    .then(result => {
-                        // 由于服务器缓存的原因，页面数据可能刷新不及时
-                        // 可能会出现已删除的数据刷新后还存在的问题
-                        // 暂时用 sessionStorage 处理，但是会导致分页数据显示少一个
-                        Utils.session.setItem(this.removedKey, photoId);
-                        Reflect.deleteProperty(section.dataset, "removeCue");
-                        chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
-                    })
-                    .catch(reason => {
-                        Reflect.deleteProperty(section.dataset, "removeCue");
-                        chrome.notifications.create(this.notifyId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("remove_failed_message"),
-                        });
-                    });
-            });
-
-            this.fragment.append(section);
-        }
-
-        this.main.append(this.fragment);
+    /** @private */
+    errorInjector(text) {
+        const div = document.createElement("div");
+        div.dataset.bio = "throw-message";
+        div.textContent = text;
+        this.main.append(div);
     }
 
     static importNode() {
-        let html = `
+        const html = `
             <section>
                 <div class="image-body">
                     <a class="image-remove" title="从当前相册中移除这张图片"><i class="fa fa-trash-o"></i></a>

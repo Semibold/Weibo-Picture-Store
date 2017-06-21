@@ -1,6 +1,3 @@
-/**
- * Init Head Structure
- */
 {
 
     const head = document.getElementById("head");
@@ -23,19 +20,19 @@
             <div class="head-split-line"></div>
             <div class="head-clip-size">
                 <label title="使用原始图片">
-                    <input type="radio" name="clipSize" value="1">
+                    <input type="radio" name="clipsize" value="1">
                     <span>original</span>
                 </label>
                 <label title="中等裁剪尺寸">
-                    <input type="radio" name="clipSize" value="2">
+                    <input type="radio" name="clipsize" value="2">
                     <span>medium</span>
                 </label>
                 <label title="缩略图裁剪尺寸">
-                    <input type="radio" name="clipSize" value="3">
+                    <input type="radio" name="clipsize" value="3">
                     <span>thumbnail</span>
                 </label>
                 <label title="自定义裁剪尺寸">
-                    <input type="radio" name="clipSize" value="4">
+                    <input type="radio" name="clipsize" value="4">
                     <input type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="off" class="custom-clip-size">
                 </label>
             </div>

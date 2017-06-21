@@ -1,6 +1,3 @@
-/**
- * Init Head Structure
- */
 {
 
     const head = document.getElementById("head");

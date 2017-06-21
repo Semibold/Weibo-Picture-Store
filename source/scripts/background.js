@@ -1,13 +1,10 @@
-/**
- * chrome background file
- */
 const notifyId = Utils.randomString(16);
 const popupState = new Map();
 
-const Referrer = (srcUrl, pageUrl) => {
-    let refererHandler = details => {
-        let name = "Referer";
-        let value = pageUrl;
+const resolveReferrer = (srcUrl, pageUrl) => {
+    const refererHandler = details => {
+        const name = "Referer";
+        const value = pageUrl;
 
         for (let i = 0; i < details.requestHeaders.length; i++) {
             if (details.requestHeaders[i].name.toLowerCase() === name.toLowerCase()) {
@@ -22,9 +19,11 @@ const Referrer = (srcUrl, pageUrl) => {
 
     return {
         addListener: () => {
-            chrome.webRequest.onBeforeSendHeaders.addListener(refererHandler, {
-                urls: [srcUrl],
-            }, ["requestHeaders", "blocking"]);
+            if (!chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
+                chrome.webRequest.onBeforeSendHeaders.addListener(refererHandler, {
+                    urls: [srcUrl],
+                }, ["requestHeaders", "blocking"]);
+            }
         },
         removeListener: () => {
             if (chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
@@ -38,10 +37,10 @@ const Referrer = (srcUrl, pageUrl) => {
 chrome.browserAction.onClicked.addListener(tab => {
     if (!popupState.get("locked")) {
         if (!popupState.has("id")) {
-            let width = 860;
-            let height = 600;
-            let top = Math.floor(screen.availHeight / 2 - height / 2);
-            let left = Math.floor(screen.availWidth / 2 - width / 2);
+            const width = 860;
+            const height = 600;
+            const top = Math.floor(screen.availHeight / 2 - height / 2);
+            const left = Math.floor(screen.availWidth / 2 - width / 2);
 
             popupState.set("locked", true);
             chrome.windows.create({
@@ -70,12 +69,12 @@ chrome.windows.onRemoved.addListener(windowId => {
 
 
 chrome.contextMenus.create({
-    title: chrome.i18n.getMessage("upload_image_url"),
+    title: chrome.i18n.getMessage("upload_image_to_micro_album"),
     contexts: ["image"],
     onclick: (obj, tab) => {
         let controller = null;
-        if (Utils.checkURL(obj.srcUrl) && Utils.checkURL(obj.pageUrl)) {
-            controller = Referrer(obj.srcUrl, obj.pageUrl);
+        if (Utils.isValidURL(obj.srcUrl) && Utils.isValidURL(obj.pageUrl)) {
+            controller = resolveReferrer(obj.srcUrl, obj.pageUrl);
             controller.addListener();
         }
         Weibo.fetchBlob(obj.srcUrl)
@@ -92,15 +91,15 @@ chrome.contextMenus.create({
             .then(result => Weibo.fileUpload(result))
             .then(result => {
                 if (result[0]) {
-                    let item = result[0];
-                    let url = `https://${Weibo.urlPrefix[0] + Weibo.rootZone}/large/${item.pid + Weibo.acceptType[item.file.type].typo}`;
+                    const item = result[0];
+                    const url = `https://${Weibo.urlPrefix[0] + Weibo.rootZone}/large/${item.pid + Weibo.acceptType[item.mimeType].typo}`;
                     Utils.writeToClipboard(url, () => {
                         chrome.notifications.create(notifyId, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("64"),
                             title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("copy_to_clipboard"),
-                            contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
+                            message: chrome.i18n.getMessage("write_to_clipboard"),
+                            contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
                         });
                     });
                 }
@@ -115,20 +114,20 @@ chrome.runtime.onMessage.addListener((message, sender) => {
         Weibo.filePurity(message.result)
             .then(result => Weibo.fileUpload(result))
             .then(result => {
-                let buffer = [];
-                for (let item of result) {
-                    item.url = `${message.prefix + item.pid + Weibo.acceptType[item.file.type].typo + message.suffix}`;
+                const buffer = [];
+                for (const item of result) {
+                    item.url = `${message.prefix + item.pid + Weibo.acceptType[item.mimeType].typo + message.suffix}`;
                     buffer.push(item.url);
                 }
                 if (message.item.writeln === "clipboard") {
-                    let text = buffer.join("\n");
+                    const text = buffer.join("\n");
                     Utils.writeToClipboard(text, () => {
                         text && chrome.notifications.create(notifyId, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("64"),
                             title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("copy_to_clipboard"),
-                            contextMessage: chrome.i18n.getMessage("copy_to_clipboard_hinter"),
+                            message: chrome.i18n.getMessage("write_to_clipboard"),
+                            contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
                         });
                     })
                 }
@@ -146,8 +145,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 
 
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
-    let name = "Referer";
-    let value = "http://photo.weibo.com/";
+    const name = "Referer";
+    const value = "http://photo.weibo.com/";
 
     for (let i = 0; i < details.requestHeaders.length; i++) {
         if (details.requestHeaders[i].name.toLowerCase() === name.toLowerCase()) {

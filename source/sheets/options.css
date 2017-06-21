@@ -1,4 +1,4 @@
-@import "module/global.css";
+@import "module/base.css";
 @import "module/scrollbar.css";
 @import "module/keyframes.css";
 
@@ -41,7 +41,7 @@ body {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
 }
 
-#main > section[data-remove-cue="true"] img[alt="preview"] {
+#main > section[data-removing="true"] img[alt="preview"] {
     filter: blur(0.2em) grayscale(100%);
 }
 

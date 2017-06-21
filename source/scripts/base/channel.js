@@ -1,6 +1,3 @@
-/**
- * Channel
- */
 const Channel = new Proxy({
     arrayBuffer: {
         readType: "readAsArrayBuffer",
@@ -24,11 +21,9 @@ const Channel = new Proxy({
     },
     dataURL: {
         readType: "readAsDataURL",
-        body(base64) {
-            let name = "b64_data";
-            let formData = new FormData();
-            let [head, body] = base64.split(",");
-            formData.set(name, body);
+        body(dataURL) {
+            const formData = new FormData();
+            formData.set("b64_data", dataURL.split(",")[1]);
             return formData;
         },
         param(option) {
@@ -42,8 +37,8 @@ const Channel = new Proxy({
                 mime: "image/jpeg",
             }, option);
         },
-        mimeType(base64) {
-            return Utils.parseMimeType(Utils.bufferFromBase64(base64));
+        mimeType(dataURL) {
+            return Utils.parseMimeType(Utils.bufferFromBase64(dataURL.split(",")[1]));
         },
     },
 }, {

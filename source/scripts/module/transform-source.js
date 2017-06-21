@@ -1,23 +1,22 @@
 /**
- * Transform Source
- * Notice: `createImageBitmap` which cannot decode SVG
+ * Notice: `createImageBitmap` which cannot decode SVG(Scalable Vector Graphics)
  */
 {
 
     const MAX_EDGE = 2 ** 15 - 1;
 
-    Weibo.transformSource = (blob) => {
+    Weibo.transformSource = blob => {
         return createImageBitmap(blob)
             .then(bitmap => {
-                let width = Math.ceil(bitmap.width);
-                let height = Math.ceil(bitmap.height);
+                const width = Math.ceil(bitmap.width);
+                const height = Math.ceil(bitmap.height);
 
                 if (width > MAX_EDGE || height > MAX_EDGE) {
-                    return Promise.reject(new RangeError("Beyond the border"));
+                    return Promise.reject("Beyond the border");
                 }
 
-                let canvas = document.createElement("canvas");
-                let context = canvas.getContext("2d");
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
 
                 canvas.width = width;
                 canvas.height = height;
