@@ -1,6 +1,3 @@
-/**
- * Inject into Web Page
- */
 const EventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
 
@@ -9,8 +6,8 @@ fileInput.hidden = true;
 fileInput.multiple = true;
 fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
 
-const Resolve = (files, item, prefix, suffix) => {
-    Weibo.readFile(files)
+const resolveBlobs = (blobs, item, prefix, suffix) => {
+    Weibo.readFile(blobs)
         .then(result => chrome.runtime.sendMessage({
             type: Weibo.transferType.fromBase64,
             item: item,
@@ -23,7 +20,7 @@ const Resolve = (files, item, prefix, suffix) => {
 const EventRegister = {
 
     drop(item, prefix, suffix) {
-        let target = document.querySelector(item.selector);
+        const target = document.querySelector(item.selector);
         if (target) {
             target.addEventListener("dragover", e => {
                 e.preventDefault();
@@ -32,16 +29,16 @@ const EventRegister = {
             target.addEventListener("drop", e => {
                 e.preventDefault();
                 e.stopPropagation();
-                Resolve(e.dataTransfer.files, item, prefix, suffix);
+                resolveBlobs(e.dataTransfer.files, item, prefix, suffix);
             });
         }
     },
 
     click(item, prefix, suffix) {
-        let target = document.querySelector(item.selector);
+        const target = document.querySelector(item.selector);
         if (target) {
             document.body.append(fileInput);
-            fileInput.addEventListener("change", e => Resolve(e.target.files, item, prefix, suffix));
+            fileInput.addEventListener("change", e => resolveBlobs(e.target.files, item, prefix, suffix));
             target.addEventListener("click", e => {
                 e.stopPropagation();
                 fileInput.click();
@@ -50,20 +47,20 @@ const EventRegister = {
     },
 
     paste(item, prefix, suffix) {
-        let target = document.querySelector(item.selector);
+        const target = document.querySelector(item.selector);
         if (target) {
             target.addEventListener("paste", e => {
                 e.stopPropagation();
                 if (target.contains(e.target)) {
-                    let items = e.clipboardData.items;
-                    let buffer = [];
-                    for (let item of items) {
+                    const items = e.clipboardData.items;
+                    const buffer = [];
+                    for (const item of items) {
                         if (item.kind === "file" && typeof item.getAsFile === "function") {
-                            let file = item.getAsFile();
+                            const file = item.getAsFile();
                             file && buffer.push(file);
                         }
                     }
-                    Resolve(buffer, item, prefix, suffix);
+                    resolveBlobs(buffer, item, prefix, suffix);
                 }
             });
         }
@@ -74,13 +71,13 @@ const EventRegister = {
 chrome.runtime.onMessage.addListener(message => {
     try {
         if (message.type === Weibo.transferType.fromBackground && message.item.writeln !== "clipboard") {
-            let target = document.querySelector(message.item.writeln || message.item.selector);
+            const target = document.querySelector(message.item.writeln || message.item.selector);
             if (target) {
-                let start = target.selectionStart;
-                let end = target.selectionEnd;
-                let value = target.value;
-                let prev = value.substring(0, start);
-                let next = value.substring(end, value.length);
+                const start = target.selectionStart;
+                const end = target.selectionEnd;
+                const value = target.value;
+                const prev = value.substring(0, start);
+                const next = value.substring(end, value.length);
                 target.value = prev + message.buffer.join("\n") + next;
             }
         }
@@ -91,10 +88,10 @@ chrome.runtime.onMessage.addListener(message => {
 
 self.addEventListener("message", e => {
     if (e.data && e.data.type === Weibo.transferType.fromUser && Array.isArray(e.data.note)) {
-        for (let item of e.data.note) {
+        for (const item of e.data.note) {
             if (item && EventMap.has(item.eventType)) {
-                let prefix = String(e.data.prefix || "");
-                let suffix = String(e.data.suffix || "");
+                const prefix = String(e.data.prefix || "");
+                const suffix = String(e.data.suffix || "");
                 try {
                     EventRegister[item.eventType](item, prefix, suffix);
                 } catch (e) {

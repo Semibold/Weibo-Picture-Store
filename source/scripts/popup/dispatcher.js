@@ -1,45 +1,47 @@
-/**
- * Dispatcher
- */
 class Dispatcher {
 
     constructor() {
         this.batch = false;
         this.config = null;
-        this.buffer = new Map();
+        this.list = new Map();
         this.main = document.querySelector("#main");
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clip-size");
-        this.fragment = document.createDocumentFragment();
         this.copyId = Utils.randomString(16);
         this.notifyId = Utils.randomString(16);
-        this.external = Weibo.startConfig.clipSize;
-        this.urlPrefix = null;
+        this.external = Weibo.startConfig.clipsize;
+        this.urlPrefix = Weibo.urlPrefix[Math.floor(Math.random() * Weibo.urlPrefix.length)];
         this.checkout = {total: 0, settle: 0, clear: true};
-        this.detailKey = "WB.detail";
-        this.configKey = "WB.config";
-        this.decorator();
+        this.customConfigKey = "custom_config";
+        this.customClipsizeKey = "custom_clipsize";
     }
 
+    /** @public */
     decorator() {
-        this.startStore();
-        this.startBlank();
-        this.startEvent();
-        this.addItems({});
+        this.buildConfigProxy();
+        this.startFromBlank();
+        this.addGlobalListener();
+        this.renderSection({});
+        return this;
     }
 
-    startStore() {
-        let padding = {scheme: "1", clipSize: "1"};
-        let detail = Utils.local.getItem(this.detailKey);
-        let config = Utils.local.getItem(this.configKey);
+    /** @private */
+    buildConfigProxy() {
+        const padding = {scheme: "1", clipsize: "1"};
+        const customConfig = {
+            scheme: localStorage.getItem(`${this.customConfigKey}.scheme`),
+            clipsize: localStorage.getItem(`${this.customConfigKey}.clipsize`),
+        };
+        const customClipsize = localStorage.getItem(this.customClipsizeKey);
 
-        if (typeof detail === "string") {
-            this.external[4] = detail;
+        if (typeof customClipsize === "string") {
+            this.external[4] = customClipsize;
         }
-        if (config) {
-            for (let name of Object.keys(padding)) {
-                if (typeof Weibo.startConfig[name][config[name]] === "string") {
-                    padding[name] = config[name];
+
+        if (customConfig) {
+            for (const name of Object.keys(padding)) {
+                if (typeof Weibo.startConfig[name][customConfig[name]] === "string") {
+                    padding[name] = customConfig[name];
                 }
             }
         }
@@ -49,58 +51,61 @@ class Dispatcher {
                 return Reflect.get(target, key, receiver);
             },
             set: (target, key, value, receiver) => {
-                let result = Reflect.set(target, key, value, receiver);
+                const result = Reflect.set(target, key, value, receiver);
                 if (result) {
                     switch (key) {
                         case "scheme":
-                            this.reScheme();
+                            this.renderScheme();
+                            localStorage.setItem(`${this.customConfigKey}.scheme`, this.config.scheme);
                             break;
-                        case "clipSize":
-                            this.clipSize();
+                        case "clipsize":
+                            this.renderClipsize();
+                            localStorage.setItem(`${this.customConfigKey}.clipsize`, this.config.clipsize);
                             break;
                     }
-                    Utils.local.setItem(this.configKey, this.config);
                 }
                 return result;
             },
         });
     }
 
-    startBlank() {
+    /** @private */
+    startFromBlank() {
         this.linker.value = this.external[4];
-        for (let [name, value] of Object.entries(this.config)) {
+        for (const [name, value] of Object.entries(this.config)) {
             document.querySelector(`[name="${name}"][value="${value}"]`).checked = true;
         }
         document.querySelector("a.head-copy-mode").dataset.batch = this.batch;
     }
 
-    startEvent() {
-        let link = document.querySelector(`[name="clipSize"][value="4"]`);
-        let copy = document.querySelector("a.head-copy-mode");
+    /** @private */
+    addGlobalListener() {
+        const link = document.querySelector(`[name="clipsize"][value="4"]`);
+        const copy = document.querySelector("a.head-copy-mode");
 
         copy.addEventListener("click", e => {
             this.batch = copy.dataset.batch = !this.batch;
-            this.copyMode();
+            this.renderCopyMode();
         });
 
         this.linker.addEventListener("input", e => {
             this.external[4] = e.target.value;
-            this.clipSize();
-            Utils.local.setItem(this.detailKey, e.target.value);
+            this.renderClipsize();
+            localStorage.setItem(this.customClipsizeKey, e.target.value);
         });
 
         this.linker.addEventListener("focus", e => {
             if (!link.checked) {
                 link.checked = true;
             }
-            if (this.config.clipSize !== link.value) {
-                this.config.clipSize = link.value;
+            if (this.config.clipsize !== link.value) {
+                this.config.clipsize = link.value;
             }
         });
 
-        for (let name of Object.keys(this.config)) {
-            let nodeList = document.querySelectorAll(`[name="${name}"]`);
-            for (let node of nodeList) {
+        for (const name of Object.keys(this.config)) {
+            const nodeList = document.querySelectorAll(`[name="${name}"]`);
+            for (const node of nodeList) {
                 node.addEventListener("change", e => {
                     if (e.target.checked) {
                         this.config[name] = e.target.value;
@@ -110,20 +115,21 @@ class Dispatcher {
         }
 
         document.addEventListener("click", e => {
-            let buttonCopy = e.target.closest(".button-copy");
+            const buttonCopy = e.target.closest(".button-copy");
+
             if (buttonCopy) {
-                let type = buttonCopy.dataset.type;
-                let prev = document.activeElement;
+                const type = buttonCopy.dataset.type;
+                const prev = document.activeElement;
 
                 if (this.batch) {
-                    let data = [];
-                    for (let hybrid of this.buffer.values()) {
-                        data.push(this.transformRaw(hybrid.item)[type]);
+                    const buffer = [];
+                    for (const hybrid of this.list.values()) {
+                        buffer.push(this.transformData(hybrid.data)[type]);
                     }
-                    this.copier.value = data.join("\n");
+                    this.copier.value = buffer.join("\n");
                 } else {
-                    let section = buttonCopy.closest("section");
-                    let input = this.buffer.get(section).boot.domNodes[`input${type}`];
+                    const section = buttonCopy.closest("section");
+                    const input = this.list.get(section).item.domNodes[`input${type}`];
                     this.copier.value = input.value;
                 }
 
@@ -135,7 +141,7 @@ class Dispatcher {
                         type: "basic",
                         iconUrl: chrome.i18n.getMessage("64"),
                         title: chrome.i18n.getMessage("info_title"),
-                        message: chrome.i18n.getMessage("copy_to_clipboard"),
+                        message: chrome.i18n.getMessage("write_to_clipboard"),
                     });
                 }
 
@@ -145,68 +151,69 @@ class Dispatcher {
         });
     }
 
-    reScheme() {
-        for (let hybrid of this.buffer.values()) {
-            hybrid.boot.repaint(this.transformRaw(hybrid.item));
-        }
-    }
-
-    clipSize() {
-        for (let hybrid of this.buffer.values()) {
-            hybrid.boot.repaint(this.transformRaw(hybrid.item));
-        }
-    }
-
-    copyMode() {
-        for (let hybrid of this.buffer.values()) {
-            this.fillMode(hybrid.boot.section);
-        }
-    }
-
-    fillMode(section) {
-        let nodeList = section.querySelectorAll(".button-copy");
-        for (let node of nodeList) {
-            node.textContent = this.batch ? "Copy All" : "Copy";
-        }
-    }
-
-    addItems(items, clear) {
-        if (!items || Array.isArray(items) && !items.length) {
+    /** @private */
+    renderSection(data, clear) {
+        if (!data) {
             return false;
         }
 
-        let pretty = Array.isArray(items) ? items : [items];
-        this.urlPrefix = Weibo.urlPrefix[Math.floor(Math.random() * Weibo.urlPrefix.length)];
-
         if (clear) {
             this.checkout.clear = false;
-            this.clearAll();
+            this.destroyCurrentList();
         }
 
-        for (let item of pretty) {
-            let boot = new BuildItem(this.transformRaw(item));
+        const item = new BuildItem(this.transformData(data)).decorator();
+        const hybrid = {item, data};
 
-            this.fillMode(boot.section);
-            this.fragment.append(boot.section);
-            this.buffer.set(boot.section, {item, boot});
-        }
-
-        this.main.append(this.fragment);
+        this.fillCopyMode(item.domNodes.section);
+        this.list.set(item.domNodes.section, hybrid);
+        this.main.append(item.domNodes.section);
         return true;
     }
 
-    transformRaw(raw) {
-        if (!raw || !raw.pid) {
-            return raw;
+    /** @private */
+    renderScheme() {
+        for (const hybrid of this.list.values()) {
+            hybrid.item.repaint(this.transformData(hybrid.data));
+        }
+    }
+
+    /** @private */
+    renderClipsize() {
+        for (const hybrid of this.list.values()) {
+            hybrid.item.repaint(this.transformData(hybrid.data));
+        }
+    }
+
+    /** @private */
+    renderCopyMode() {
+        for (const hybrid of this.list.values()) {
+            this.fillCopyMode(hybrid.item.domNodes.section);
+        }
+    }
+
+    /** @private */
+    fillCopyMode(section) {
+        const nodeList = section.querySelectorAll(".button-copy");
+        const textContent = this.batch ? "Copy All" : "Copy";
+        for (const node of nodeList) {
+            node.textContent = textContent;
+        }
+    }
+
+    /** @private */
+    transformData(data) {
+        if (!data || !data.pid) {
+            return data;
         }
 
-        let scheme = Weibo.startConfig.scheme;
-        let clipSize = Weibo.startConfig.clipSize;
-        let rootZone = Weibo.rootZone;
-        let typo = Weibo.acceptType[raw.file.type].typo;
-        let url = `${scheme[this.config.scheme] + this.urlPrefix + rootZone}/${clipSize[this.config.clipSize]}/${raw.pid + typo}`;
+        const scheme = Weibo.startConfig.scheme;
+        const clipsize = Weibo.startConfig.clipsize;
+        const rootZone = Weibo.rootZone;
+        const typo = Weibo.acceptType[data.mimeType].typo;
+        const url = `${scheme[this.config.scheme] + this.urlPrefix + rootZone}/${clipsize[this.config.clipsize]}/${data.pid + typo}`;
 
-        return Object.assign(raw, {
+        return Object.assign(data, {
             URL: url,
             HTML: `<img src="${url}" alt="image">`,
             UBB: `[IMG]${url}[/IMG]`,
@@ -214,20 +221,22 @@ class Dispatcher {
         });
     }
 
-    clearAll() {
-        if (this.buffer.size) {
-            for (let hybrid of this.buffer.values()) {
-                hybrid.boot.destroy();
+    /** @private */
+    destroyCurrentList() {
+        if (this.list.size) {
+            for (const hybrid of this.list.values()) {
+                hybrid.item.destroy();
             }
-            this.buffer.clear();
+            this.list.clear();
         }
     }
 
-    actuator(result) {
-        if (Array.isArray(result) && result.length) {
-            this.checkout.total += result.length;
-            backWindow.Weibo.fileUpload(result, raw => {
-                raw && this.addItems(raw, this.checkout.clear);
+    /** @public */
+    requestUpload(list) {
+        if (Array.isArray(list) && list.length) {
+            this.checkout.total += list.length;
+            backWindow.Weibo.fileUpload(list, data => {
+                this.renderSection(data, this.checkout.clear);
                 if (++this.checkout.settle === this.checkout.total) {
                     this.checkout.clear = true;
                 }
