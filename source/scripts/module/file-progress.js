@@ -56,7 +56,16 @@
                 if (dtd.settle === dtd.total) {
                     dtd.requestId && clearTimeout(dtd.requestId);
                     dtd.reformat();
-                    chrome.notifications.clear(notificationId);
+                    chrome.notifications.clear(notificationId, wasCleared => {
+                        if (wasCleared && tid === Weibo.fileProgress.TYPE_UPLOAD) {
+                            chrome.notifications.create(dtd.notifyId, {
+                                type: "basic",
+                                iconUrl: chrome.i18n.getMessage("64"),
+                                title: chrome.i18n.getMessage("info_title"),
+                                message: chrome.i18n.getMessage("upload_workflow_ended"),
+                            });
+                        }
+                    });
                 }
             });
 

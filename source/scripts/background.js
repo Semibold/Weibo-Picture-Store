@@ -69,6 +69,15 @@ chrome.windows.onRemoved.addListener(windowId => {
 
 
 chrome.contextMenus.create({
+    title: chrome.i18n.getMessage("manage_history_record"),
+    contexts: ["browser_action"],
+    onclick: (obj, tab) => {
+        chrome.tabs.create({url: "history.html"});
+    },
+});
+
+
+chrome.contextMenus.create({
     title: chrome.i18n.getMessage("upload_image_to_micro_album"),
     contexts: ["image"],
     onclick: (obj, tab) => {
@@ -106,7 +115,7 @@ chrome.contextMenus.create({
             })
             .catch(Utils.noop);
     },
-}, () => chrome.runtime.lastError && console.warn(chrome.runtime.lastError));
+});
 
 
 chrome.runtime.onMessage.addListener((message, sender) => {

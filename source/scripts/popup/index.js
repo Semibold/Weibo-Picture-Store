@@ -7,15 +7,15 @@ const dispatcher = new Dispatcher().decorator();
 const resolveBlobs = blobs => {
     return backWindow.Weibo
         .readFile(blobs, "arrayBuffer", true)
-        .then(json => backWindow.Weibo.filePurity(json))
-        .then(json => dispatcher.requestUpload(json));
+        .then(result => backWindow.Weibo.filePurity(result))
+        .then(result => dispatcher.requestUpload(result));
 };
 
 fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
 fileInput.addEventListener("change", e => resolveBlobs(e.target.files));
 
 browsingHistory.addEventListener("click", e => {
-    backWindow.chrome.tabs.create({url: "options.html"});
+    backWindow.chrome.tabs.create({url: "history.html"});
 });
 
 document.addEventListener("keydown", e => {

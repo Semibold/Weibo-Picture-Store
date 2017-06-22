@@ -1,6 +1,3 @@
-/**
- * Dispatcher
- */
 class Dispatcher {
 
     constructor() {
@@ -239,7 +236,7 @@ class Dispatcher {
         if (Array.isArray(list) && list.length) {
             this.checkout.total += list.length;
             backWindow.Weibo.fileUpload(list, data => {
-                data && this.renderSection(data, this.checkout.clear);
+                this.renderSection(data, this.checkout.clear);
                 if (++this.checkout.settle === this.checkout.total) {
                     this.checkout.clear = true;
                 }

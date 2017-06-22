@@ -1,7 +1,6 @@
 {
 
-    const head = document.getElementById("head");
-    const html = `
+    const headHTML = `
         <div class="head-setting">
             <div class="head-network-protocol">
                 <label title="使用http协议">
@@ -42,6 +41,6 @@
             <a class="head-browsing-history" title="查看上传记录"><i class="fa fa-history"></i></a>
         </div>`;
 
-    head.append(Utils.parseHTML(html));
+    document.getElementById("head").append(Utils.parseHTML(headHTML));
 
 }

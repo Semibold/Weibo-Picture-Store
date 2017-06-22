@@ -11,7 +11,7 @@ class Dispatcher {
         this.fragment = document.createDocumentFragment();
         this.checkout = {albumId: null, pages: null};
         this.searchParams = new URLSearchParams(location.search);
-        this.loading = null;
+        this.loading = document.createElement("div");
         this.albumIdStorageKey = "album_id";
         this.removedPhotoIdStorageKey = "removed_photo_id";
     }
@@ -27,7 +27,6 @@ class Dispatcher {
 
     /** @private */
     buildLoadingHinter() {
-        this.loading = document.createElement("div");
         this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
     }

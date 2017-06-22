@@ -30,7 +30,7 @@
                 });
             } else {
                 if (!retry && json && json.code === overflowCode) {
-                    Weibo.getAllPhoto(null, 20, 50)
+                    albumInfoPromise.then(albumInfo => Weibo.getAllPhoto(albumInfo, 20, 50))
                         .then(json => Weibo.removePhoto(json.albumId, json.list.map(item => item.photoId)))
                         .then(json => Weibo.pidUpload(pid, uid, true));
                 }

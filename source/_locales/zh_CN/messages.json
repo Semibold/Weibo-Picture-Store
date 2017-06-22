@@ -82,5 +82,11 @@
   },
   "upload_image_to_micro_album": {
     "message": "把这张图片上传到微相册"
+  },
+  "upload_workflow_ended": {
+    "message": "图片上传流程结束啦！"
+  },
+  "manage_history_record": {
+    "message": "上传记录"
   }
 }
