@@ -1,5 +1,7 @@
 # Weibo-Picture-Store
 
+> [更新日志](changelog.md)
+
 
 ## Introduction
 
