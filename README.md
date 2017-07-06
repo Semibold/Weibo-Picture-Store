@@ -62,7 +62,7 @@
 4. 上一页按钮（禁用状态）
 5. 下一页按钮（可用状态）
 6. 使用微相册管理这些图片
-7. [捐赠](http://www.bixiv.com/donate)支持一下
+7. [捐赠](http://git.hub.moe/donate.html)支持一下
 8. 在 GitHub 上提交建议或者 Bug
 9. 在博客中提交建议或者 Bug（如果不方便使用 GitHub）
 10. 使用电子邮件联系我
