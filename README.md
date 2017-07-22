@@ -27,15 +27,15 @@
 
 > 具体的操作指南，包含图示
 
-![](http://ws1.sinaimg.cn/large/006G4xsfgy1fdtn3wabotj30kk014mxr.jpg)
+![](screenshots/1.jpg)
 
 弹窗属于单例模式，在同一时间只能打开一个。在弹窗处于最小化的情况下，用户再去点击 icon 按钮会出现上图的闪烁提示，表示弹窗已经处于打开状态。（上图是 Windows 10 的提示，不同的操作系统略有差异）
 
-![](http://ws4.sinaimg.cn/large/006G4xsfgy1fdtn02ss4jj30en07vjrp.jpg)
+![](screenshots/2.jpg)
 
 上图展示的是扩展中常用的提示，一般出现在主屏幕的右下角。通常在一定时间后会自动消失，但是有两种提示框需要达到特定条件才会消失。一种是进度条提示，它会在图片上传流程结束自动关闭。另一种是检测到微博没有登录的提示，需要用户按照提示操作或者手动点击关闭。
 
-![](http://wx1.sinaimg.cn/large/006G4xsfgy1fdtqr30l0pj30ni0ghaaj.jpg)
+![](screenshots/3.jpg)
 
 1. 地址协议选择
 2. 图片裁剪选择
@@ -50,11 +50,11 @@
 
 因为粘贴图片文件实际上是一种相当受限的操作，所以这里的粘贴操作被稍稍的加强了一下。粘贴区域额外的支持粘贴图片地址，可以对其它图片地址上传到微相册提供极大的便利，并且支持换行方式的批量上传操作（支持 Windows、Classic Mac、Unix 三种操作系统的换行符）。
 
-![](http://ws3.sinaimg.cn/large/006G4xsfgy1fdtnu4qtj9j30k90cujro.jpg)
+![](screenshots/4.jpg)
 
 如果可以获取到页面中的图片，则会在右键菜单中显示把这张图片上传到微相册的选项，点击后会自动上传，上传结束后会出现提示。如果上传成功，该图片的地址就自动在剪切板中，可以粘贴使用了。注意：如果在没有结果返回的情况下，用户对另一张图片执行了相同的操作，那么剪切板中最终会是最后成功上传的图片地址。
 
-![](http://wx4.sinaimg.cn/large/006G4xsfgy1fdu842r4jij30zm1innim.jpg)
+![](screenshots/5.jpg)
 
 1. 从相册中移除这张图片（移除后图片的地址依然可以访问）
 2. 在图片上右击可以复制图片地址（上面的是复制原图地址，下面的是复制当前显示的图片地址）
@@ -154,7 +154,7 @@
 
 V2EX 回复框增加微博贴图功能效果：
 
-![](https://wx1.sinaimg.cn/large/006G4xsfgy1fdz0jqdoxpg30ls0bkdmk.gif)
+![](screenshots/6.gif)
 
 
 ## Thanks
