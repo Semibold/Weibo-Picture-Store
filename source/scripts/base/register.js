@@ -63,4 +63,5 @@ Weibo.transferType = {
     fromUser: "WB.add_selector_listener",
     fromBase64: "CE.data_from_base64",
     fromBackground: "CE.data_from_background",
+    fromVideoFrame: "CE.data_from_video_frame",
 };

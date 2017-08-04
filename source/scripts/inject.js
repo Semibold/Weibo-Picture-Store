@@ -81,6 +81,26 @@ chrome.runtime.onMessage.addListener(message => {
                 target.value = prev + message.buffer.join("\n") + next;
             }
         }
+        if (message.type === Weibo.transferType.fromVideoFrame && message.srcUrl) {
+            const target = document.querySelector(`video[src="${message.srcUrl}"]`);
+            if (target) {
+                const MAX_EDGE = 2 ** 15 - 1;
+                const width = Math.ceil(target.videoWidth);
+                const height = Math.ceil(target.videoHeight);
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                const prefix = "https://ws1.sinaimg.cn/large/";
+                const suffix = "";
+                if (width < MAX_EDGE && height < MAX_EDGE) {
+                    canvas.width = width;
+                    canvas.height = height;
+                    context.drawImage(target, 0, 0, width, height);
+                    canvas.toBlob(blob => resolveBlobs([blob], {
+                        writeln: "clipboard",
+                    }, prefix, suffix), "image/jpeg", 0.95);
+                }
+            }
+        }
     } catch (e) {
         console.warn(e.message);
     }
@@ -101,3 +121,7 @@ self.addEventListener("message", e => {
         }
     }
 });
+
+// self.addEventListener("contextmenu", e => {
+//     e.stopImmediatePropagation();
+// }, true);
