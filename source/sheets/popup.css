@@ -42,15 +42,14 @@
 
 .head-network-protocol > label,
 .head-clip-size > label {
-    display: inline-block;
-    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
     margin-left: 0.8em;
 }
 
 .head-network-protocol > label > input,
 .head-clip-size > label > input {
-    display: inline-block;
-    vertical-align: middle;
+    margin-right: 2px;
     cursor: default;
 }
 

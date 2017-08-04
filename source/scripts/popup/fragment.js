@@ -20,15 +20,15 @@
             <div class="head-clip-size">
                 <label title="使用原始图片">
                     <input type="radio" name="clipsize" value="1">
-                    <span>original</span>
+                    <span>${chrome.i18n.getMessage("clipsize_original")}</span>
                 </label>
                 <label title="中等裁剪尺寸">
                     <input type="radio" name="clipsize" value="2">
-                    <span>medium</span>
+                    <span>${chrome.i18n.getMessage("clipsize_medium")}</span>
                 </label>
                 <label title="缩略图裁剪尺寸">
                     <input type="radio" name="clipsize" value="3">
-                    <span>thumbnail</span>
+                    <span>${chrome.i18n.getMessage("clipsize_thumbnail")}</span>
                 </label>
                 <label title="自定义裁剪尺寸">
                     <input type="radio" name="clipsize" value="4">

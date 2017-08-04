@@ -78,6 +78,18 @@ chrome.contextMenus.create({
 
 
 chrome.contextMenus.create({
+    title: chrome.i18n.getMessage("upload_frame_to_micro_album"),
+    contexts: ["video"],
+    onclick: (obj, tab) => {
+        chrome.tabs.sendMessage(tab.id, {
+            type: Weibo.transferType.fromVideoFrame,
+            srcUrl: obj.srcUrl,
+        });
+    },
+});
+
+
+chrome.contextMenus.create({
     title: chrome.i18n.getMessage("upload_image_to_micro_album"),
     contexts: ["image"],
     onclick: (obj, tab) => {

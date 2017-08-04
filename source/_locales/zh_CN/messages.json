@@ -83,8 +83,20 @@
   "upload_image_to_micro_album": {
     "message": "把这张图片上传到微相册"
   },
+  "upload_frame_to_micro_album": {
+    "message": "把当前的视频帧上传到微相册"
+  },
   "upload_workflow_ended": {
     "message": "图片上传流程结束啦！"
+  },
+  "clipsize_original": {
+    "message": "原图"
+  },
+  "clipsize_medium": {
+    "message": "中等尺寸"
+  },
+  "clipsize_thumbnail": {
+    "message": "缩略图"
   },
   "manage_history_record": {
     "message": "上传记录"
