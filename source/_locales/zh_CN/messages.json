@@ -89,6 +89,9 @@
   "upload_workflow_ended": {
     "message": "图片上传流程结束啦！"
   },
+  "scheme_relative": {
+    "message": "自适应"
+  },
   "clipsize_original": {
     "message": "原图"
   },

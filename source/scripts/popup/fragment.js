@@ -13,7 +13,7 @@
                 </label>
                 <label title="使用相对协议">
                     <input type="radio" name="scheme" value="3">
-                    <span>relative</span>
+                    <span>${chrome.i18n.getMessage("scheme_relative")}</span>
                 </label>
             </div>
             <div class="head-split-line"></div>
