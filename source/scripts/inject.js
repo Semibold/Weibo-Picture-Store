@@ -140,8 +140,9 @@ self.addEventListener("contextmenu", e => {
 
         // Restore `disabled` property of style before the next repaint.
         // Should not listen `keyup` event which will not trigger if native context menu is activated.
-        requestAnimationFrame(() => {
-            overrideStyle.disabled = true;
-        });
+        // Should apply lifecycle of native context menu
+        // requestAnimationFrame(() => {
+        //     overrideStyle.disabled = true;
+        // });
     }
 }, true);
