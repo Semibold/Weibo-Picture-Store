@@ -1,5 +1,6 @@
 const EventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
+const overrideStyle = document.createElement("style");
 
 fileInput.type = "file";
 fileInput.hidden = true;
@@ -126,6 +127,21 @@ self.addEventListener("message", e => {
     }
 });
 
-// self.addEventListener("contextmenu", e => {
-//     e.stopImmediatePropagation();
-// }, true);
+self.addEventListener("DOMContentLoaded", e => {
+    document.head.append(overrideStyle);
+    overrideStyle.textContent = `* { pointer-events: none !important; } video, iframe { pointer-events: auto !important; }`;
+    overrideStyle.disabled = true;
+});
+
+self.addEventListener("contextmenu", e => {
+    if (e.ctrlKey) {
+        e.stopImmediatePropagation();
+        overrideStyle.disabled = false;
+
+        // Restore `disabled` property of style before the next repaint.
+        // Should not listen `keyup` event which will not trigger if native context menu is activated.
+        requestAnimationFrame(() => {
+            overrideStyle.disabled = true;
+        });
+    }
+}, true);
