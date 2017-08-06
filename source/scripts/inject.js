@@ -82,11 +82,14 @@ chrome.runtime.onMessage.addListener(message => {
             }
         }
         if (message.type === Weibo.transferType.fromVideoFrame && message.srcUrl) {
-            const target = document.querySelector(`video[src="${message.srcUrl}"]`);
-            if (target) {
+            const videoRefs = document.querySelectorAll('video');
+            for (const videoRef of videoRefs) {
+                if (videoRef.src !== message.srcUrl) {
+                    continue;
+                }
                 const MAX_EDGE = 2 ** 15 - 1;
-                const width = Math.ceil(target.videoWidth);
-                const height = Math.ceil(target.videoHeight);
+                const width = Math.ceil(videoRef.videoWidth);
+                const height = Math.ceil(videoRef.videoHeight);
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
                 const prefix = "https://ws1.sinaimg.cn/large/";
@@ -94,11 +97,12 @@ chrome.runtime.onMessage.addListener(message => {
                 if (width < MAX_EDGE && height < MAX_EDGE) {
                     canvas.width = width;
                     canvas.height = height;
-                    context.drawImage(target, 0, 0, width, height);
+                    context.drawImage(videoRef, 0, 0, width, height);
                     canvas.toBlob(blob => resolveBlobs([blob], {
                         writeln: "clipboard",
                     }, prefix, suffix), "image/jpeg", 0.95);
                 }
+                break;
             }
         }
     } catch (e) {
