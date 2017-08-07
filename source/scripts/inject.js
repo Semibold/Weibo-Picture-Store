@@ -129,9 +129,9 @@ self.addEventListener("message", e => {
 
 self.addEventListener("DOMContentLoaded", e => {
     document.head.append(overrideStyle);
-    overrideStyle.textContent = `* { pointer-events: none !important; } video, iframe { pointer-events: auto !important; }`;
+    overrideStyle.textContent = `body { pointer-events: none !important; } video { pointer-events: auto !important; }`;
     overrideStyle.disabled = true;
-});
+}, true);
 
 self.addEventListener("contextmenu", e => {
     if (e.ctrlKey) {
