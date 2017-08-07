@@ -165,6 +165,24 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 });
 
 
+chrome.commands.onCommand.addListener(command => {
+    switch (command) {
+        case "transform-pointer-events":
+            chrome.tabs.query({
+                active: true,
+            }, tabs => {
+                for (const tab of tabs) {
+                    chrome.tabs.sendMessage(tab.id, {
+                        type: Weibo.transferType.fromChromeCommand,
+                        command: command,
+                    });
+                }
+            });
+            break;
+    }
+});
+
+
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     const name = "Referer";
     const value = "http://photo.weibo.com/";

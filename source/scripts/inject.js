@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener(message => {
         if (message.type === Weibo.transferType.fromVideoFrame && message.srcUrl) {
             const videoRefs = document.querySelectorAll('video');
             for (const videoRef of videoRefs) {
-                if (videoRef.src !== message.srcUrl) {
+                if (videoRef.currentSrc !== message.srcUrl) {
                     continue;
                 }
                 const MAX_EDGE = 2 ** 15 - 1;
@@ -105,6 +105,9 @@ chrome.runtime.onMessage.addListener(message => {
                 }
                 break;
             }
+        }
+        if (message.type === Weibo.transferType.fromChromeCommand) {
+            overrideStyle.disabled = !overrideStyle.disabled;
         }
     } catch (e) {
         console.warn(e.message);
@@ -129,20 +132,19 @@ self.addEventListener("message", e => {
 
 self.addEventListener("DOMContentLoaded", e => {
     document.head.append(overrideStyle);
-    overrideStyle.textContent = `body { pointer-events: none !important; } video { pointer-events: auto !important; }`;
+    overrideStyle.textContent = `
+        body {
+            pointer-events: none !important;
+        }
+        iframe, embed, object, param, video, source {
+            pointer-events: auto !important;
+        }
+    `;
     overrideStyle.disabled = true;
 }, true);
 
 self.addEventListener("contextmenu", e => {
-    if (e.ctrlKey) {
+    if (!overrideStyle.disabled) {
         e.stopImmediatePropagation();
-        overrideStyle.disabled = false;
-
-        // Restore `disabled` property of style before the next repaint.
-        // Should not listen `keyup` event which will not trigger if native context menu is activated.
-        // Should apply lifecycle of native context menu
-        // requestAnimationFrame(() => {
-        //     overrideStyle.disabled = true;
-        // });
     }
 }, true);

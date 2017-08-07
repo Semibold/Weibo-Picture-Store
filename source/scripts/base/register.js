@@ -64,4 +64,5 @@ Weibo.transferType = {
     fromBase64: "CE.data_from_base64",
     fromBackground: "CE.data_from_background",
     fromVideoFrame: "CE.data_from_video_frame",
+    fromChromeCommand: "CE.data_from_chrome_command",
 };
