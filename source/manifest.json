@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "default_locale": "zh_CN",
   "description": "__MSG_extension_description__",
   "icons": {
@@ -36,6 +36,14 @@
   ],
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
   "minimum_chrome_version": "59",
+  "commands": {
+    "transform-pointer-events": {
+      "suggested_key": {
+        "default": "Shift+Alt+T"
+      },
+      "description": "Transform pointer-events"
+    }
+  },
   "permissions": [
     "tabs",
     "webRequest",

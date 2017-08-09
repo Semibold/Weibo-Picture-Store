@@ -1,5 +1,6 @@
 const EventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
+const overrideStyle = document.createElement("style");
 
 fileInput.type = "file";
 fileInput.hidden = true;
@@ -82,24 +83,41 @@ chrome.runtime.onMessage.addListener(message => {
             }
         }
         if (message.type === Weibo.transferType.fromVideoFrame && message.srcUrl) {
-            const target = document.querySelector(`video[src="${message.srcUrl}"]`);
-            if (target) {
+            const videoRefs = document.querySelectorAll('video');
+            for (const videoRef of videoRefs) {
+                if (videoRef.currentSrc !== message.srcUrl) {
+                    continue;
+                }
                 const MAX_EDGE = 2 ** 15 - 1;
-                const width = Math.ceil(target.videoWidth);
-                const height = Math.ceil(target.videoHeight);
+                const width = Math.ceil(videoRef.videoWidth);
+                const height = Math.ceil(videoRef.videoHeight);
+                if (width === 0 || height === 0) {
+                    return;
+                }
+                if (width > MAX_EDGE || height > MAX_EDGE) {
+                    return;
+                }
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
                 const prefix = "https://ws1.sinaimg.cn/large/";
                 const suffix = "";
-                if (width < MAX_EDGE && height < MAX_EDGE) {
-                    canvas.width = width;
-                    canvas.height = height;
-                    context.drawImage(target, 0, 0, width, height);
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(videoRef, 0, 0, width, height);
+                try {
                     canvas.toBlob(blob => resolveBlobs([blob], {
                         writeln: "clipboard",
                     }, prefix, suffix), "image/jpeg", 0.95);
+                } catch (e) {
+                    chrome.runtime.sendMessage({
+                        type: Weibo.transferType.fromWithoutCORSMode,
+                    });
                 }
+                break;
             }
+        }
+        if (message.type === Weibo.transferType.fromChromeCommand) {
+            overrideStyle.disabled = !overrideStyle.disabled;
         }
     } catch (e) {
         console.warn(e.message);
@@ -122,6 +140,40 @@ self.addEventListener("message", e => {
     }
 });
 
-// self.addEventListener("contextmenu", e => {
-//     e.stopImmediatePropagation();
-// }, true);
+self.addEventListener("DOMContentLoaded", e => {
+    const highlight = document.createElement("inject-highlight");
+    highlight.setAttribute("data-injector-id", chrome.runtime.id);
+    overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
+    document.body.append(highlight);
+    document.head.append(overrideStyle);
+    overrideStyle.textContent = `
+        html {
+            pointer-events: none !important;
+        }
+        iframe, embed, object, param, video, source {
+            pointer-events: auto !important;
+        }
+        inject-highlight[data-injector-id="${chrome.runtime.id}"] {
+            display: block;
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #fff;
+            outline: 3px dashed #fb0000;
+            outline-offset: -3px;
+            background-color: transparent;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: ${2 ** 31 - 1};
+        }
+    `;
+    overrideStyle.disabled = true;
+}, true);
+
+self.addEventListener("contextmenu", e => {
+    if (!overrideStyle.disabled) {
+        e.stopImmediatePropagation();
+    }
+}, true);

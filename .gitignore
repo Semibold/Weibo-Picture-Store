@@ -3,5 +3,6 @@
 
 node_modules
 deploy
+test
 
 npm-debug.log

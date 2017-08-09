@@ -162,6 +162,32 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                 });
             });
     }
+    if (message && message.type === Weibo.transferType.fromWithoutCORSMode) {
+        chrome.notifications.create(notifyId, {
+            type: "basic",
+            iconUrl: chrome.i18n.getMessage("64"),
+            title: chrome.i18n.getMessage("warn_title"),
+            message: chrome.i18n.getMessage("resource_without_cors_mode"),
+        });
+    }
+});
+
+
+chrome.commands.onCommand.addListener(command => {
+    switch (command) {
+        case "transform-pointer-events":
+            chrome.tabs.query({
+                active: true,
+            }, tabs => {
+                for (const tab of tabs) {
+                    chrome.tabs.sendMessage(tab.id, {
+                        type: Weibo.transferType.fromChromeCommand,
+                        command: command,
+                    });
+                }
+            });
+            break;
+    }
 });
 
 
