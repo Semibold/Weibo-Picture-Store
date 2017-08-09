@@ -91,17 +91,27 @@ chrome.runtime.onMessage.addListener(message => {
                 const MAX_EDGE = 2 ** 15 - 1;
                 const width = Math.ceil(videoRef.videoWidth);
                 const height = Math.ceil(videoRef.videoHeight);
+                if (width === 0 || height === 0) {
+                    return;
+                }
+                if (width > MAX_EDGE || height > MAX_EDGE) {
+                    return;
+                }
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
                 const prefix = "https://ws1.sinaimg.cn/large/";
                 const suffix = "";
-                if (width < MAX_EDGE && height < MAX_EDGE) {
-                    canvas.width = width;
-                    canvas.height = height;
-                    context.drawImage(videoRef, 0, 0, width, height);
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(videoRef, 0, 0, width, height);
+                try {
                     canvas.toBlob(blob => resolveBlobs([blob], {
                         writeln: "clipboard",
                     }, prefix, suffix), "image/jpeg", 0.95);
+                } catch (e) {
+                    chrome.runtime.sendMessage({
+                        type: Weibo.transferType.fromWithoutCORSMode,
+                    });
                 }
                 break;
             }

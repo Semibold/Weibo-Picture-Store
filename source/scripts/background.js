@@ -162,6 +162,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                 });
             });
     }
+    if (message && message.type === Weibo.transferType.fromWithoutCORSMode) {
+        chrome.notifications.create(notifyId, {
+            type: "basic",
+            iconUrl: chrome.i18n.getMessage("64"),
+            title: chrome.i18n.getMessage("warn_title"),
+            message: chrome.i18n.getMessage("resource_without_cors_mode"),
+        });
+    }
 });
 
 

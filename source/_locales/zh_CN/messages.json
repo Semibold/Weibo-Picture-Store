@@ -101,6 +101,9 @@
   "clipsize_thumbnail": {
     "message": "缩略图"
   },
+  "resource_without_cors_mode": {
+    "message": "当前资源的网络请求不符合 CORS 规范，无法读取资源的数据"
+  },
   "manage_history_record": {
     "message": "上传记录"
   }
