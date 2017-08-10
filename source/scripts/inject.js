@@ -1,6 +1,6 @@
 const EventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
-const overrideStyle = document.createElement("style");
+const overrideStyle = document.createElement("link");
 
 fileInput.type = "file";
 fileInput.hidden = true;
@@ -142,11 +142,7 @@ self.addEventListener("message", e => {
 
 self.addEventListener("DOMContentLoaded", e => {
     const highlight = document.createElement("inject-highlight");
-    highlight.setAttribute("data-injector-id", chrome.runtime.id);
-    overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
-    document.body.append(highlight);
-    document.head.append(overrideStyle);
-    overrideStyle.textContent = `
+    const styleContent = `
         html {
             pointer-events: none !important;
         }
@@ -169,6 +165,12 @@ self.addEventListener("DOMContentLoaded", e => {
             z-index: ${2 ** 31 - 1};
         }
     `;
+    highlight.setAttribute("data-injector-id", chrome.runtime.id);
+    overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
+    overrideStyle.rel = "stylesheet";
+    overrideStyle.href = `data:text/css;base64,${btoa(styleContent)}`;
+    document.body.append(highlight);
+    document.head.append(overrideStyle);
     overrideStyle.disabled = true;
 }, true);
 
