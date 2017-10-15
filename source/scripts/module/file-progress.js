@@ -4,11 +4,11 @@
 {
 
     const fps = 25;
-    const Store = new Map();
+    const storeMap = new Map();
     const nextFrame = callback => setTimeout(callback, 1000 / fps);
 
     const triggerProgress = (tid) => {
-        let dtd = Store.get(tid);
+        let dtd = storeMap.get(tid);
         let avr = 3;
         let max = 0.9;
         let sec = avr * dtd.total;
@@ -106,7 +106,7 @@
     };
 
     Weibo.fileProgress = (tid) => {
-        const dtd = Store.get(tid);
+        const dtd = storeMap.get(tid);
         return {
             consume() {
                 return dtd.consume();
@@ -120,7 +120,7 @@
         };
     };
 
-    Store.set(Weibo.fileProgress.TYPE_UPLOAD = 1, new TypeEntry());
-    Store.set(Weibo.fileProgress.TYPE_DOWNLOAD = 2, new TypeEntry());
+    storeMap.set(Weibo.fileProgress.TYPE_UPLOAD = 1, new TypeEntry());
+    storeMap.set(Weibo.fileProgress.TYPE_DOWNLOAD = 2, new TypeEntry());
 
 }

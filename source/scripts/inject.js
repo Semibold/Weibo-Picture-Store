@@ -1,4 +1,4 @@
-const EventMap = new Set(["drop", "click", "paste"]);
+const eventMap = new Set(["drop", "click", "paste"]);
 const fileInput = document.createElement("input");
 const overrideStyle = document.createElement("link");
 
@@ -18,9 +18,9 @@ const resolveBlobs = (blobs, item, prefix, suffix) => {
         }));
 };
 
-const EventRegister = {
+const EventRegister = class {
 
-    drop(item, prefix, suffix) {
+    static drop(item, prefix, suffix) {
         const target = document.querySelector(item.selector);
         if (target) {
             target.addEventListener("dragover", e => {
@@ -33,9 +33,9 @@ const EventRegister = {
                 resolveBlobs(e.dataTransfer.files, item, prefix, suffix);
             });
         }
-    },
+    }
 
-    click(item, prefix, suffix) {
+    static click(item, prefix, suffix) {
         const target = document.querySelector(item.selector);
         if (target) {
             document.body.append(fileInput);
@@ -45,9 +45,9 @@ const EventRegister = {
                 fileInput.click();
             });
         }
-    },
+    }
 
-    paste(item, prefix, suffix) {
+    static paste(item, prefix, suffix) {
         const target = document.querySelector(item.selector);
         if (target) {
             target.addEventListener("paste", e => {
@@ -65,7 +65,7 @@ const EventRegister = {
                 }
             });
         }
-    },
+    }
 
 };
 
@@ -127,7 +127,7 @@ chrome.runtime.onMessage.addListener(message => {
 self.addEventListener("message", e => {
     if (e.data && e.data.type === Weibo.transferType.fromUser && Array.isArray(e.data.note)) {
         for (const item of e.data.note) {
-            if (item && EventMap.has(item.eventType)) {
+            if (item && eventMap.has(item.eventType)) {
                 const prefix = String(e.data.prefix || "");
                 const suffix = String(e.data.suffix || "");
                 try {
