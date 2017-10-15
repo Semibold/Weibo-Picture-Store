@@ -170,8 +170,12 @@ self.addEventListener("DOMContentLoaded", e => {
     overrideStyle.rel = "stylesheet";
     overrideStyle.href = `data:text/css;base64,${btoa(styleContent)}`;
     overrideStyle.disabled = true;
-    document.body.append(highlight);
-    document.head.append(overrideStyle);
+    if (document.head && document.body) {
+        document.body.append(highlight);
+        document.head.append(overrideStyle);
+    } else {
+        console.warn(`Injection failed.(Chrome Extension ID: ${chrome.runtime.id})`);
+    }
 }, true);
 
 self.addEventListener("contextmenu", e => {
