@@ -170,6 +170,13 @@ V2EX 回复框增加微博贴图功能效果：
 ![](screenshots/6.gif)
 
 
+## Extension
+
+> 此扩展相关的 Tampermonkey 脚本（点击即可打开安装页面）
+
+- [V2EX 回复框自动贴图](https://greasyfork.org/zh-CN/scripts/34096-添加-v2ex-回复框自动贴图的功能)
+
+
 ## Thanks
 
 - [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
