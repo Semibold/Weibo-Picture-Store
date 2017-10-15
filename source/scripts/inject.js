@@ -169,9 +169,9 @@ self.addEventListener("DOMContentLoaded", e => {
     overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
     overrideStyle.rel = "stylesheet";
     overrideStyle.href = `data:text/css;base64,${btoa(styleContent)}`;
+    overrideStyle.disabled = true;
     document.body.append(highlight);
     document.head.append(overrideStyle);
-    overrideStyle.disabled = true;
 }, true);
 
 self.addEventListener("contextmenu", e => {
