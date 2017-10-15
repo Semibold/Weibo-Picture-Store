@@ -4,25 +4,20 @@
      * Referer Wanted: "http://photo.weibo.com/${uid}/client"
      */
     const url = "http://photo.weibo.com/albums/create";
-    const createNewAlbum = () => {
+    const createNewAlbumRequest = () => {
         const method = "POST";
         const body = Utils.createSearchParams(Weibo.distinctProp);
-        const request = () => {
-            return Utils.fetch(url, {method, body})
-                .then(response => {
-                    return response.ok ? response.json() : Promise.reject(response.status);
-                }).then(json => {
-                    if (json && json.result) {
-                        return {
-                            albumId: json.data.album_id.toString(),
-                        };
-                    } else {
-                        return Promise.reject("Invalid Data");
-                    }
-                });
-        };
-
-        return Utils.singleton(request);
+        return Utils.fetch(url, {method, body}).then(response => {
+            return response.ok ? response.json() : Promise.reject(response.status);
+        }).then(json => {
+            if (json && json.result) {
+                return {
+                    albumId: json.data.album_id.toString(),
+                };
+            } else {
+                return Promise.reject("Invalid Data");
+            }
+        });
     };
 
     Weibo.getAlbumId = (uid = null) => {
@@ -34,7 +29,7 @@
         }
         return Weibo.checkAlbumId().catch(reason => {
             if (reason && reason.canCreateNewAlbum) {
-                return createNewAlbum();
+                return Utils.singleton(createNewAlbumRequest);
             } else {
                 return Promise.reject(reason);
             }
