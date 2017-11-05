@@ -167,6 +167,16 @@ self.addEventListener("DOMContentLoaded", e => {
     `;
     highlight.setAttribute("data-injector-id", chrome.runtime.id);
     overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
+
+    /**
+     * Resolve bug caused by `LeaVerou/prefixfree`
+     * @see https://github.com/LeaVerou/prefixfree/issues/6131
+     *
+     * Problem pages are known:
+     *  - http://howtoubuntu.org/things-to-do-after-installing-ubuntu-14-04-trusty-tahr#chrome
+     */
+    overrideStyle.setAttribute("data-noprefix", "no-conflict");
+
     overrideStyle.rel = "stylesheet";
     overrideStyle.href = `data:text/css;base64,${btoa(styleContent)}`;
     overrideStyle.disabled = true;
