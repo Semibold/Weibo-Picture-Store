@@ -1,6 +1,11 @@
 # Changelog
 
 
+### 2.2.8
+
+- 冲突：解决 [LeaVerou/prefixfree](https://github.com/LeaVerou/prefixfree/issues/6131) bug 引起样式泄漏的问题</li>
+
+
 ### 2.2.5
 
 - 修复：QQ 邮箱重用扩展注入的 Style 导致的样式泄露问题
