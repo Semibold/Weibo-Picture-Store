@@ -1,9 +1,15 @@
 # Changelog
 
 
+### 2.2.9
+
+- 新增：打开上传窗口的快捷键（Shift+Alt+W）
+- 新增：对 weibo.com 域下 cookies 的 secure 属性校验和警告提示
+
+
 ### 2.2.8
 
-- 冲突：解决 [LeaVerou/prefixfree](https://github.com/LeaVerou/prefixfree/issues/6131) bug 引起样式泄漏的问题</li>
+- 冲突：解决 [LeaVerou/prefixfree](https://github.com/LeaVerou/prefixfree/issues/6131) bug 引起样式泄漏的问题
 
 
 ### 2.2.5
