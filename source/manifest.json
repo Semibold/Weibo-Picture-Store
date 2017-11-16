@@ -37,6 +37,11 @@
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
   "minimum_chrome_version": "59",
   "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Shift+Alt+W"
+      }
+    },
     "transform-pointer-events": {
       "suggested_key": {
         "default": "Shift+Alt+T"
