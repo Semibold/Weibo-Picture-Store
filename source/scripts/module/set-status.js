@@ -7,6 +7,15 @@
         const method = "POST";
         const body = Utils.createSearchParams({sid: 0, state: 0});
         return Weibo.getStatus().then(json => {
+            // 检测 cookies 的 secure 属性是否被设置为 true
+            chrome.cookies.getAll({
+                domain: "weibo.com",
+                secure: true,
+            }, cookies => {
+                if (cookies.length) {
+                    console.warn("Unexcepted Error: cookies secure detected");
+                }
+            });
             if (json.login) {
                 return Promise.reject(json);
             } else {

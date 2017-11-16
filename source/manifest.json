@@ -51,6 +51,7 @@
   },
   "permissions": [
     "tabs",
+    "cookies",
     "webRequest",
     "webRequestBlocking",
     "webNavigation",
