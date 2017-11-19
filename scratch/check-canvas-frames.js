@@ -8,8 +8,8 @@ function checkCanvasFrames(canvas) {
         sampleRate: 10,
     };
     const tolerant = {
-        upper: 1,
-        lower: 5,
+        upper: 5,
+        lower: 1,
         ratio: 0.02,
     };
     const recorder = {
