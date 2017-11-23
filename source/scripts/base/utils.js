@@ -1,4 +1,10 @@
-const Utils = class {
+import {
+    SINGLETON_MODULE,
+    BITMAP_PATTERN_TABLE,
+    UNKNOW_BITMAP_MIME_TYPE,
+} from "./constant.js";
+
+export class Utils {
 
     static noop() {}
 
@@ -146,4 +152,4 @@ const Utils = class {
         return UNKNOW_BITMAP_MIME_TYPE;
     }
 
-};
+}

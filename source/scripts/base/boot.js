@@ -1,4 +1,4 @@
 /**
- * Boot Module
+ * Sharre Module
  */
-const Weibo = self.Weibo = {};
+export const Weibo = self.Weibo = {_sharre_: true};
