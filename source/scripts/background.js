@@ -3,12 +3,8 @@ import {
     transferType,
     loginWeiboURL,
     acceptType,
-    rootZone,
-    urlPrefix,
 } from "./base/register.js";
 import {notifyId as getStatusNotifyId} from "./core/get-status.js";
-import {fetchBlob} from "./core/fetch-blob.js";
-import {readFile} from "./sharre/read-file.js";
 import {filePurity} from "./core/file-purity.js";
 import {fileUpload} from "./core/file-upload.js";
 
@@ -25,39 +21,6 @@ chrome.notifications.onClicked.addListener(notificationId => {
         chrome.tabs.create({url: loginWeiboURL}, tab => chrome.notifications.clear(getStatusNotifyId));
     }
 });
-
-
-const resolveReferrer = (srcUrl, pageUrl) => {
-    const refererHandler = details => {
-        const name = "Referer";
-        const value = pageUrl;
-
-        for (let i = 0; i < details.requestHeaders.length; i++) {
-            if (details.requestHeaders[i].name.toLowerCase() === name.toLowerCase()) {
-                details.requestHeaders.splice(i, 1);
-                break;
-            }
-        }
-
-        details.requestHeaders.push({name, value});
-        return {requestHeaders: details.requestHeaders};
-    };
-
-    return {
-        addListener: () => {
-            if (!chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
-                chrome.webRequest.onBeforeSendHeaders.addListener(refererHandler, {
-                    urls: [srcUrl],
-                }, ["requestHeaders", "blocking"]);
-            }
-        },
-        removeListener: () => {
-            if (chrome.webRequest.onBeforeSendHeaders.hasListener(refererHandler)) {
-                chrome.webRequest.onBeforeSendHeaders.removeListener(refererHandler);
-            }
-        },
-    };
-};
 
 
 chrome.browserAction.onClicked.addListener(tab => {
