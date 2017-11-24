@@ -1,4 +1,4 @@
-import {Utils} from "../base/utils";
+import {Utils} from "../base/utils.js";
 import {acceptType, maximumFileSize} from "../base/register.js";
 
 const slopId = Utils.randomString(16);
