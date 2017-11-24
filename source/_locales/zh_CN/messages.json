@@ -14,6 +14,9 @@
   "128": {
     "message": "icons/128.png"
   },
+  "svg": {
+    "message": "assets/weibo-1.svg"
+  },
   "image_placeholder": {
     "message": "assets/transparent.gif"
   },
