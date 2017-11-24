@@ -2,11 +2,15 @@ Promise.all([
     import(chrome.extension.getURL("scripts/base/utils.js")),
     import(chrome.extension.getURL("scripts/base/register.js")),
     import(chrome.extension.getURL("scripts/base/constant.js")),
-    import(chrome.extension.getURL("scripts/sharre/read-file.js")),
+    import(chrome.extension.getURL("scripts/sharre/share-between-pages.js")),
 ]).then(([{Utils}, {
     chromeSupportedType,
     transferType
-}, {MAXIMUM_EDGE}, {readFile}]) => {
+}, {MAXIMUM_EDGE}, {
+    defaultPrefix,
+    defaultSuffix,
+    resolveBlobs,
+}]) => {
     const eventMap = new Set(["drop", "click", "paste"]);
     const fileInput = document.createElement("input");
     const overrideStyle = document.createElement("link");
@@ -15,17 +19,6 @@ Promise.all([
     fileInput.hidden = true;
     fileInput.multiple = true;
     fileInput.accept = Array.from(chromeSupportedType).join(",");
-
-    const resolveBlobs = (blobs, item, prefix, suffix) => {
-        readFile(blobs)
-            .then(result => chrome.runtime.sendMessage({
-                type: transferType.fromBase64,
-                item: item,
-                result: result,
-                prefix: prefix,
-                suffix: suffix,
-            }));
-    };
 
     class EventRegister {
 
@@ -79,8 +72,6 @@ Promise.all([
     }
 
     chrome.runtime.onMessage.addListener(message => {
-        const prefix = "https://ws1.sinaimg.cn/large/";
-        const suffix = "";
         try {
             if (message.type === transferType.fromBackground && message.item.writeln !== "clipboard") {
                 const target = document.querySelector(message.item.writeln || message.item.selector);
@@ -120,7 +111,7 @@ Promise.all([
                     try {
                         canvas.toBlob(blob => resolveBlobs([blob], {
                             writeln: "clipboard",
-                        }, prefix, suffix), "image/jpeg", 0.95);
+                        }, defaultPrefix, defaultSuffix), "image/jpeg", 0.95);
                     } catch (e) {
                         chrome.runtime.sendMessage({
                             type: transferType.fromWithoutCORSMode,
@@ -138,7 +129,7 @@ Promise.all([
                 }).then(blob => {
                     resolveBlobs([blob], {
                         writeln: "clipboard",
-                    }, prefix, suffix);
+                    }, defaultPrefix, defaultSuffix);
                 }).catch(Utils.noop);
             }
             if (message.type === transferType.fromChromeCommand) {

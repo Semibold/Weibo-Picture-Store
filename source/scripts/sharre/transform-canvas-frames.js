@@ -1,9 +1,13 @@
+import {
+    defaultPrefix,
+    defaultSuffix,
+    resolveBlobs,
+} from "./share-between-pages.js";
 import {transferType} from "../base/register.js";
 import APNCodec from "../../APNG-Codec/source/apng-codec.js";
 
 export const transformCanvasFrames = canvas => {
     const checkout = {
-        fps: null,
         animation: false,
         sampleRate: 10,
     };
@@ -43,7 +47,9 @@ export const transformCanvasFrames = canvas => {
             const imgData = context.getImageData(0, 0, w, h);
             if (!checkout.animation && recorder.etime - recorder.stime > primaryTimeout) {
                 clearInterval(recorder.tid);
-                // todo: handle as .png
+                canvas.toBlob(blob => resolveBlobs([blob], {
+                    writeln: "clipboard",
+                }, defaultPrefix, defaultSuffix), "image/png");
                 return;
             }
             if (!recorder.check && recorder.etime - recorder.stime > totalityTimeout) {
@@ -85,7 +91,20 @@ export const transformCanvasFrames = canvas => {
                 const detla = Math.min(Math.max(Math.floor(recorder.sindex * tolerant.ratio), tolerant.lower), tolerant.upper);
                 if (stats.fail <= detla) {
                     clearInterval(recorder.tid);
-                    // todo: handle as .gif
+                    if (fragment.length) {
+                        const buffers = [];
+                        const delays = [];
+                        for (let i = 0; i < fragment.length; i++) {
+                            buffers.push(fragment[i].imgData.data);
+                            delays.push( i === 0 ? 0 : fragment[i].timeStamp - fragment[i - 1].timeStamp);
+                        }
+                        const arrayBuffer = APNCodec.encode(buffers, w, h, 0, delays);
+                        resolveBlobs([new Blob([arrayBuffer], {
+                            type: "image/png",
+                        })], {
+                            writeln: "clipboard",
+                        }, defaultPrefix, defaultSuffix);
+                    }
                     return;
                 }
                 recorder.check = false;
