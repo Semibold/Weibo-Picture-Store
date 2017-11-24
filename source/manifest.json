@@ -42,6 +42,7 @@
     }
   },
   "web_accessible_resources": [
+    "APNG-Codec/*",
     "scripts/*"
   ],
   "permissions": [
