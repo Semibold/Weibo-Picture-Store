@@ -4,7 +4,7 @@ import {
     resolveBlobs,
 } from "./share-between-pages.js";
 import {transferType} from "../base/register.js";
-import APNCodec from "../../APNG-Codec/source/apng-codec.js";
+import APNGCodec from "../../APNG-Codec/source/apng-codec.js";
 
 export const transformCanvasFrames = canvas => {
     const checkout = {
@@ -98,7 +98,7 @@ export const transformCanvasFrames = canvas => {
                             buffers.push(fragment[i].imgData.data);
                             delays.push( i === 0 ? 0 : fragment[i].timeStamp - fragment[i - 1].timeStamp);
                         }
-                        const arrayBuffer = APNCodec.encode(buffers, w, h, 0, delays);
+                        const arrayBuffer = APNGCodec.encode(buffers, w, h, 0, delays);
                         resolveBlobs([new Blob([arrayBuffer], {
                             type: "image/png",
                         })], {
