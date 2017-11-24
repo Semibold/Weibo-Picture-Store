@@ -9,10 +9,10 @@ export const fetchBlob = url => {
         interval: 500,
         requestId: null,
     };
-    const fileProgress = fileProgress(TYPE_DOWNLOAD);
+    const progress = fileProgress(TYPE_DOWNLOAD);
 
-    fileProgress.padding(1);
-    delayInfo.requestId = setTimeout(() => fileProgress.triggerProgress(), delayInfo.interval);
+    progress.padding(1);
+    delayInfo.requestId = setTimeout(() => progress.triggerProgress(), delayInfo.interval);
 
     return Utils.fetch(url, {
         cache: "default",
@@ -21,11 +21,11 @@ export const fetchBlob = url => {
         return response.ok ? response.blob() : Promise.reject(response.status);
     }).then(result => {
         clearTimeout(delayInfo.requestId);
-        fileProgress.consume();
+        progress.consume();
         return Promise.resolve(result);
     }).catch(reason => {
         clearTimeout(delayInfo.requestId);
-        fileProgress.consume();
+        progress.consume();
         chrome.notifications.create(notifyId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("64"),
