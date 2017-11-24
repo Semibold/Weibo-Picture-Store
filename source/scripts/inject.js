@@ -1,8 +1,9 @@
 Promise.all([
+    import(chrome.extension.getURL("scripts/base/utils.js")),
     import(chrome.extension.getURL("scripts/base/register.js")),
     import(chrome.extension.getURL("scripts/base/constant.js")),
     import(chrome.extension.getURL("scripts/sharre/read-file.js")),
-]).then(([{
+]).then(([{Utils}, {
     chromeSupportedType,
     transferType
 }, {MAXIMUM_EDGE}, {readFile}]) => {
@@ -78,6 +79,8 @@ Promise.all([
     }
 
     chrome.runtime.onMessage.addListener(message => {
+        const prefix = "https://ws1.sinaimg.cn/large/";
+        const suffix = "";
         try {
             if (message.type === transferType.fromBackground && message.item.writeln !== "clipboard") {
                 const target = document.querySelector(message.item.writeln || message.item.selector);
@@ -111,8 +114,6 @@ Promise.all([
                     }
                     const canvas = document.createElement("canvas");
                     const context = canvas.getContext("2d");
-                    const prefix = "https://ws1.sinaimg.cn/large/";
-                    const suffix = "";
                     canvas.width = width;
                     canvas.height = height;
                     context.drawImage(videoRef, 0, 0, width, height);
@@ -127,6 +128,18 @@ Promise.all([
                     }
                     break;
                 }
+            }
+            if (message.type === transferType.fromImageFrame && message.srcUrl) {
+                Utils.fetch(message.srcUrl, {
+                    cache: "default",
+                    credentials: "omit",
+                }).then(response => {
+                    return response.ok ? response.blob() : Promise.reject(response.status);
+                }).then(blob => {
+                    resolveBlobs([blob], {
+                        writeln: "clipboard",
+                    }, prefix, suffix);
+                }).catch(Utils.noop);
             }
             if (message.type === transferType.fromChromeCommand) {
                 overrideStyle.disabled = !overrideStyle.disabled;

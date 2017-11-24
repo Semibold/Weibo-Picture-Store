@@ -116,7 +116,7 @@ chrome.contextMenus.create({
         chrome.tabs.sendMessage(tab.id, {
             type: transferType.fromVideoFrame,
             srcUrl: obj.srcUrl,
-        });
+        }, {frameId: obj.frameId});
     },
 });
 
@@ -128,39 +128,10 @@ chrome.contextMenus.create({
     title: chrome.i18n.getMessage("upload_image_to_micro_album"),
     contexts: ["image"],
     onclick: (obj, tab) => {
-        let controller = null;
-        if (Utils.isValidURL(obj.srcUrl) && Utils.isValidURL(obj.pageUrl)) {
-            controller = resolveReferrer(obj.srcUrl, obj.pageUrl);
-            controller.addListener();
-        }
-        fetchBlob(obj.srcUrl)
-            .then(result => {
-                controller && controller.removeListener();
-                return Promise.resolve(result);
-            })
-            .catch(reason => {
-                controller && controller.removeListener();
-                return Promise.reject(reason);
-            })
-            .then(blob => readFile([blob]))
-            .then(result => filePurity(result))
-            .then(result => fileUpload(result))
-            .then(result => {
-                if (result[0]) {
-                    const item = result[0];
-                    const url = `https://${urlPrefix[0] + rootZone}/large/${item.pid + acceptType[item.mimeType].typo}`;
-                    Utils.writeToClipboard(url, () => {
-                        chrome.notifications.create(notifyId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("notification_icon"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: chrome.i18n.getMessage("write_to_clipboard"),
-                            contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
-                        });
-                    });
-                }
-            })
-            .catch(Utils.noop);
+        chrome.tabs.sendMessage(tab.id, {
+            type: transferType.fromImageFrame,
+            srcUrl: obj.srcUrl,
+        }, {frameId: obj.frameId});
     },
 });
 
