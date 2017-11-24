@@ -1,5 +1,10 @@
-{
-
+Promise.all([
+    import(chrome.extension.getURL("scripts/base/register.js")),
+    import(chrome.extension.getURL("scripts/sharre/read-file.js")),
+]).then(([{
+    chromeSupportedType,
+    transferType
+}, {readFile}]) => {
     const eventMap = new Set(["drop", "click", "paste"]);
     const fileInput = document.createElement("input");
     const overrideStyle = document.createElement("link");
@@ -7,12 +12,12 @@
     fileInput.type = "file";
     fileInput.hidden = true;
     fileInput.multiple = true;
-    fileInput.accept = Array.from(Weibo.chromeSupportedType).join(",");
+    fileInput.accept = Array.from(chromeSupportedType).join(",");
 
     const resolveBlobs = (blobs, item, prefix, suffix) => {
-        Weibo.readFile(blobs)
+        readFile(blobs)
             .then(result => chrome.runtime.sendMessage({
-                type: Weibo.transferType.fromBase64,
+                type: transferType.fromBase64,
                 item: item,
                 result: result,
                 prefix: prefix,
@@ -20,7 +25,7 @@
             }));
     };
 
-    const EventRegister = class {
+    class EventRegister {
 
         static drop(item, prefix, suffix) {
             const target = document.querySelector(item.selector);
@@ -69,11 +74,11 @@
             }
         }
 
-    };
+    }
 
     chrome.runtime.onMessage.addListener(message => {
         try {
-            if (message.type === Weibo.transferType.fromBackground && message.item.writeln !== "clipboard") {
+            if (message.type === transferType.fromBackground && message.item.writeln !== "clipboard") {
                 const target = document.querySelector(message.item.writeln || message.item.selector);
                 if (target) {
                     const start = target.selectionStart;
@@ -84,7 +89,7 @@
                     target.value = prev + message.buffer.join("\n") + next;
                 }
             }
-            if (message.type === Weibo.transferType.fromVideoFrame && message.srcUrl) {
+            if (message.type === transferType.fromVideoFrame && message.srcUrl) {
                 const videoRefs = document.querySelectorAll('video');
                 for (const videoRef of videoRefs) {
                     if (videoRef.currentSrc !== message.srcUrl) {
@@ -112,13 +117,13 @@
                         }, prefix, suffix), "image/jpeg", 0.95);
                     } catch (e) {
                         chrome.runtime.sendMessage({
-                            type: Weibo.transferType.fromWithoutCORSMode,
+                            type: transferType.fromWithoutCORSMode,
                         });
                     }
                     break;
                 }
             }
-            if (message.type === Weibo.transferType.fromChromeCommand) {
+            if (message.type === transferType.fromChromeCommand) {
                 overrideStyle.disabled = !overrideStyle.disabled;
             }
         } catch (e) {
@@ -127,7 +132,7 @@
     });
 
     self.addEventListener("message", e => {
-        if (e.data && e.data.type === Weibo.transferType.fromUser && Array.isArray(e.data.note)) {
+        if (e.data && e.data.type === transferType.fromUser && Array.isArray(e.data.note)) {
             for (const item of e.data.note) {
                 if (item && eventMap.has(item.eventType)) {
                     const prefix = String(e.data.prefix || "");
@@ -196,4 +201,4 @@
         }
     }, true);
 
-}
+});
