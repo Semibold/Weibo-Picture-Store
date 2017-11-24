@@ -1,6 +1,6 @@
-@import "module/base.css";
-@import "module/scrollbar.css";
-@import "module/keyframes.css";
+@import "core/base.css";
+@import "core/scrollbar.css";
+@import "core/keyframes.css";
 
 body {
     background-color: rgb(242, 242, 242);
