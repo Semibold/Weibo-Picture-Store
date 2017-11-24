@@ -185,7 +185,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                             message: chrome.i18n.getMessage("write_to_clipboard"),
                             contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
                         });
-                    })
+                    });
                 }
                 chrome.tabs.sendMessage(sender.tab.id, {
                     type: transferType.fromBackground,

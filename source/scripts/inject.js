@@ -1,10 +1,11 @@
 Promise.all([
     import(chrome.extension.getURL("scripts/base/register.js")),
+    import(chrome.extension.getURL("scripts/base/constant.js")),
     import(chrome.extension.getURL("scripts/sharre/read-file.js")),
 ]).then(([{
     chromeSupportedType,
     transferType
-}, {readFile}]) => {
+}, {MAXIMUM_EDGE}, {readFile}]) => {
     const eventMap = new Set(["drop", "click", "paste"]);
     const fileInput = document.createElement("input");
     const overrideStyle = document.createElement("link");
@@ -92,16 +93,20 @@ Promise.all([
             if (message.type === transferType.fromVideoFrame && message.srcUrl) {
                 const videoRefs = document.querySelectorAll('video');
                 for (const videoRef of videoRefs) {
+                    /**
+                     * 为什么不用 video.src 的写法？
+                     * <video><source src="..."></video> 这种写法不存在 video.src
+                     * 但是 chrome 可以捕获 source 中的 src 值
+                     */
                     if (videoRef.currentSrc !== message.srcUrl) {
                         continue;
                     }
-                    const MAX_EDGE = 2 ** 15 - 1;
                     const width = Math.ceil(videoRef.videoWidth);
                     const height = Math.ceil(videoRef.videoHeight);
                     if (width === 0 || height === 0) {
                         return;
                     }
-                    if (width > MAX_EDGE || height > MAX_EDGE) {
+                    if (width > MAXIMUM_EDGE || height > MAXIMUM_EDGE) {
                         return;
                     }
                     const canvas = document.createElement("canvas");
