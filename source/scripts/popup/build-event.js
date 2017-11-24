@@ -1,6 +1,11 @@
-class BuildEvent {
+import {Utils} from "../base/utils.js";
+import {readFile} from "../sharre/read-file.js";
+import {backWindow, fileInput} from "./sharre.js";
 
-    constructor(item) {
+export class BuildEvent {
+
+    constructor(origin, item) {
+        this.origin = origin;
         this.section = item.domNodes.section;
         this.listenerSet = new Set();
     }
@@ -58,7 +63,10 @@ class BuildEvent {
                             }
                         }
 
-                        Promise.all(queues).then(result => resolveBlobs(buffer));
+                        Promise.all(queues)
+                            .then(result => readFile(buffer, "arrayBuffer", true))
+                            .then(result => backWindow.Weibo.filePurity(result))
+                            .then(result => this.origin.requestUpload(result));
                         break;
                     }
                 }
