@@ -1,6 +1,5 @@
 import {Utils} from "../base/utils.js";
 import {backWindow} from "./sharre.js";
-import "./fragment.js";
 
 export class Dispatcher {
 
