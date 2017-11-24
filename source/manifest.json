@@ -41,6 +41,9 @@
       "description": "Transform pointer-events"
     }
   },
+  "web_accessible_resources": [
+    "scripts/*"
+  ],
   "permissions": [
     "tabs",
     "cookies",
