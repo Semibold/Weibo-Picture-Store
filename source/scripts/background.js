@@ -152,7 +152,7 @@ chrome.contextMenus.create({
                     Utils.writeToClipboard(url, () => {
                         chrome.notifications.create(notifyId, {
                             type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
+                            iconUrl: chrome.i18n.getMessage("notification_icon"),
                             title: chrome.i18n.getMessage("info_title"),
                             message: chrome.i18n.getMessage("write_to_clipboard"),
                             contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
@@ -180,7 +180,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                     Utils.writeToClipboard(text, () => {
                         text && chrome.notifications.create(notifyId, {
                             type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
+                            iconUrl: chrome.i18n.getMessage("notification_icon"),
                             title: chrome.i18n.getMessage("info_title"),
                             message: chrome.i18n.getMessage("write_to_clipboard"),
                             contextMessage: chrome.i18n.getMessage("write_to_clipboard_hinter"),
@@ -200,7 +200,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     if (message && message.type === transferType.fromWithoutCORSMode) {
         chrome.notifications.create(notifyId, {
             type: "basic",
-            iconUrl: chrome.i18n.getMessage("64"),
+            iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("warn_title"),
             message: chrome.i18n.getMessage("resource_without_cors_mode"),
         });

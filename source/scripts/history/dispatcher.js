@@ -142,7 +142,7 @@ export class Dispatcher {
                     Reflect.deleteProperty(section.dataset, "removing");
                     chrome.notifications.create(this.notifyId, {
                         type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
+                        iconUrl: chrome.i18n.getMessage("notification_icon"),
                         title: chrome.i18n.getMessage("info_title"),
                         message: chrome.i18n.getMessage("remove_photo_failed"),
                     });

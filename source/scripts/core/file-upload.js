@@ -53,7 +53,7 @@ export const fileUpload = (list, endCallback) => {
                 }).catch(reason => {
                     reason.login && chrome.notifications.create(failId, {
                         type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
+                        iconUrl: chrome.i18n.getMessage("notification_icon"),
                         title: chrome.i18n.getMessage("fail_title"),
                         message: chrome.i18n.getMessage("upload_file_failed"),
                     });

@@ -13,7 +13,7 @@ export const getStatus = (isNotification = false) => {
         } else {
             isNotification && chrome.notifications.create(notifyId, {
                 type: "basic",
-                iconUrl: chrome.i18n.getMessage("64"),
+                iconUrl: chrome.i18n.getMessage("notification_icon"),
                 title: chrome.i18n.getMessage("warn_title"),
                 message: chrome.i18n.getMessage("being_logout_status"),
                 contextMessage: chrome.i18n.getMessage("goto_login_page_hinter"),
@@ -24,7 +24,7 @@ export const getStatus = (isNotification = false) => {
     }).catch(reason => {
         isNotification && chrome.notifications.create(notifyId, {
             type: "basic",
-            iconUrl: chrome.i18n.getMessage("64"),
+            iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("warn_title"),
             message: chrome.i18n.getMessage("check_logging_status"),
             contextMessage: chrome.i18n.getMessage("goto_login_page_hinter"),

@@ -26,14 +26,14 @@ export const filePurity = list => {
 
     judge.typeMismatch && chrome.notifications.create(typeId, {
         type: "basic",
-        iconUrl: chrome.i18n.getMessage("64"),
+        iconUrl: chrome.i18n.getMessage("notification_icon"),
         title: chrome.i18n.getMessage("info_title"),
         message: chrome.i18n.getMessage("file_type_mismatch"),
     });
 
     judge.sizeOverflow && chrome.notifications.create(slopId, {
         type: "basic",
-        iconUrl: chrome.i18n.getMessage("64"),
+        iconUrl: chrome.i18n.getMessage("notification_icon"),
         title: chrome.i18n.getMessage("info_title"),
         message: chrome.i18n.getMessage("file_size_overflow"),
     });

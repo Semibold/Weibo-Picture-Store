@@ -28,7 +28,7 @@ export const fetchBlob = url => {
         progress.consume();
         chrome.notifications.create(notifyId, {
             type: "basic",
-            iconUrl: chrome.i18n.getMessage("64"),
+            iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("warn_title"),
             message: chrome.i18n.getMessage("fetch_file_failed"),
         });

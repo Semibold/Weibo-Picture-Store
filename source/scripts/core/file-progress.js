@@ -47,7 +47,7 @@ const triggerProgress = (tid) => {
 
         chrome.notifications.create(dtd.notifyId, {
             type: "progress",
-            iconUrl: chrome.i18n.getMessage("64"),
+            iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("info_title"),
             message: message,
             contextMessage: contextMessage,
@@ -61,7 +61,7 @@ const triggerProgress = (tid) => {
                     if (wasCleared && tid === TYPE_UPLOAD) {
                         chrome.notifications.create(dtd.notifyId, {
                             type: "basic",
-                            iconUrl: chrome.i18n.getMessage("64"),
+                            iconUrl: chrome.i18n.getMessage("notification_icon"),
                             title: chrome.i18n.getMessage("info_title"),
                             message: chrome.i18n.getMessage("upload_workflow_ended"),
                         });
