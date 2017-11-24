@@ -21,15 +21,7 @@
     {
       "all_frames": true,
       "match_about_blank": true,
-      "js": [
-        "scripts/base/boot.js",
-        "scripts/base/channel.js",
-        "scripts/base/constant.js",
-        "scripts/base/register.js",
-        "scripts/base/utils.js",
-        "scripts/module/read-file.js",
-        "scripts/inject.js"
-      ],
+      "js": ["scripts/inject.js"],
       "matches": ["<all_urls>"],
       "run_at": "document_start"
     }
