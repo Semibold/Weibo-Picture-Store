@@ -185,28 +185,28 @@
     self.addEventListener("DOMContentLoaded", e => {
         const highlight = document.createElement("inject-highlight");
         const styleContent = `
-        html {
-            pointer-events: none !important;
-        }
-        iframe, embed, object, param, video, source {
-            pointer-events: auto !important;
-        }
-        inject-highlight[data-injector-id="${chrome.runtime.id}"] {
-            display: block;
-            position: fixed;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            border: 3px solid #fff;
-            outline: 3px dashed #fb0000;
-            outline-offset: -3px;
-            background-color: transparent;
-            box-sizing: border-box;
-            pointer-events: none;
-            z-index: ${2 ** 31 - 1};
-        }
-    `;
+            html {
+                pointer-events: none !important;
+            }
+            iframe, embed, object, param, video, source {
+                pointer-events: auto !important;
+            }
+            inject-highlight[data-injector-id="${chrome.runtime.id}"] {
+                display: block;
+                position: fixed;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                border: 3px solid #fff;
+                outline: 3px dashed #fb0000;
+                outline-offset: -3px;
+                background-color: transparent;
+                box-sizing: border-box;
+                pointer-events: none;
+                z-index: ${2 ** 31 - 1};
+            }
+        `;
         highlight.setAttribute("data-injector-id", chrome.runtime.id);
         overrideStyle.setAttribute("data-injector-id", chrome.runtime.id);
 
