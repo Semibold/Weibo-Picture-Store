@@ -58,7 +58,6 @@ export const transformCanvasFrames = canvas => {
                 return;
             }
 
-            // todo: chrome bug. ArrayBuffer view comparasion result might be false.
             // @see https://bugs.chromium.org/p/chromium/issues/detail?id=786381
             if (!fragment.length || !isEqualView(fragment[fragment.length - 1].imgData.data, imgData.data)) {
                 fragment.push({
