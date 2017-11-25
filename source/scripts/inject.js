@@ -1,8 +1,8 @@
 Promise.all([
-    import(chrome.extension.getURL("scripts/base/utils.js")),
-    import(chrome.extension.getURL("scripts/base/register.js")),
-    import(chrome.extension.getURL("scripts/base/constant.js")),
-    import(chrome.extension.getURL("scripts/sharre/share-between-pages.js")),
+    import(chrome.runtime.getURL("scripts/base/utils.js")),
+    import(chrome.runtime.getURL("scripts/base/register.js")),
+    import(chrome.runtime.getURL("scripts/base/constant.js")),
+    import(chrome.runtime.getURL("scripts/sharre/share-between-pages.js")),
 ]).then(([{Utils}, {
     chromeSupportedType,
     transferType
