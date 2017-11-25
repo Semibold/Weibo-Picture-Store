@@ -86,6 +86,9 @@
   "upload_image_to_micro_album": {
     "message": "把这张图片上传到微相册"
   },
+  "upload_canvas_to_micro_album": {
+    "message": "截取动画并上传到微相册"
+  },
   "upload_frame_to_micro_album": {
     "message": "把当前的视频帧上传到微相册"
   },

@@ -99,6 +99,20 @@ chrome.contextMenus.create({
 });
 
 
+/**
+ * 右键菜单：Canvas
+ */
+chrome.contextMenus.create({
+    title: chrome.i18n.getMessage("upload_canvas_to_micro_album"),
+    contexts: ["all"],
+    onclick: (obj, tab) => {
+        chrome.tabs.sendMessage(tab.id, {
+            type: transferType.fromCanvasFrame,
+        }, {frameId: obj.frameId});
+    },
+});
+
+
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (message && message.type === transferType.fromBase64) {
         filePurity(message.result)

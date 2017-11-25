@@ -10,7 +10,7 @@
         import(chrome.runtime.getURL("scripts/sharre/share-between-pages.js")),
     ]).then(([{Utils}, {
         chromeSupportedType,
-        transferType
+        transferType,
     }, {MAXIMUM_EDGE}, {
         defaultPrefix,
         defaultSuffix,
@@ -136,6 +136,16 @@
                         }, defaultPrefix, defaultSuffix);
                     }).catch(Utils.noop);
                 }
+                if (message.type === transferType.fromCanvasFrame) {
+                    const node = document.elementFromPoint(recoder.closestX, recoder.closestY);
+                    if (node && node.tagName &&
+                        node.tagName.toUpperCase() === "CANVAS") {
+                        import(chrome.runtime.getURL("scripts/sharre/transform-canvas-frames.js"))
+                            .then(({transformCanvasFrames}) => transformCanvasFrames(node));
+                    } else {
+                        console.warn("Target element is not canvas");
+                    }
+                }
                 if (message.type === transferType.fromChromeCommand) {
                     overrideStyle.disabled = !overrideStyle.disabled;
                 }
@@ -160,14 +170,16 @@
             }
         });
 
+        self.addEventListener("contextmenu", e => {
+            if (!overrideStyle.disabled) {
+                e.stopImmediatePropagation();
+            }
+            if (e.button === 2) {
+                recoder.closestX = e.x;
+                recoder.closestY = e.y;
+            }
+        }, true);
     });
-
-
-    self.addEventListener("contextmenu", e => {
-        if (!overrideStyle.disabled) {
-            e.stopImmediatePropagation();
-        }
-    }, true);
 
 
     self.addEventListener("DOMContentLoaded", e => {
