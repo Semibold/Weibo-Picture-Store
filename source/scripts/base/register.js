@@ -77,7 +77,6 @@ export const transferType = {
     fromBackground: "CE.data_from_background",
     fromImageFrame: "CE.data_from_image_frame",
     fromVideoFrame: "CE.data_from_video_frame",
-    fromCanvasFrame: "CE.data_from_canvas_frame",
     fromChromeCommand: "CE.data_from_chrome_command",
     fromWithoutCORSMode: "CE.data_from_without_cors_mode",
 };

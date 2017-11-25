@@ -1,6 +1,5 @@
 {
 
-    const recoder = {closestX: 0, closestY: 0};
     const overrideStyle = document.createElement("link");
 
     Promise.all([
@@ -136,16 +135,6 @@
                         }, defaultPrefix, defaultSuffix);
                     }).catch(Utils.noop);
                 }
-                if (message.type === transferType.fromCanvasFrame) {
-                    const node = document.elementFromPoint(recoder.closestX, recoder.closestY);
-                    if (node && node.tagName &&
-                        node.tagName.toUpperCase() === "CANVAS") {
-                        import(chrome.runtime.getURL("scripts/sharre/transform-canvas-frames.js"))
-                            .then(({transformCanvasFrames}) => transformCanvasFrames(node));
-                    } else {
-                        console.warn("Target element is not canvas");
-                    }
-                }
                 if (message.type === transferType.fromChromeCommand) {
                     overrideStyle.disabled = !overrideStyle.disabled;
                 }
@@ -173,10 +162,6 @@
         self.addEventListener("contextmenu", e => {
             if (!overrideStyle.disabled) {
                 e.stopImmediatePropagation();
-            }
-            if (e.button === 2) {
-                recoder.closestX = e.x;
-                recoder.closestY = e.y;
             }
         }, true);
     });
