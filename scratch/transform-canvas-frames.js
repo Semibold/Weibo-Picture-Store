@@ -1,11 +1,16 @@
-/**
- * @param {HTMLCanvasElement} canvas
- */
-function checkCanvasFrames(canvas) {
+const downloadImage = (blob) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob) + '.png';
+    a.download = new Date().toJSON();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+};
+
+const transformCanvasFrames = canvas => {
     const checkout = {
-        fps: null,
         animation: false,
-        sampleRate: 10,
+        sampleRate: 20,
     };
     const tolerant = {
         upper: 5,
@@ -25,6 +30,8 @@ function checkCanvasFrames(canvas) {
     const totalityTimeout = 60 * 1000;
     const context = canvas.getContext("2d");
     const isEqualView = (buf1, buf2) => buf1.byteLength === buf2.byteLength && buf1.every((value, index) => value === buf2[index]);
+    const w = canvas.width;
+    const h = canvas.height;
 
     recorder.stime = recorder.etime = Date.now();
     recorder.tid = setInterval(() => {
@@ -34,11 +41,14 @@ function checkCanvasFrames(canvas) {
             console.warn("Timeout: 60 * 1.5 seconds has run out. Force exit");
             return;
         }
+        if (canvas.width !== w || canvas.height !== h) {
+            throw new Error("Canvas width/height has changed");
+        }
         try {
-            const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const imgData = context.getImageData(0, 0, w, h);
             if (!checkout.animation && recorder.etime - recorder.stime > primaryTimeout) {
                 clearInterval(recorder.tid);
-                // todo: handle as .png
+                canvas.toBlob(blob => downloadImage(blob), "image/png");
                 return;
             }
             if (!recorder.check && recorder.etime - recorder.stime > totalityTimeout) {
@@ -47,7 +57,6 @@ function checkCanvasFrames(canvas) {
                 return;
             }
 
-            // todo: chrome bug. first arrayBuffer view comparasion result is always false.
             // @see https://bugs.chromium.org/p/chromium/issues/detail?id=786381
             if (!fragment.length || !isEqualView(fragment[fragment.length - 1].imgData.data, imgData.data)) {
                 fragment.push({
@@ -80,15 +89,38 @@ function checkCanvasFrames(canvas) {
                 const detla = Math.min(Math.max(Math.floor(recorder.sindex * tolerant.ratio), tolerant.lower), tolerant.upper);
                 if (stats.fail <= detla) {
                     clearInterval(recorder.tid);
-                    // todo: handle as .gif
+                    // const worker = new Worker("codec-worker.js");
+                    // worker.onmessage = (e) => {
+                    //     const {buffers, len} = e.data;
+                    //     const arrayBuffer = new Uint8Array(len);
+                    //     buffers.reduce((accumulator, currentValue, currentIndex, array) => {
+                    //         arrayBuffer.set(currentValue, accumulator);
+                    //         return accumulator + currentValue.length;
+                    //     }, 0);
+                    //     downloadImage(new Blob([arrayBuffer], {type: "image/png"}));
+                    // };
+                    console.log("frames:", fragment);
+                    if (fragment.length) {
+                        const buffers = [];
+                        const delays = [];
+                        for (let i = 0; i < fragment.length; i++) {
+                            buffers.push(fragment[i].imgData.data.buffer);
+                            delays.push(i === 0 ? 0 : fragment[i].timeStamp - fragment[i - 1].timeStamp);
+                        }
+                        // worker.postMessage({buffers, w, h, delays});
+                        console.time("Encode");
+                        const arrayBuffer = UPNG.encode(buffers, w, h, 0, delays);
+                        console.timeEnd("Encode");
+                        console.log(arrayBuffer);
+                        downloadImage(new Blob([arrayBuffer], {type: "image/png"}));
+                    }
                     return;
                 }
                 recorder.check = false;
             }
         } catch (e) {
-            clearInterval(recorder.tid);
             e.message && console.warn(e.message);
-            // todo: Tainted canvases hinter
+            clearInterval(recorder.tid);
         }
     }, checkout.sampleRate);
-}
+};
