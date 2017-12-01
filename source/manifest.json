@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "2.2.9",
+  "version": "3.0.0",
   "default_locale": "zh_CN",
   "description": "__MSG_extension_description__",
   "icons": {
@@ -42,7 +42,6 @@
     }
   },
   "web_accessible_resources": [
-    "APNG-Codec/*",
     "scripts/*"
   ],
   "permissions": [
