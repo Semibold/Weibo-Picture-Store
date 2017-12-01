@@ -1,4 +1,4 @@
 /**
- * Boot Module
+ * Core Module
  */
-const Weibo = self.Weibo = {};
+export const Weibo = self.Weibo = {_core_: true};

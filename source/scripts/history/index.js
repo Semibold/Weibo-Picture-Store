@@ -1,4 +1,5 @@
-document.title = `上传记录 - ${chrome.i18n.getMessage("extension_name")}`;
+import "./fragment.js";
+import {Dispatcher} from "./dispatcher.js";
 
-const backWindow = chrome.extension.getBackgroundPage();
+document.title = `上传记录 - ${chrome.i18n.getMessage("extension_name")}`;
 new Dispatcher().decorator();

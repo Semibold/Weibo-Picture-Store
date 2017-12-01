@@ -1,6 +1,11 @@
 # Changelog
 
 
+### 3.0.0
+
+- 改版：完全启用 ES-next Modules
+
+
 ### 2.2.9
 
 - 新增：打开上传窗口的快捷键（Shift+Alt+W）

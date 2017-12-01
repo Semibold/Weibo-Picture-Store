@@ -1,4 +1,9 @@
-const Channel = new Proxy({
+import {Utils} from "./utils.js";
+
+/**
+ * 两种图片上传方式
+ */
+export const Channel = new Proxy({
     arrayBuffer: {
         readType: "readAsArrayBuffer",
         body(arrayBuffer) {

@@ -1,6 +1,10 @@
-class BuildItem {
+import {Utils} from "../base/utils.js";
+import {BuildEvent} from "./build-event.js";
 
-    constructor(data) {
+export class BuildItem {
+
+    constructor(origin, data) {
+        this.origin = origin;
         this.data = data;
         this.itemEvent = null;
         this.objectURL = null;
@@ -36,7 +40,7 @@ class BuildItem {
 
     /** @private */
     addListener() {
-        this.itemEvent = new BuildEvent(this).decorator();
+        this.itemEvent = new BuildEvent(this.origin, this).decorator();
     }
 
     /** @public */

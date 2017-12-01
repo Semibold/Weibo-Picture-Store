@@ -1,8 +1,16 @@
-const SINGLETON_MODULE = new Map();
-const MULTIPLE_USER_CACHE = new Map();
+export const SINGLETON_MODULE = new Map();
+export const MULTIPLE_USER_CACHE = new Map();
 
-const UNKNOW_BITMAP_MIME_TYPE = "";
-const BITMAP_PATTERN_TABLE = [
+export const TYPE_UPLOAD = 1;
+export const TYPE_DOWNLOAD = 2;
+
+/**
+ * Canvas 画布宽或高的最大值
+ */
+export const MAXIMUM_EDGE = 2 ** 15 - 1;
+
+export const UNKNOW_BITMAP_MIME_TYPE = "";
+export const BITMAP_PATTERN_TABLE = [
     {
         pattern: [0x00, 0x00, 0x01, 0x00],
         mask: [0xFF, 0xFF, 0xFF, 0xFF],

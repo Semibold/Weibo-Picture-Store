@@ -1,4 +1,7 @@
-class Dispatcher {
+import {Utils} from "../base/utils.js";
+import {backWindow} from "./sharre.js";
+
+export class Dispatcher {
 
     constructor() {
         this.page = 1;
@@ -139,7 +142,7 @@ class Dispatcher {
                     Reflect.deleteProperty(section.dataset, "removing");
                     chrome.notifications.create(this.notifyId, {
                         type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
+                        iconUrl: chrome.i18n.getMessage("notification_icon"),
                         title: chrome.i18n.getMessage("info_title"),
                         message: chrome.i18n.getMessage("remove_photo_failed"),
                     });

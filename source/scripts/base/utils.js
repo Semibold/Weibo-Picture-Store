@@ -1,4 +1,11 @@
-const Utils = class {
+import {
+    SINGLETON_MODULE,
+    BITMAP_PATTERN_TABLE,
+    UNKNOW_BITMAP_MIME_TYPE,
+} from "./constant.js";
+import {Weibo} from "./boot.js";
+
+export class Utils {
 
     static noop() {}
 
@@ -146,4 +153,17 @@ const Utils = class {
         return UNKNOW_BITMAP_MIME_TYPE;
     }
 
-};
+    static sharre(func) {
+        if (chrome.extension.getBackgroundPage() !== self) {
+            throw new Error("Illegal Invoke");
+        }
+        if (!func.name) {
+            throw new Error("Invalid Params");
+        }
+        if (Weibo[func.name]) {
+            throw new Error("Function has been registered");
+        }
+        Weibo[func.name] = func;
+    }
+
+}

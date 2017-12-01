@@ -5,7 +5,7 @@
 
 ## Introduction
 
-上传图片到微博并生成外链的 Chrome 浏览器扩展（最低版本支持：Chrome 59）
+上传图片到微博并生成外链的 Chrome 浏览器扩展
 
 
 ## Feature
@@ -159,6 +159,10 @@
     + 1000 张。如果达到这个数量后继续使用，则会删除早前的 50 张图片
 - 微博处于已登录状态，为什么上传图片失败了？
     + 可能是其他 Chrome 插件造成的。解决方案：停用相关插件，并退出微博重新登录一次
+    + 详情参考 [Issues#37](https://github.com/Aqours/Weibo-Picture-Store/issues/37)
+- Errors: Failed to load module script: The server responded with...
+    + [下载此文件](https://github.com/Aqours/Weibo-Picture-Store/blob/master/scratch/reset-content-type.reg)，双击运行更新注册表即可
+    + 详情参考 [Issues#762483](https://bugs.chromium.org/p/chromium/issues/detail?id=762483#c7)
 
 
 ## Powered

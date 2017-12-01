@@ -1,4 +1,14 @@
-class Dispatcher {
+import {
+    startConfig,
+    urlPrefix,
+    rootZone,
+    acceptType,
+} from "../base/register.js";
+import {Utils} from "../base/utils.js";
+import {backWindow} from "./sharre.js";
+import {BuildItem} from "./build-item.js";
+
+export class Dispatcher {
 
     constructor() {
         this.batch = false;
@@ -9,8 +19,8 @@ class Dispatcher {
         this.linker = document.querySelector("input.custom-clip-size");
         this.copyId = Utils.randomString(16);
         this.notifyId = Utils.randomString(16);
-        this.external = Weibo.startConfig.clipsize;
-        this.urlPrefix = Weibo.urlPrefix[Math.floor(Math.random() * Weibo.urlPrefix.length)];
+        this.external = startConfig.clipsize;
+        this.urlPrefix = urlPrefix[Math.floor(Math.random() * urlPrefix.length)];
         this.checkout = {total: 0, settle: 0, clear: true};
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
@@ -40,7 +50,7 @@ class Dispatcher {
 
         if (customConfig) {
             for (const name of Object.keys(padding)) {
-                if (typeof Weibo.startConfig[name][customConfig[name]] === "string") {
+                if (typeof startConfig[name][customConfig[name]] === "string") {
                     padding[name] = customConfig[name];
                 }
             }
@@ -139,7 +149,7 @@ class Dispatcher {
                 if (document.execCommand("copy")) {
                     chrome.notifications.create(this.copyId, {
                         type: "basic",
-                        iconUrl: chrome.i18n.getMessage("64"),
+                        iconUrl: chrome.i18n.getMessage("notification_icon"),
                         title: chrome.i18n.getMessage("info_title"),
                         message: chrome.i18n.getMessage("write_to_clipboard"),
                     });
@@ -162,7 +172,7 @@ class Dispatcher {
             this.destroyCurrentList();
         }
 
-        const item = new BuildItem(this.transformData(data)).decorator();
+        const item = new BuildItem(this, this.transformData(data)).decorator();
         const hybrid = {item, data};
 
         this.fillCopyMode(item.domNodes.section);
@@ -207,10 +217,9 @@ class Dispatcher {
             return data;
         }
 
-        const scheme = Weibo.startConfig.scheme;
-        const clipsize = Weibo.startConfig.clipsize;
-        const rootZone = Weibo.rootZone;
-        const typo = Weibo.acceptType[data.mimeType].typo;
+        const scheme = startConfig.scheme;
+        const clipsize = startConfig.clipsize;
+        const typo = acceptType[data.mimeType].typo;
         const url = `${scheme[this.config.scheme] + this.urlPrefix + rootZone}/${clipsize[this.config.clipsize]}/${data.pid + typo}`;
 
         return Object.assign(data, {
