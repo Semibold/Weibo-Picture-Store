@@ -15,7 +15,7 @@
     "message": "icons/128.png"
   },
   "notification_icon": {
-    "message": "assets/weibo-1.svg"
+    "message": "assets/weibo-1.spacer.svg"
   },
   "image_placeholder": {
     "message": "assets/transparent.gif"
