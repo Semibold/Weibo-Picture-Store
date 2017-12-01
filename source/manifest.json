@@ -27,7 +27,7 @@
     }
   ],
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
-  "minimum_chrome_version": "59",
+  "minimum_chrome_version": "65",
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
