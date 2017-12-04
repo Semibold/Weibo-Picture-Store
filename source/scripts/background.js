@@ -128,7 +128,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
                     result: result,
                     prefix: message.prefix,
                     suffix: message.suffix,
-                });
+                }, {frameId: sender.frameId});
             });
     }
     if (message && message.type === transferType.fromWithoutCORSMode) {
