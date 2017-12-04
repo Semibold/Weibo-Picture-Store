@@ -106,8 +106,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             .then(result => {
                 const buffer = [];
                 for (const item of result) {
-                    item.url = `${message.prefix + item.pid + acceptType[item.mimeType].typo + message.suffix}`;
-                    buffer.push(item.url);
+                    const url = `${message.prefix + item.pid + acceptType[item.mimeType].typo + message.suffix}`;
+                    buffer.push(url);
                 }
                 if (message.item.writeln === "clipboard") {
                     const text = buffer.join("\n");
