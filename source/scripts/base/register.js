@@ -79,4 +79,5 @@ export const transferType = {
     fromVideoFrame: "CE.data_from_video_frame",
     fromChromeCommand: "CE.data_from_chrome_command",
     fromWithoutCORSMode: "CE.data_from_without_cors_mode",
+    fromFetchFileFailed: "CS.data_from_fetch_file_failed",
 };

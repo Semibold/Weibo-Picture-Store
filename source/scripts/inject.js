@@ -133,7 +133,11 @@
                         resolveBlobs([blob], {
                             writeln: "clipboard",
                         }, defaultPrefix, defaultSuffix);
-                    }).catch(Utils.noop);
+                    }).catch(reason => {
+                        chrome.runtime.sendMessage({
+                            type: transferType.fromFetchFileFailed,
+                        });
+                    });
                 }
                 if (message.type === transferType.fromChromeCommand) {
                     overrideStyle.disabled = !overrideStyle.disabled;

@@ -139,6 +139,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
             message: chrome.i18n.getMessage("resource_without_cors_mode"),
         });
     }
+    if (message && message.type === transferType.fromFetchFileFailed) {
+        chrome.notifications.create(notifyId, {
+            type: "basic",
+            iconUrl: chrome.i18n.getMessage("notification_icon"),
+            title: chrome.i18n.getMessage("warn_title"),
+            message: chrome.i18n.getMessage("fetch_file_failed"),
+        });
+    }
 });
 
 
