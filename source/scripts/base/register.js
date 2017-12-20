@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2017 The Weibo-Picture-Store Authors. All rights reserved.
+ * Use of this source code is governed by a MIT-style license that can be
+ * found in the LICENSE file.
+ */
+
 export const rootZone = ".sinaimg.cn";
 export const loginWeiboURL = "http://weibo.com/login.php?url=" + encodeURIComponent("http://weibo.com");
 
