@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-@import "core/base.css";
-@import "core/scrollbar.css";
+@import "base/base.css";
+@import "base/scrollbar.css";
 
 #controller {
     --margin-bottom: 2.5em;

@@ -4,9 +4,9 @@
  * found in the LICENSE file.
  */
 
-@import "core/base.css";
-@import "core/scrollbar.css";
-@import "core/keyframes.css";
+@import "base/base.css";
+@import "base/scrollbar.css";
+@import "base/keyframes.css";
 
 body {
     background-color: rgb(242, 242, 242);
