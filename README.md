@@ -161,7 +161,7 @@
     + 可能是其他 Chrome 插件造成的。解决方案：停用相关插件，并退出微博重新登录一次
     + 详情参考 [Issues#37](https://github.com/Aqours/Weibo-Picture-Store/issues/37)
 - Errors: Failed to load module script: The server responded with...
-    + [下载此文件](https://github.com/Aqours/Weibo-Picture-Store/blob/master/scratch/reset-content-type.reg)，双击运行更新注册表即可
+    + [下载此文件](https://github.com/Aqours/Weibo-Picture-Store/blob/master/scratch/reset-content-type.reg)，双击运行更新注册表即可（Windows 操作系统可用）
     + 详情参考 [Issues#762483](https://bugs.chromium.org/p/chromium/issues/detail?id=762483#c7)
 
 
