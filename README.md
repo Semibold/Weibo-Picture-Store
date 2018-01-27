@@ -157,12 +157,6 @@
     + 属于正常情况，服务器返回的数据时效性不足，脚本做了些弥补，因此会出现这种情况
 - 微相册同步图片的最大数量是多少？
     + 1000 张。如果达到这个数量后继续使用，则会删除早前的 50 张图片
-- 微博处于已登录状态，为什么上传图片失败了？
-    + 可能是其他 Chrome 插件造成的。解决方案：停用相关插件，并退出微博重新登录一次
-    + 详情参考 [Issues#37](https://github.com/Aqours/Weibo-Picture-Store/issues/37)
-- Errors: Failed to load module script: The server responded with...
-    + [下载此文件](https://github.com/Aqours/Weibo-Picture-Store/blob/master/scratch/reset-content-type.reg)，双击运行更新注册表即可（Windows 操作系统可用）
-    + 详情参考 [Issues#762483](https://bugs.chromium.org/p/chromium/issues/detail?id=762483#c7)
 
 
 ## Powered
