@@ -11,7 +11,7 @@ import {fileProgress} from "./file-progress.js";
 import {pidUpload} from "./pid-upload.js";
 import {setStatus} from "./set-status.js";
 
-const url = "http://picupload.service.weibo.com/interface/pic_upload.php";
+const url = "http://picupload.weibo.com/interface/pic_upload.php";
 const failId = Utils.randomString(16);
 const tailer = {promise: Promise.resolve()};
 
