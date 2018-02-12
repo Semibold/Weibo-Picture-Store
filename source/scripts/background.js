@@ -176,6 +176,7 @@ chrome.commands.onCommand.addListener(command => {
 
 /**
  * 注册创建微博相册所需的 Referer
+ * @todo Pending: Use https if Weibo force https protocol(?)
  */
 chrome.webRequest.onBeforeSendHeaders.addListener(details => {
     const name = "Referer";
