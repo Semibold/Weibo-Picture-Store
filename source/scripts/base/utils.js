@@ -38,14 +38,9 @@ export class Utils {
 
     static singleton(func) {
         if (!SINGLETON_MODULE.has(func)) {
-            const promise = func().then(result => {
+            SINGLETON_MODULE.set(func, func().finally(() => {
                 SINGLETON_MODULE.delete(func);
-                return Promise.resolve(result);
-            }).catch(reason => {
-                SINGLETON_MODULE.delete(func);
-                return Promise.reject(reason);
-            });
-            SINGLETON_MODULE.set(func, promise);
+            }));
         }
         return SINGLETON_MODULE.get(func);
     }
