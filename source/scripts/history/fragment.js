@@ -6,7 +6,7 @@
 
 import {Utils} from "../base/utils.js";
 
-const headTHML = `
+const headHTML = `
     <h1>
         <span><i class="fa fa-paragraph"></i></span>
         <span>上传记录</span>
@@ -31,5 +31,5 @@ const footHTML = `
         </div>
     </div>`;
 
-document.getElementById("head").append(Utils.parseHTML(headTHML));
+document.getElementById("head").append(Utils.parseHTML(headHTML));
 document.getElementById("foot").append(Utils.parseHTML(footHTML));
