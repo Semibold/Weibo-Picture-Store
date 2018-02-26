@@ -105,6 +105,13 @@ chrome.contextMenus.create({
 });
 
 
+chrome.runtime.onInstalled.addListener(details => {
+    if (details.reason !== "chrome_update") {
+        chrome.tabs.create({url: "recorder.html#changelog"});
+    }
+});
+
+
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (message && message.type === transferType.fromBase64) {
         filePurity(message.result)
