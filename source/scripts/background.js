@@ -106,7 +106,7 @@ chrome.contextMenus.create({
 
 
 chrome.runtime.onInstalled.addListener(details => {
-    if (details.reason !== "chrome_update") {
+    if (details.reason === "update") {
         chrome.tabs.create({url: "recorder.html#changelog"});
     }
 });
