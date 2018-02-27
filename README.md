@@ -2,7 +2,7 @@
 
 > [更新日志](changelog.md)
 
-> [Telegram 反馈交流讨论组](https://t.me/joinchat/FUv7Vg8Z6QSNcklICe-veQ)
+> [Telegram 反馈交流讨论组](https://t.me/Weibo_Picture_Store)
 
 
 ## Introduction
