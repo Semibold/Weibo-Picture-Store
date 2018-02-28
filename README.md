@@ -2,7 +2,7 @@
 
 > [更新日志](changelog.md)
 
-> [Telegram 反馈交流讨论组](https://t.me/Weibo_Picture_Store)
+> [Telegram 反馈交流讨论组](https://t.me/Neko_Atsume)
 
 
 ## Introduction
