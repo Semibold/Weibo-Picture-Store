@@ -106,8 +106,11 @@ chrome.contextMenus.create({
 
 
 chrome.runtime.onInstalled.addListener(details => {
-    if (details.reason === "update") {
-        chrome.tabs.create({url: "recorder.html#changelog"});
+    if (details.previousVersion) {
+        const [major, minor, patch] = details.previousVersion.split(".");
+        if (details.reason === "update" && major < 3) {
+            chrome.tabs.create({url: "recorder.html#changelog"});
+        }
     }
 });
 
