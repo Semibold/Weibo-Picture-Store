@@ -23,6 +23,7 @@ export const getStatus = (isNotification = false) => {
                 title: chrome.i18n.getMessage("warn_title"),
                 message: chrome.i18n.getMessage("being_logout_status"),
                 contextMessage: chrome.i18n.getMessage("goto_login_page_hinter"),
+                isClickable: true,
                 requireInteraction: true,
             });
             return {login: false};
@@ -34,6 +35,7 @@ export const getStatus = (isNotification = false) => {
             title: chrome.i18n.getMessage("warn_title"),
             message: chrome.i18n.getMessage("check_logging_status"),
             contextMessage: chrome.i18n.getMessage("goto_login_page_hinter"),
+            isClickable: true,
             requireInteraction: true,
         });
         return {login: false};
