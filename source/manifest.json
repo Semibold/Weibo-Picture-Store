@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extension_name__",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "default_locale": "zh_CN",
   "description": "__MSG_extension_description__",
   "icons": {
@@ -47,6 +47,7 @@
   "permissions": [
     "tabs",
     "cookies",
+    "downloads",
     "webRequest",
     "webRequestBlocking",
     "webNavigation",
