@@ -14,16 +14,6 @@ const setStatusRequest = () => {
     const method = "POST";
     const body = Utils.createSearchParams({sid: 0, state: 0});
     return getStatus().then(json => {
-        // 检测 cookies 的 secure 属性是否被设置为 true
-        // @see https://bugs.chromium.org/p/chromium/issues/detail?id=788152
-        chrome.cookies.getAll({
-            domain: "weibo.com",
-            secure: true,
-        }, cookies => {
-            if (cookies.length) {
-                console.warn("Warn: Secure property of cookies have been detected");
-            }
-        });
         if (json.login) {
             return Promise.reject(json);
         } else {
