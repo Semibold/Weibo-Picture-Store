@@ -109,17 +109,5 @@
   },
   "manage_history_record": {
     "message": "上传记录"
-  },
-  "js_content_type_amendment": {
-    "message": "请先下载文件，然后打开已下载的文件并按照提示修复注册表中的错误，最后重启这个扩展"
-  },
-  "js_content_type_exception": {
-    "message": "检测到当前 Content-Type(JS) 的值是错误的"
-  },
-  "js_content_type_download_amendment_file": {
-    "message": "下载修复注册表错误所需的文件"
-  },
-  "restart_extension_self": {
-    "message": "重启这个扩展同时关闭弹窗提示"
   }
 }
