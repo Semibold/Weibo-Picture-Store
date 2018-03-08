@@ -2,10 +2,6 @@
 
 > [更新日志](changelog.md)
 
-> [开发者文档](developer.md)
-
-> [Telegram 反馈交流讨论组](https://t.me/Neko_Atsume)
-
 
 ## Introduction
 
