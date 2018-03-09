@@ -62,3 +62,9 @@ export const getAllPhoto = (albumInfo, page, count, replay) => {
         }
     });
 };
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(getAllPhoto);

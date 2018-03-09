@@ -129,3 +129,9 @@ export const fileProgress = (tid) => {
 
 storeMap.set(TYPE_UPLOAD, new TypeEntry());
 storeMap.set(TYPE_DOWNLOAD, new TypeEntry());
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(fileProgress);

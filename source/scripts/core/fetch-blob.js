@@ -41,3 +41,9 @@ export const fetchBlob = url => {
         return Promise.reject(reason);
     });
 };
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(fetchBlob);

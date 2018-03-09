@@ -41,3 +41,9 @@ export const getStatus = (isNotification = false) => {
         return {login: false};
     });
 };
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(getStatus);
