@@ -62,4 +62,3 @@ export const getAllPhoto = (albumInfo, page, count, replay) => {
         }
     });
 };
-Utils.sharre(getAllPhoto);

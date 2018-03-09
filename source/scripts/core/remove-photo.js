@@ -43,4 +43,3 @@ export const removePhoto = (albumId, photoIds, replay) => {
         }
     });
 };
-Utils.sharre(removePhoto);

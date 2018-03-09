@@ -44,4 +44,3 @@ const checkAlbumIdRequest = () => {
 };
 
 export const checkAlbumId = () => Utils.singleton(checkAlbumIdRequest);
-Utils.sharre(checkAlbumId);

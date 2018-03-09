@@ -86,4 +86,3 @@ export const fileUpload = (list, endCallback) => {
 
     return tailer.promise.then(result => buffer);
 };
-Utils.sharre(fileUpload);

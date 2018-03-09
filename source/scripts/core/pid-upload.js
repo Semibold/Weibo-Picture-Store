@@ -48,4 +48,3 @@ export const pidUpload = (pid, uid, retry) => {
     }).catch(Utils.noop);
 
 };
-Utils.sharre(pidUpload);

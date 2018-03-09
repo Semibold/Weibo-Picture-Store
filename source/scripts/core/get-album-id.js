@@ -44,4 +44,3 @@ export const getAlbumId = (uid = null) => {
         }
     });
 };
-Utils.sharre(getAlbumId);

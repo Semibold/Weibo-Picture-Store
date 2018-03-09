@@ -129,4 +129,3 @@ export const fileProgress = (tid) => {
 
 storeMap.set(TYPE_UPLOAD, new TypeEntry());
 storeMap.set(TYPE_DOWNLOAD, new TypeEntry());
-Utils.sharre(fileProgress);

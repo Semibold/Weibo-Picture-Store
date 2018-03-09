@@ -41,4 +41,3 @@ export const getStatus = (isNotification = false) => {
         return {login: false};
     });
 };
-Utils.sharre(getStatus);

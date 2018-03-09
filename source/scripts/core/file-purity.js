@@ -46,4 +46,3 @@ export const filePurity = list => {
 
     return Promise.resolve(congruent);
 };
-Utils.sharre(filePurity);

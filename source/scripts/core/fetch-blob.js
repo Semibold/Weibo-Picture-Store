@@ -41,4 +41,3 @@ export const fetchBlob = url => {
         return Promise.reject(reason);
     });
 };
-Utils.sharre(fetchBlob);

@@ -45,4 +45,3 @@ const setStatusRequest = () => {
 };
 
 export const setStatus = () => Utils.singleton(setStatusRequest);
-Utils.sharre(setStatus);
