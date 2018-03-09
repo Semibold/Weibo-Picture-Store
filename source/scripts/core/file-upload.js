@@ -86,4 +86,9 @@ export const fileUpload = (list, endCallback) => {
 
     return tailer.promise.then(result => buffer);
 };
-Utils.sharre(fileUpload);
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(fileUpload);

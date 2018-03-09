@@ -44,4 +44,9 @@ export const getAlbumId = (uid = null) => {
         }
     });
 };
-Utils.sharre(getAlbumId);
+
+/**
+ * @desc Inject function exported into coreAPIs
+ * @desc These code must be invoked with chrome extension's background page context
+ */
+Utils.injectIntoCoreAPI(getAlbumId);
