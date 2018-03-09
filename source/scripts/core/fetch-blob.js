@@ -8,7 +8,7 @@ import {TYPE_DOWNLOAD} from "../base/constant.js";
 import {Utils} from "../base/utils.js";
 import {fileProgress} from "./file-progress.js";
 
-const notifyId = Utils.randomString(16);
+const fetchFileFailedId = Utils.randomString(16);
 
 export const fetchBlob = url => {
     const delayInfo = {
@@ -32,7 +32,7 @@ export const fetchBlob = url => {
     }).catch(reason => {
         clearTimeout(delayInfo.requestId);
         progress.consume();
-        chrome.notifications.create(notifyId, {
+        chrome.notifications.create(fetchFileFailedId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("warn_title"),

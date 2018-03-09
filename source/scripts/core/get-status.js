@@ -9,7 +9,7 @@ import {Utils} from "../base/utils.js";
 const doneCode = "100000";
 const url = Utils.buildURL("http://weibo.com/aj/onoff/getstatus", {sid: 0});
 
-export const notifyId = Utils.randomString(16);
+export const loginStatusId = Utils.randomString(16);
 export const getStatus = (isNotification = false) => {
     return Utils.fetch(url).then(response => {
         return response.ok ? response.json() : Promise.reject(response.status);
@@ -17,7 +17,7 @@ export const getStatus = (isNotification = false) => {
         if (json && json.code === doneCode) {
             return {login: true};
         } else {
-            isNotification && chrome.notifications.create(notifyId, {
+            isNotification && chrome.notifications.create(loginStatusId, {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notification_icon"),
                 title: chrome.i18n.getMessage("warn_title"),
@@ -29,7 +29,7 @@ export const getStatus = (isNotification = false) => {
             return {login: false};
         }
     }).catch(reason => {
-        isNotification && chrome.notifications.create(notifyId, {
+        isNotification && chrome.notifications.create(loginStatusId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notification_icon"),
             title: chrome.i18n.getMessage("warn_title"),

@@ -10,7 +10,7 @@ import {
     loginWeiboURL,
     acceptType,
 } from "./base/register.js";
-import {notifyId as getStatusNotifyId} from "./core/get-status.js";
+import {loginStatusId} from "./core/get-status.js";
 import {filePurity} from "./core/file-purity.js";
 import {fileUpload} from "./core/file-upload.js";
 
@@ -23,8 +23,8 @@ const popupState = new Map();
  * 通知的点击事件
  */
 chrome.notifications.onClicked.addListener(notificationId => {
-    if (notificationId === getStatusNotifyId) {
-        chrome.tabs.create({url: loginWeiboURL}, tab => chrome.notifications.clear(getStatusNotifyId));
+    if (notificationId === loginStatusId) {
+        chrome.tabs.create({url: loginWeiboURL}, tab => chrome.notifications.clear(loginStatusId));
     }
 });
 
