@@ -4,6 +4,22 @@
  * found in the LICENSE file.
  */
 
+/**
+ * @include "./core/*.js"
+ * Must be initialized on background page.
+ */
+import "./core/check-album-id.js";
+import "./core/fetch-blob.js";
+import "./core/file-progress.js";
+import "./core/file-purity.js";
+import "./core/file-upload.js";
+import "./core/get-album-id.js";
+import "./core/get-all-photo.js";
+import "./core/get-status.js";
+import "./core/pid-upload.js";
+import "./core/remove-photo.js";
+import "./core/set-status.js";
+
 import {Utils} from "./base/utils.js";
 import {
     transferType,
