@@ -14,10 +14,6 @@ export const getStatus = (isNotification = false) => {
     return Utils.fetch(url).then(response => {
         return response.ok ? response.json() : Promise.reject(response.status);
     }).then(json => {
-        /**
-         * @TODO (?)检验登录 URL 及检查登录时产生重定向次数（并非很好的方案）
-         * @WARN 此处无法检测微博账号异常，若用户账号异常，静默失败
-         */
         if (json && json.code === doneCode) {
             return {login: true};
         } else {
