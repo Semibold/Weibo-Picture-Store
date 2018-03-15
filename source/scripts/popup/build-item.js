@@ -80,22 +80,22 @@ export class BuildItem {
                         <tbody>
                             <tr class="type-1">
                                 <td><span class="title">URL</span></td>
-                                <td><input type="text" readonly spellcheck="false" placeholder="Uniform Resource Locator"></td>
+                                <td><input type="text" disabled readonly spellcheck="false" placeholder="Uniform Resource Locator"></td>
                                 <td><a class="button-copy" data-type="URL">Copy</a></td>
                             </tr>
                             <tr class="type-2">
                                 <td><span class="title">HTML</span></td>
-                                <td><input type="text" readonly spellcheck="false" placeholder="HyperText Markup Language"></td>
+                                <td><input type="text" disabled readonly spellcheck="false" placeholder="HyperText Markup Language"></td>
                                 <td><a class="button-copy" data-type="HTML">Copy</a></td>
                             </tr>
                             <tr class="type-3">
                                 <td><span class="title">UBB</span></td>
-                                <td><input type="text" readonly spellcheck="false" placeholder="Ultimate Bulletin Board"></td>
+                                <td><input type="text" disabled readonly spellcheck="false" placeholder="Ultimate Bulletin Board"></td>
                                 <td><a class="button-copy" data-type="UBB">Copy</a></td>
                             </tr>
                             <tr class="type-4">
                                 <td><span class="title">Markdown</span></td>
-                                <td><input type="text" readonly spellcheck="false" placeholder="Markdown"></td>
+                                <td><input type="text" disabled readonly spellcheck="false" placeholder="Markdown"></td>
                                 <td><a class="button-copy" data-type="Markdown">Copy</a></td>
                             </tr>
                         </tbody>
