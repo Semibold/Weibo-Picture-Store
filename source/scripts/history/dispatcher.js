@@ -11,7 +11,7 @@ export class Dispatcher {
 
     constructor() {
         this.page = 1;
-        this.count = 30;
+        this.count = 40;
         this.notifyId = Utils.randomString(16);
         this.main = document.querySelector("#main");
         this.prev = document.querySelector(".foot-navigator > .prev");
