@@ -9,6 +9,71 @@ import {Base64} from "./base64.js";
 export class Utils {
 
   /**
+   * @param {number} [future = 0] - Second time
+   * @return {number} - Second time
+   */
+  static time(future = 0) {
+    return Math.floor(Date.now() / 1000) + future;
+  }
+
+  /**
+   * @async
+   * @param {RequestInfo} input
+   * @param {RequestInit} [init]
+   * @return {Promise<Response>}
+   */
+  static fetch(input, init) {
+    return fetch(input, Object.assign({
+      method: "GET",
+      mode: "cors",
+      credentials: "include",
+      cache: "default",
+      redirect: "follow",
+      referrer: "client",
+    }, init));
+  }
+
+  /**
+   * @param {string} maybeURL
+   * @return {boolean}
+   */
+  static isValidURL(maybeURL) {
+    try {
+      new URL(maybeURL);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /**
+   * @param {string} url
+   * @param {Object} [param]
+   * @return {string}
+   */
+  static buildURL(url, param) {
+    const base = new URL(url);
+    const searchParams = this.createSearchParams(param, base.search);
+    base.search = searchParams.toString();
+    return base.href;
+  }
+
+  /**
+   * @param {Object} [param]
+   * @param {string|URLSearchParams} [init]
+   * @reutrn {URLSearchParams}
+   */
+  static createSearchParams(param, init) {
+    const searchParams = new URLSearchParams(init);
+    if (param) {
+      for (const [key, value] of Object.entries(param)) {
+        searchParams.set(key, value);
+      }
+    }
+    return searchParams;
+  }
+
+  /**
    * @param {string} html
    * @return {DocumentFragment}
    */
@@ -56,6 +121,15 @@ export class Utils {
       return pv + cv.byteLength;
     }, 0);
     return bufferView;
+  }
+
+  /**
+   * @param {ArrayBufferLike} buffer
+   * @return {string} - Lowercase hexits
+   */
+  static hexitFromBuffer(buffer) {
+    const bv = new Uint8Array(buffer);
+    return [...bv].map(x => x.toString(16).padStart(2, "0")).join("").toLowerCase();
   }
 
 }

@@ -25,6 +25,6 @@ export async function hash_hmac(algo, data, key, raw_output = false) {
   if (raw_output) {
     return Utils.textFromBuffer(sign);
   } else {
-    return [...new Uint8Array(sign)].map(num => num.toString(16).padStart(2, "0")).join("");
+    return Utils.hexitFromBuffer(sign);
   }
 }
