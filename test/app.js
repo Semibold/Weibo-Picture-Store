@@ -7,3 +7,12 @@
 import "./scripts/hash-hmac.js";
 import "./scripts/base64.js";
 import "./scripts/md5.js";
+
+import {testTencentStorageAuth} from "./scripts/tencent-storage.js";
+
+/**
+ * @desc manual testing function
+ */
+self._Manual_Testing_ = async function () {
+  testTencentStorageAuth().catch(r => console.warn(r));
+};
