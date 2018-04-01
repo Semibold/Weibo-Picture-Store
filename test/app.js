@@ -6,3 +6,4 @@
 
 import "./scripts/hash-hmac.js";
 import "./scripts/base64.js";
+import "./scripts/md5.js";
