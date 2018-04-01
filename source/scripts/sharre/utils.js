@@ -61,7 +61,7 @@ export class Utils {
   /**
    * @param {Object} [param]
    * @param {string|URLSearchParams} [init]
-   * @reutrn {URLSearchParams}
+   * @return {URLSearchParams}
    */
   static createSearchParams(param, init) {
     const searchParams = new URLSearchParams(init);
