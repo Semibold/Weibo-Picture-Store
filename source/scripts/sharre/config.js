@@ -23,4 +23,12 @@ export class Config {
     ]);
   }
 
+  /**
+   * @desc temp hardcode
+   * @todo should return chrome.runtime.id
+   */
+  static get trackId() {
+    return "chrome_extension";
+  }
+
 }
