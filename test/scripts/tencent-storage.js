@@ -10,19 +10,13 @@ import {TencentStorageAuth} from "../../source/scripts/auth/tencent-storage.js";
  * @async
  * @desc 需要测试者自己提供 key 文件
  * @example /test/key.js
- *     export const tencentAuthInfo = {
- *         appId: "",
- *         accessKey: "",
- *         secretKey: "",
- *         host: "",
- *     };
+ *   export const tencentAuthInfo = { accessKey: "", secretKey: "", host: ""};
  */
 export async function testTencentStorageAuth() {
   const {tencentAuthInfo} = await import("../key.js");
-  const {accessKey, secretKey, host, appId = ""} = tencentAuthInfo;
-  const tsa = new TencentStorageAuth();
-  tsa.setAlgo().setAppInfo(accessKey, secretKey).setRequestInfo("GET", "/", host).setSignTime().setHeaderList().setURLParamList();
-  const headers = await tsa.generateHeaders();
+  const {accessKey, secretKey, host} = tencentAuthInfo;
+  const tsa = new TencentStorageAuth(accessKey, secretKey);
+  const headers = await tsa.getAuthHeaders("GET", "/", host, "https:");
   fetch(tsa.auths.url.toString() + "&extra=A8n中文", {
     headers,
     method: tsa.auths.method,
