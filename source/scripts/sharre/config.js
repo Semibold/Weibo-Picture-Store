@@ -7,28 +7,143 @@
 /**
  * @readonly
  */
+class InternalConf {
+
+  static get headroom() {
+    return {
+      syncdata: {
+        checked: false,
+        disabled: false,
+      },
+    };
+  }
+
+  static get weibo_com() {
+    return {
+      name: chrome.i18n.getMessage("ssp_weibo_com_name"),
+      selectmenu: {
+        visible: false,
+        disabled: true,
+      },
+      imageonly: {
+        checked: true,
+        disabled: true,
+      },
+      dirpath: {
+        value: "",
+        disabled: true,
+      },
+    };
+  }
+
+  static get tencent_com() {
+    return {
+      name: chrome.i18n.getMessage("ssp_tencent_com_name"),
+      selectmenu: {
+        visible: true,
+        disabled: false,
+      },
+      imageonly: {
+        checked: true,
+        disabled: true,
+      },
+      dirpath: {
+        value: "",
+        disabled: false,
+      },
+    };
+  }
+
+  static get qiniu_com() {
+    return {
+      name: chrome.i18n.getMessage("ssp_qiniu_com_name"),
+      selectmenu: {
+        visible: true,
+        disabled: true,
+      },
+      imageonly: {
+        checked: true,
+        disabled: true,
+      },
+      dirpath: {
+        value: "",
+        disabled: false,
+      },
+    };
+  }
+
+  static get aliyun_com() {
+    return {
+      name: chrome.i18n.getMessage("ssp_aliyun_com_name"),
+      selectmenu: {
+        visible: true,
+        disabled: true,
+      },
+      imageonly: {
+        checked: true,
+        disabled: true,
+      },
+      dirpath: {
+        value: "",
+        disabled: false,
+      },
+    };
+  }
+
+  static get upyun_com() {
+    return {
+      name: chrome.i18n.getMessage("ssp_upyun_com_name"),
+      selectmenu: {
+        visible: true,
+        disabled: true,
+      },
+      imageonly: {
+        checked: true,
+        disabled: true,
+      },
+      dirpath: {
+        value: "",
+        disabled: false,
+      },
+    };
+  }
+
+}
+
+
+/**
+ * @readonly
+ */
 export class Config {
 
   /**
-   * @enum
-   * @desc Storage Service Provider Type
+   * @return {string} - 固定值
    */
-  static get sspType() {
-    return new Set([
-      "weibo.com",
-      "tencent.com",
-      "qiniu.com",
-      "aliyun.com",
-      "upyun.com",
-    ]);
+  static get trackId() {
+    return "since-20170309";
   }
 
   /**
-   * @desc temp hardcode
-   * @todo should return chrome.runtime.id
+   * @enum
+   * @desc Storage Service Provider Type (as identity)
+   * @return {string[]}
    */
-  static get trackId() {
-    return "chrome_extension";
+  static get sspt() {
+    return [
+      "weibo_com",
+      "tencent_com",
+      "qiniu_com",
+      "aliyun_com",
+      "upyun_com",
+    ];
+  }
+
+  static get syncdata() {
+    return InternalConf.headroom.syncdata;
+  }
+
+  static get ssptdata() {
+    return Config.sspt.reduce((r, x) => Object.assign(r, {[x]: InternalConf[x]}), {});
   }
 
 }

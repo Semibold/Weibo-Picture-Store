@@ -4,5 +4,20 @@
   },
   "ext_desc": {
     "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
+  },
+  "ssp_weibo_com_name": {
+    "message": "微博图床"
+  },
+  "ssp_tencent_com_name": {
+    "message": "腾讯云 对象存储(COS)"
+  },
+  "ssp_qiniu_com_name": {
+    "message": "七牛云 对象存储"
+  },
+  "ssp_aliyun_com_name": {
+    "message": "阿里云 对象存储(OSS)"
+  },
+  "ssp_upyun_com_name": {
+    "message": "又拍云 云存储(USS)"
   }
 }
