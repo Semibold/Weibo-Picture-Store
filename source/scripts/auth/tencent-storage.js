@@ -18,36 +18,13 @@ import {Config} from "../sharre/config.js";
  */
 export class TencentStorageAuth {
 
-  constructor() {
-    this.auths = {};
-    this.authParams = new URLSearchParams();
-  }
-
   /**
-   * @public
-   * @desc 目前仅支持 sha1，传入参数自动忽略
-   * @param {string} [algo = "sha1"]
-   * @return {TencentStorageAuth}
-   */
-  setAlgo(algo = "sha1") {
-    this.auths.algo = "sha1";
-    this.authParams.set("q-sign-algorithm", this.auths.algo);
-    return this;
-  }
-
-  /**
-   * @public
    * @param {string} ak - AccessKey (alias: SecretId)
    * @param {string} sk - SecretKey
-   * @param {string} [appid] - 没有用到
-   * @return {TencentStorageAuth}
    */
-  setAppInfo(ak, sk, appid = "") {
-    this.auths.accessKey = ak;
-    this.auths.secretKey = sk;
-    this.auths.appid = appid;
-    this.authParams.set("q-ak", this.auths.accessKey);
-    return this;
+  constructor(ak, sk) {
+    this.auths = {accessKey: ak, secretKey: sk};
+    this.authParams = new URLSearchParams();
   }
 
   /**
@@ -69,14 +46,23 @@ export class TencentStorageAuth {
 
   /**
    * @public
+   * @desc 目前仅支持 sha1，传入参数自动忽略
+   * @param {string} [algo = "sha1"]
+   * @return {TencentStorageAuth}
+   */
+  setAlgo(algo = "sha1") {
+    this.auths.algo = "sha1";
+    return this;
+  }
+
+  /**
+   * @public
    * @param {number} [persistSeconds = 600]
    * @return {TencentStorageAuth}
    */
   setSignTime(persistSeconds = 600) {
     this.auths.stime = Utils.time();
     this.auths.etime = this.auths.stime + persistSeconds;
-    this.authParams.set("q-sign-time", `${this.auths.stime};${this.auths.etime}`);
-    this.authParams.set("q-key-time", `${this.auths.stime};${this.auths.etime}`);
     return this;
   }
 
@@ -88,7 +74,6 @@ export class TencentStorageAuth {
    */
   setHeaderList(headers = {host: this.auths.host}) {
     this.auths.headers = headers;
-    this.authParams.set("q-header-list", Object.keys(this.auths.headers).map(x => x.toLowerCase()).sort().join(";"));
     return this;
   }
 
@@ -100,7 +85,6 @@ export class TencentStorageAuth {
    */
   setURLParamList(urlparams = {_tracker: Config.trackId}) {
     this.auths.urlparams = urlparams;
-    this.authParams.set("q-url-param-list", Object.keys(this.auths.urlparams).map(x => x.toLowerCase()).sort().join(";"));
 
     // autoupdate url info
     for (const [k, v] of Object.entries(this.auths.urlparams)) {
@@ -119,7 +103,7 @@ export class TencentStorageAuth {
    * @return {Promise<Headers>}
    */
   async generateHeaders() {
-    const signTime = this.authParams.get("q-sign-time");
+    const signTime = `${this.auths.stime};${this.auths.etime}`;
     const signKey = await hash_hmac("sha-1", signTime, this.auths.secretKey);
     const httpParams = [];
     const httpHeaders = [];
@@ -143,6 +127,12 @@ export class TencentStorageAuth {
     const str2sign = [this.auths.algo, signTime, httpStrSha1ed].join("\n") + "\n";
     const sign = await hash_hmac("sha-1", str2sign, signKey);
     const headers = new Headers(this.auths.headers);
+    this.authParams.set("q-sign-algorithm", this.auths.algo);
+    this.authParams.set("q-ak", this.auths.accessKey);
+    this.authParams.set("q-sign-time", signTime);
+    this.authParams.set("q-key-time", signTime);
+    this.authParams.set("q-header-list", Object.keys(this.auths.headers).map(x => x.toLowerCase()).sort().join(";"));
+    this.authParams.set("q-url-param-list", Object.keys(this.auths.urlparams).map(x => x.toLowerCase()).sort().join(";"));
     this.authParams.set("q-signature", sign);
 
     // URLSearchParams.toString(); 会生成安全的 querystring
@@ -150,6 +140,22 @@ export class TencentStorageAuth {
     headers.set("Authorization", decodeURIComponent(this.authParams.toString()));
 
     return headers;
+  }
+
+  /**
+   * @public
+   * @async
+   * @desc Simplify. Invoke above functions if you want to customize params.
+   * @param {string} method - http method
+   * @param {string} path - include query string
+   * @param {string} host - It's a host. (without protocol and path)
+   * @param {string} [protocol = "http:"]
+   * @return {Promise<Headers>}
+   */
+  async getAuthHeaders(method, path, host, protocol = "http:") {
+    this.setRequestInfo(method, path, host, protocol);
+    this.setAlgo().setSignTime().setHeaderList().setURLParamList();
+    return await this.generateHeaders();
   }
   
 }
