@@ -8,9 +8,10 @@ import {TencentStorageAuth} from "../../source/scripts/auth/tencent-storage.js";
 
 /**
  * @async
+ * @desc 需要手动运行测试
  * @desc 需要测试者自己提供 key 文件
  * @example /test/key.js
- *   export const tencentAuthInfo = { accessKey: "", secretKey: "", host: ""};
+ *   export const tencentAuthInfo = {accessKey: "", secretKey: "", host: ""};
  */
 export async function testTencentStorageAuth() {
   const {tencentAuthInfo} = await import("../key.js");

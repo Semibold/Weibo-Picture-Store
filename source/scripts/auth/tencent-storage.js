@@ -13,7 +13,6 @@ import {Config} from "../sharre/config.js";
  * @desc 参与签名计算的字符建议使用小写字母和URL安全字符，否则可能无法通过签名校验
  * @desc [fix] - 代表已知问题（官方文档没有说明），并且内部修复了这些问题
  * @desc [nofix] - 代表已知问题（官方文档没有说明），但是内部没有修复这些问题
- * @desc based on Tencent COS version 4
  * @see https://cloud.tencent.com/document/product/436/7778
  */
 export class TencentStorageAuth {
