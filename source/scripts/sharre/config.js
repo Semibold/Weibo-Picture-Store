@@ -11,6 +11,7 @@ class InternalConf {
 
   static get headroom() {
     return {
+      selectindex: 0,
       syncdata: {
         checked: false,
         disabled: false,
@@ -22,7 +23,7 @@ class InternalConf {
     return {
       name: chrome.i18n.getMessage("ssp_weibo_com_name"),
       selectmenu: {
-        visible: false,
+        visible: true,
         disabled: true,
       },
       imageonly: {
@@ -58,7 +59,7 @@ class InternalConf {
     return {
       name: chrome.i18n.getMessage("ssp_qiniu_com_name"),
       selectmenu: {
-        visible: true,
+        visible: false,
         disabled: true,
       },
       imageonly: {
@@ -76,7 +77,7 @@ class InternalConf {
     return {
       name: chrome.i18n.getMessage("ssp_aliyun_com_name"),
       selectmenu: {
-        visible: true,
+        visible: false,
         disabled: true,
       },
       imageonly: {
@@ -94,7 +95,7 @@ class InternalConf {
     return {
       name: chrome.i18n.getMessage("ssp_upyun_com_name"),
       selectmenu: {
-        visible: true,
+        visible: false,
         disabled: true,
       },
       imageonly: {
@@ -138,10 +139,23 @@ export class Config {
     ];
   }
 
+  /**
+   * @return {number}
+   */
+  static get selectindex() {
+    return InternalConf.headroom.selectindex;
+  }
+
+  /**
+   * @return {Object}
+   */
   static get syncdata() {
     return InternalConf.headroom.syncdata;
   }
 
+  /**
+   * @return {Object}
+   */
   static get ssptdata() {
     return Config.sspt.reduce((r, x) => Object.assign(r, {[x]: InternalConf[x]}), {});
   }
