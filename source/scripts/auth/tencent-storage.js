@@ -11,8 +11,7 @@ import {Config} from "../sharre/config.js";
 /**
  * @desc 按顺序调用
  * @desc 参与签名计算的字符建议使用小写字母和URL安全字符，否则可能无法通过签名校验
- * @desc [fix] - 代表已知问题（官方文档没有说明），并且内部修复了这些问题
- * @desc [nofix] - 代表已知问题（官方文档没有说明），但是内部没有修复这些问题
+ * @desc [*] - 代表这部分代码实现不符合官方文档的描述实现（经实际测试，官方文档的描述不准确）
  * @see https://cloud.tencent.com/document/product/436/7778
  */
 export class TencentStorageAuth {
@@ -85,11 +84,9 @@ export class TencentStorageAuth {
   setURLParamList(urlparams = {_tracker: Config.trackId}) {
     this.auths.urlparams = urlparams;
 
-    // autoupdate url info
+    // auto update search params of request url
     for (const [k, v] of Object.entries(this.auths.urlparams)) {
-      // 参与签名的 value，在 querystring 中必须使用 lowercase [fix]
-      // 虽然 key 无此要求，但是建议使用 lowercase [nofix]
-      this.auths.url.searchParams.set(k, v.toLowerCase());
+      this.auths.url.searchParams.set(k, v);
     }
 
     return this;
@@ -107,12 +104,9 @@ export class TencentStorageAuth {
     const httpParams = [];
     const httpHeaders = [];
     for (const [k, v] of Object.entries(this.auths.urlparams)) {
-      // value 需要使用 urlencode，否则有特殊字符时，签名不通过 [fix]
-      // key 如果含有URL不安全字符，无论其是否经过 urlencode，签名都不通过 [nofix]
-      httpParams.push(`${k.toLowerCase()}=${encodeURIComponent(v.toLowerCase())}`);
+      httpParams.push(`${k.toLowerCase()}=${encodeURIComponent(v)}`); // [*]
     }
     for (const [k, v] of Object.entries(this.auths.headers)) {
-      // value 需要使用 lowercase，含有 uppercase 时签名不通过 [nofix]
       httpHeaders.push(`${k.toLowerCase()}=${encodeURIComponent(v)}`);
     }
     const httpStr = [
