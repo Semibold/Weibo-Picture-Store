@@ -106,8 +106,10 @@ table {
 }
 
 .options-ssptab {
+  padding: 1px;
   border: 1px solid #aeaeae;
   overflow-y: auto;
+  user-select: none;
 }
 
 .options-ssptab > nav {
@@ -116,8 +118,22 @@ table {
   padding: 0.5rem 1rem;
 }
 
+.options-ssptab > nav[hidden] {
+  display: none;
+}
+
+.options-ssptab > nav:not([hidden]):hover {
+  color: white;
+  background-color: rgba(0, 137, 167, 0.6);
+}
+
 .options-ssptab > nav:nth-of-type(odd) {
   background-color: #f4f4f4;
+}
+
+.options-ssptab > nav[data-selected="true"] {
+  color: white;
+  background-color: rgb(0, 137, 167);
 }
 
 .options-ssplogo {
@@ -151,6 +167,7 @@ table {
 .options-config {
   border: 1px solid #aeaeae;
   background-color: #f1f1f1;
+  min-height: 16rem;
 }
 
 .options-userdata {
