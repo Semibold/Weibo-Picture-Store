@@ -12,100 +12,53 @@ class InternalConf {
   static get headroom() {
     return {
       selectindex: 0,
-      syncdata: {
-        checked: false,
-        disabled: false,
-      },
+      maximumsize: 10,
+      syncdata: false,
     };
   }
 
   static get weibo_com() {
     return {
-      name: chrome.i18n.getMessage("ssp_weibo_com_name"),
-      selectmenu: {
-        visible: true,
-        disabled: true,
-      },
-      imageonly: {
-        checked: true,
-        disabled: true,
-      },
-      dirpath: {
-        value: "",
-        disabled: true,
-      },
+      selectbtn: {disabled: false},
+      updatebtn: {disabled: true},
+      saveasbtn: {disabled: true},
+      deletebtn: {disabled: true},
     };
   }
 
   static get tencent_com() {
     return {
-      name: chrome.i18n.getMessage("ssp_tencent_com_name"),
-      selectmenu: {
-        visible: true,
-        disabled: false,
-      },
-      imageonly: {
-        checked: true,
-        disabled: true,
-      },
-      dirpath: {
-        value: "",
-        disabled: false,
-      },
+      selectbtn: {disabled: false},
+      updatebtn: {disabled: false},
+      saveasbtn: {disabled: false},
+      deletebtn: {disabled: true},
     };
   }
 
   static get qiniu_com() {
     return {
-      name: chrome.i18n.getMessage("ssp_qiniu_com_name"),
-      selectmenu: {
-        visible: false,
-        disabled: true,
-      },
-      imageonly: {
-        checked: true,
-        disabled: true,
-      },
-      dirpath: {
-        value: "",
-        disabled: false,
-      },
+      selectbtn: {disabled: true},
+      updatebtn: {disabled: false},
+      saveasbtn: {disabled: false},
+      deletebtn: {disabled: true},
     };
   }
 
   static get aliyun_com() {
     return {
-      name: chrome.i18n.getMessage("ssp_aliyun_com_name"),
-      selectmenu: {
-        visible: false,
-        disabled: true,
-      },
-      imageonly: {
-        checked: true,
-        disabled: true,
-      },
-      dirpath: {
-        value: "",
-        disabled: false,
-      },
+      selectbtn: {disabled: true},
+      updatebtn: {disabled: false},
+      saveasbtn: {disabled: false},
+      deletebtn: {disabled: true},
     };
   }
 
   static get upyun_com() {
     return {
-      name: chrome.i18n.getMessage("ssp_upyun_com_name"),
-      selectmenu: {
-        visible: false,
-        disabled: true,
-      },
-      imageonly: {
-        checked: true,
-        disabled: true,
-      },
-      dirpath: {
-        value: "",
-        disabled: false,
-      },
+      selectbtn: {disabled: true},
+      updatebtn: {disabled: false},
+      saveasbtn: {disabled: false},
+      deletebtn: {disabled: true},
     };
   }
 
@@ -122,6 +75,14 @@ export class Config {
    */
   static get trackId() {
     return "since-20170309";
+  }
+
+  /**
+   * @desc 微相册的唯一标识符：64 位特征码（固定值）
+   * @return {string}
+   */
+  static get microAlbumId() {
+    return "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUWFdcwtlGEX2w";
   }
 
   /**
