@@ -12,53 +12,68 @@ class InternalConf {
   static get headroom() {
     return {
       selectindex: 0,
-      maximumsize: 10,
       syncdata: false,
-    };
-  }
-
-  static get weibo_com() {
-    return {
-      selectbtn: {disabled: false},
-      updatebtn: {disabled: true},
-      saveasbtn: {disabled: true},
-      deletebtn: {disabled: true},
-    };
-  }
-
-  static get tencent_com() {
-    return {
-      selectbtn: {disabled: false},
-      updatebtn: {disabled: false},
-      saveasbtn: {disabled: false},
-      deletebtn: {disabled: true},
-    };
-  }
-
-  static get qiniu_com() {
-    return {
-      selectbtn: {disabled: true},
-      updatebtn: {disabled: false},
-      saveasbtn: {disabled: false},
-      deletebtn: {disabled: true},
-    };
-  }
-
-  static get aliyun_com() {
-    return {
-      selectbtn: {disabled: true},
-      updatebtn: {disabled: false},
-      saveasbtn: {disabled: false},
-      deletebtn: {disabled: true},
-    };
-  }
-
-  static get upyun_com() {
-    return {
-      selectbtn: {disabled: true},
-      updatebtn: {disabled: false},
-      saveasbtn: {disabled: false},
-      deletebtn: {disabled: true},
+      inactived: {
+        weibo_com: false,
+        tencent_com: false,
+        qiniu_com: true,
+        aliyun_com: true,
+        upyun_com: true,
+      },
+      furtherer: {
+        updatebtn: {disabled: false},
+        saveasbtn: {disabled: false},
+        deletebtn: {disabled: false},
+      },
+      predefine: {
+        weibo_com: {
+          updatebtn: {disabled: true},
+          saveasbtn: {disabled: true},
+          deletebtn: {disabled: true},
+        },
+        tencent_com: {
+          updatebtn: {disabled: false},
+          saveasbtn: {disabled: false},
+          deletebtn: {disabled: true},
+        },
+        qiniu_com: {
+          updatebtn: {disabled: false},
+          saveasbtn: {disabled: false},
+          deletebtn: {disabled: true},
+        },
+        aliyun_com: {
+          updatebtn: {disabled: false},
+          saveasbtn: {disabled: false},
+          deletebtn: {disabled: true},
+        },
+        upyun_com: {
+          updatebtn: {disabled: false},
+          saveasbtn: {disabled: false},
+          deletebtn: {disabled: true},
+        },
+      },
+      structure: {
+        weibo_com: {
+          sspt: "weibo_com",
+        },
+        tencent_com: {
+          sspt: "tencent_com",
+          mark: "",
+          akey: "",
+          skey: "",
+          host: "",
+          path: "",
+        },
+        qiniu_com: {
+          sspt: "qiniu_com",
+        },
+        aliyun_com: {
+          sspt: "aliyun_com",
+        },
+        upyun_com: {
+          sspt: "upyun_com",
+        },
+      },
     };
   }
 
@@ -86,6 +101,14 @@ export class Config {
   }
 
   /**
+   * @desc 最大的数据长度（固定值）
+   * @return {number}
+   */
+  static get listmaxlength() {
+    return 12;
+  }
+
+  /**
    * @enum
    * @desc Storage Service Provider Type (as identity)
    * @return {string[]}
@@ -100,25 +123,28 @@ export class Config {
     ];
   }
 
-  /**
-   * @return {number}
-   */
+  static get inactived() {
+    return InternalConf.headroom.inactived;
+  }
+
   static get selectindex() {
     return InternalConf.headroom.selectindex;
   }
 
-  /**
-   * @return {Object}
-   */
   static get syncdata() {
     return InternalConf.headroom.syncdata;
   }
 
-  /**
-   * @return {Object}
-   */
+  static get furtherer() {
+    return InternalConf.headroom.furtherer;
+  }
+
+  static get predefine() {
+    return InternalConf.headroom.predefine;
+  }
+
   static get ssptdata() {
-    return Config.sspt.reduce((r, x) => Object.assign(r, {[x]: InternalConf[x]}), {});
+    return InternalConf.headroom.structure;
   }
 
 }

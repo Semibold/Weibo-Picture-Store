@@ -9,34 +9,19 @@
 export const userdata = {
 
   // 顶层配置
-  headroom: {
-    selectindex: 0,
-    syncdata: true,
-  },
+  selectindex: 0,
+  syncdata: true,
 
   // 各种类型配置
   weibo_com: [
     {
-      // 每种类型的第一个值必须有这些预定义数据
-      // 这些数据来自 config.js
-      predefine: {
-        selectbtn: {disabled: false},
-        updatebtn: {disabled: true},
-        saveasbtn: {disabled: true},
-        deletebtn: {disabled: true},
-      },
-
+      sspt: "weibo_com",
       // 因为微博不可配置，所以没有其他数据
     }
   ],
   tencent_com: [
     {
-      predefine: {
-        selectbtn: {disabled: false},
-        updatebtn: {disabled: false},
-        saveasbtn: {disabled: false},
-        deletebtn: {disabled: true},
-      },
+      sspt: "tencent_com",
       mark: "ahh",
       akey: "ak-1",
       skey: "sk-1",
@@ -45,6 +30,7 @@ export const userdata = {
     },
     {
       // 当前类型的配置数据
+      sspt: "tencent_com",
       mark: "pic",
       akey: "ak-2",
       skey: "sk-2",
@@ -54,38 +40,20 @@ export const userdata = {
   ],
   qiniu_com: [
     {
-      predefine: {
-        selectbtn: {disabled: true},
-        updatebtn: {disabled: false},
-        saveasbtn: {disabled: false},
-        deletebtn: {disabled: true},
-      },
-
+      sspt: "qiniu_com",
       // not implemented
       // 没有实现，暂时无法提供数据结构
     }
   ],
   aliyun_com: [
     {
-      predefine: {
-        selectbtn: {disabled: true},
-        updatebtn: {disabled: false},
-        saveasbtn: {disabled: false},
-        deletebtn: {disabled: true},
-      },
-
+      sspt: "aliyun_com",
       // not implemented
     }
   ],
   upyun_com: [
     {
-      predefine: {
-        selectbtn: {disabled: true},
-        updatebtn: {disabled: false},
-        saveasbtn: {disabled: false},
-        deletebtn: {disabled: true},
-      },
-
+      sspt: "upyun_com",
       // not implemented
     }
   ],

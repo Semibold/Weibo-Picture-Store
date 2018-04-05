@@ -6,6 +6,7 @@
 
 import {i18nLocaleTexts, i18nLocaleAttrs} from "./sharre/i18n-locale.js";
 import {Config} from "./sharre/config.js";
+import {setUserData, getUserData} from "./sharre/transverter.js";
 
 i18nLocaleTexts();
 i18nLocaleAttrs();
@@ -16,8 +17,8 @@ class UserData {
    * @see /test/structs/userdata.js
    */
   constructor(sdata) {
-    this.list = [];
     this.sdata = sdata;
+    this.list = [];
     this.nodemap = new WeakMap();
     this.ssptab = document.querySelector(".options-ssptab");
     this.ssptabtpl = document.querySelector("#options-ssptab-template");
@@ -43,10 +44,9 @@ class UserData {
    * @return {UserData}
    */
   init() {
-    this.genlist();
     this.locales();
+    this.genlist();
     this.renderSync();
-    this.renderTabs();
     this.renderSelectedTab();
     this.addSyncEvent();
     this.addTabsEvent();
@@ -56,15 +56,21 @@ class UserData {
 
   /**
    * @private
+   * @desc 数据有新增、删除时，这个列表需要重新生成
    */
   genlist() {
+    this.list.length = 0;
     Config.sspt.forEach(x => {
       if (this.sdata[x] && this.sdata[x].length) {
-        this.sdata[x].forEach(item => this.list.push(Object.assign(item, {sspt: x})));
+        this.sdata[x].forEach((item, i) => {
+          const foreign = i === 0 ? Config.predefine[x] : Config.furtherer;
+          this.list.push(Object.assign(item, {foreign}));
+        });
       } else {
         throw new Error("Wrong data structure");
       }
     });
+    this.renderTabs();
   }
 
   /**
@@ -80,7 +86,7 @@ class UserData {
    */
   renderSync() {
     const input = document.querySelector(".input-syncdata");
-    input.checked = this.sdata.headroom.syncdata;
+    input.checked = this.sdata.syncdata;
   }
 
   /**
@@ -89,6 +95,7 @@ class UserData {
   renderTabs() {
     const f = new DocumentFragment();
     const dt = this.tabfragment.cloneNode(true);
+    const tabs = this.ssptab.querySelectorAll(`nav[data-sspt]`);
     Object.assign(this.dtnodes, {
       weibo_com: dt.querySelector(`nav[data-sspt="weibo_com"]`),
       tencent_com: dt.querySelector(`nav[data-sspt="tencent_com"]`),
@@ -98,26 +105,30 @@ class UserData {
     });
     f.append(dt);
     Config.sspt.forEach(x => this.generateTabs(x));
+    for (const tab of tabs) tab.remove();
     this.ssptab.append(f);
   }
 
   /**
    * @private
+   * @param {string} x - sspt
    */
   generateTabs(x) {
-    const fd = this.sdata[x][0];
-    this.nodemap.set(this.dtnodes[x], fd);
-    if (fd.predefine && fd.predefine.selectbtn.disabled) {
+    const d0 = this.sdata[x][0];
+    this.nodemap.set(this.dtnodes[x], d0);
+    this.renderRemark(this.dtnodes[x]);
+    if (Config.inactived[x]) {
       this.dtnodes[x].hidden = true;
     }
     const tf = new DocumentFragment();
     const tn = this.tabfragment.querySelector(`nav[data-sspt="${x}"]`);
     for (let i = 1; i < this.sdata[x].length; i++) {
       const node = tn.cloneNode(true);
-      if (fd.predefine && fd.predefine.selectbtn.disabled) {
+      if (Config.inactived[x]) {
         node.hidden = true;
       } else {
         this.nodemap.set(node, this.sdata[x][i]);
+        this.renderRemark(node);
       }
       tf.append(node);
     }
@@ -128,56 +139,65 @@ class UserData {
 
   /**
    * @private
+   * @param {Element} node
    */
-  renderSelectedTab(index = 0) {
+  renderRemark(node) {
+    if (this.nodemap.has(node)) {
+      const d = this.nodemap.get(node);
+      const cnode = node.querySelector("nav[data-sspt] > span:nth-of-type(2)");
+      const ctext = cnode.textContent.split("-").shift().trim();
+      cnode.textContent = d.mark ? `${ctext} - ${d.mark}` : ctext;
+    }
+  }
+
+  /**
+   * @private
+   * @param {number} [index]
+   */
+  renderSelectedTab(index) {
     const tabs = this.ssptab.querySelectorAll("nav[data-sspt]");
-    if (index < 0 || index >= this.list.length) {
-      index = 0;
-    } else {
-      const fd = this.sdata[this.list[index].sspt][0];
-      if (fd.predefine && fd.predefine.selectbtn.disabled) {
-        index = 0;
-      }
+    if (index == null) {
+      index = this.sdata.selectindex || Config.selectindex;
+    }
+    if (index < 0) return;
+    if (index >= this.list.length) {
+      throw new Error(`Invalid index: ${index}`);
     }
     for (const tab of tabs) {
       tab.dataset.selected = false;
     }
     tabs[index].dataset.selected = true;
+    tabs[index].scrollIntoView();
     this.renderSelectedConfig(index);
+    if (this.sdata.selectindex !== index) {
+      this.sdata.selectindex = index;
+      setUserData(this.sdata);
+    }
   }
 
   /**
    * @private
+   * @param {number} i
    */
-  renderSelectedConfig(index) {
-    const i = this.sdata.headroom.selectindex || index;
+  renderSelectedConfig(i) {
     const d = this.list[i];
     const app = document.querySelector("#app");
-    if (d.predefine) {
-      const updatebtn = document.querySelector(".options-btn-update");
-      const saveasbtn = document.querySelector(".options-btn-saveas");
-      const deletebtn = document.querySelector(".options-btn-delete");
-      updatebtn.disabled = d.predefine.updatebtn.disabled;
-      saveasbtn.disabled = d.predefine.saveasbtn.disabled;
-      deletebtn.disabled = d.predefine.deletebtn.disabled;
-    }
-    switch (d.sspt) {
-      case "weibo_com":
-      case "tencent_com":
-      case "qiniu_com":
-      case "aliyun_com":
-      case "upyun_com":
-        this[d.sspt](d);
-        app.setAttribute("data-selected-sspt", d.sspt);
-        break;
-    }
+    const updatebtn = document.querySelector(".options-btn-update");
+    const saveasbtn = document.querySelector(".options-btn-saveas");
+    const deletebtn = document.querySelector(".options-btn-delete");
+    updatebtn.disabled = d.foreign.updatebtn.disabled;
+    saveasbtn.disabled = d.foreign.saveasbtn.disabled;
+    deletebtn.disabled = d.foreign.deletebtn.disabled;
+    this[d.sspt](d, "render");
+    app.setAttribute("data-selected-sspt", d.sspt);
   }
 
   /**
    * @private
    * @see sspt
+   * @enum role = "render" | "update"
    */
-  weibo_com(d) {
+  weibo_com(d, role) {
     const input = this.ddnodes.weibo_com.querySelector(".input-microalbum-id");
     input.value = Config.microAlbumId;
   }
@@ -186,41 +206,58 @@ class UserData {
    * @private
    * @see sspt
    */
-  tencent_com(d) {
+  tencent_com(d, role) {
     const mark = this.ddnodes.tencent_com.querySelector(".input-mark");
     const akey = this.ddnodes.tencent_com.querySelector(".input-akey");
     const skey = this.ddnodes.tencent_com.querySelector(".input-skey");
     const host = this.ddnodes.tencent_com.querySelector(".input-host");
     const path = this.ddnodes.tencent_com.querySelector(".input-path");
-    mark.value = d.mark;
-    akey.value = d.akey;
-    skey.value = d.skey;
-    host.value = d.host;
-    path.value = d.path;
+    switch (role) {
+      case "render":
+        mark.value = d.mark;
+        akey.value = d.akey;
+        skey.value = d.skey;
+        host.value = d.host;
+        path.value = d.path;
+        break;
+      case "update":
+        d.mark = mark.value.trim();
+        d.akey = akey.value.trim();
+        d.skey = skey.value.trim();
+        d.host = host.value.trim();
+        d.path = path.value.trim();
+        break;
+    }
   }
 
   /**
    * @private
    * @see sspt
    */
-  qiniu_com(d) {}
+  qiniu_com(d, role) {}
 
   /**
    * @private
    * @see sspt
    */
-  aliyun_com(d) {}
+  aliyun_com(d, role) {}
 
   /**
    * @private
    * @see sspt
    */
-  upyun_com(d) {}
+  upyun_com(d, role) {}
 
   /**
    * @private
    */
-  addSyncEvent() {}
+  addSyncEvent() {
+    const input = document.querySelector(".input-syncdata");
+    input.addEventListener("click", e => {
+      this.sdata.syncdata = input.checked;
+      setUserData(this.sdata);
+    });
+  }
 
   /**
    * @private
@@ -230,6 +267,7 @@ class UserData {
       const tab = e.target.closest("nav[data-sspt]");
       if (this.nodemap.has(tab)) {
         const d = this.nodemap.get(tab);
+        if (Config.inactived[d.sspt]) return;
         const i = this.list.findIndex(cv => cv === d);
         this.renderSelectedTab(i);
       }
@@ -239,6 +277,60 @@ class UserData {
   /**
    * @private
    */
-  addBtnsEvent() {}
+  addBtnsEvent() {
+    const updatebtn = document.querySelector(".options-btn-update");
+    const saveasbtn = document.querySelector(".options-btn-saveas");
+    const deletebtn = document.querySelector(".options-btn-delete");
+    updatebtn.addEventListener("click", e => {
+      // @todo 验证数据
+      const cd = this.list[this.sdata.selectindex];
+      if (cd.foreign.updatebtn.disabled) return;
+      this[cd.sspt](cd, "update");
+      this.renderRemark(this.ssptab.querySelector(`nav[data-selected="true"]`));
+      setUserData(this.sdata);
+    });
+    saveasbtn.addEventListener("click", e => {
+      // @todo 验证数据
+      const cd = this.list[this.sdata.selectindex];
+      if (cd.foreign.saveasbtn.disabled) return;
+      const al = this.activatedlist();
+      if (al.length >= Config.listmaxlength) {
+        // @todo 超出最大条目提示
+        return;
+      }
+      const nd = Config.ssptdata[cd.sspt];
+      this.sdata[cd.sspt].push(nd);
+      this[cd.sspt](nd, "update");
+      this.genlist();
+      const index = this.list.findIndex(cv => cv === nd);
+      this.renderSelectedTab(index);
+      setUserData(this.sdata);
+    });
+    deletebtn.addEventListener("click", e => {
+      const cd = this.list[this.sdata.selectindex];
+      if (cd.foreign.deletebtn.disabled) return;
+      const index = this.sdata[cd.sspt].findIndex(cv => cv === cd);
+      this.sdata[cd.sspt].splice(index, 1);
+      this.genlist();
+      for (let i = this.sdata.selectindex - 1; i >=0 ; i--) {
+        const ld = this.list[i];
+        if (Config.inactived[ld.sspt]) continue;
+        this.renderSelectedTab(i);
+        break;
+      }
+      setUserData(this.sdata);
+    });
+  }
+
+  /**
+   * @private
+   */
+  activatedlist() {
+    return this.list.filter(item => !Config.inactived[item.sspt]);
+  }
 
 }
+
+getUserData().then(d => {
+  new UserData(d).init();
+});
