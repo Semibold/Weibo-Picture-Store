@@ -7,11 +7,89 @@
 
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>__MSG_options_title__</title>
+  <meta charset="UTF-8">
+  <title>__MSG_options_title__</title>
+  <link rel="stylesheet" href="sheets/sharre/scrollbar.css">
+  <link rel="stylesheet" href="sheets/options.css">
 </head>
 <body>
-<div id="app"></div>
-<script type="module" src="scripts/options/app.js"></script>
+<template id="options-ssptab-template">
+  <nav data-sspt="weibo_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="ssp_weibo_com_name"></span>
+  </nav>
+  <nav data-sspt="tencent_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="ssp_tencent_com_name"></span>
+  </nav>
+  <nav data-sspt="qiniu_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="ssp_qiniu_com_name"></span>
+  </nav>
+  <nav data-sspt="aliyun_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="ssp_aliyun_com_name"></span>
+  </nav>
+  <nav data-sspt="upyun_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="ssp_upyun_com_name"></span>
+  </nav>
+</template>
+<div id="app" data-selected-sspt>
+  <div class="options-header">
+    <h2 class="options-title" data-i18n="options_title"></h2>
+    <div class="options-syncdata">
+      <label data-i18n-attrs="title options_syncdata_title">
+        <input class="input-syncdata" type="checkbox">
+        <span data-i18n="options_syncdata"></span>
+      </label>
+    </div>
+  </div>
+  <div class="options-content">
+    <div class="options-ssptab"><!-- @see template#options-ssptab-template --></div>
+    <div class="options-config">
+      <!-- weibo -->
+      <div class="options-userdata hidden" data-sspt="weibo_com">
+        <span data-i18n="options_microalbum_desc_id"></span>
+        <label><input class="input-microalbum-id" spellcheck="false" type="text" disabled readonly></label>
+      </div>
+      <!-- /weibo -->
+
+      <!-- tencent -->
+      <div class="options-userdata hidden" data-sspt="tencent_com">
+        <span data-i18n="options_userdata_remark">Remark</span>
+        <label><input class="input-mark" spellcheck="false" type="text" placeholder="Remark (e.g: animate-pics)"></label>
+        <span>Access Key</span>
+        <label><input class="input-akey" spellcheck="false" type="text" placeholder="AccessKey (SecretId)"></label>
+        <span>Secret Key</span>
+        <label><input class="input-skey" spellcheck="false" type="password" placeholder="SecretKey"></label>
+        <span>Host</span>
+        <label><input class="input-host" spellcheck="false" type="text" placeholder="Host (e.g: pic-1.example.com)"></label>
+        <span>Path</span>
+        <label><input class="input-path" spellcheck="false" type="text" placeholder="Path prefix (e.g: /figure/)"></label>
+      </div>
+      <!-- /tencent -->
+
+      <!-- qiniu -->
+      <div class="options-userdata hidden" data-sspt="qiniu_com"></div>
+      <!-- /qiniu -->
+
+      <!-- aliyun-->
+      <div class="options-userdata hidden" data-sspt="aliyun_com"></div>
+      <!-- /aliyun-->
+
+      <!-- upyun -->
+      <div class="options-userdata hidden" data-sspt="upyun_com"></div>
+      <!-- /upyun -->
+    </div>
+
+    <div class="options-btns">
+      <button class="options-btn-update" data-i18n="options_btn_update"></button>
+      <button class="options-btn-saveas" data-i18n="options_btn_saveas"></button>
+      <button class="options-btn-delete" data-i18n="options_btn_delete"></button>
+    </div>
+  </div>
+</div>
+<script type="module" src="scripts/options.js"></script>
 </body>
 </html>
