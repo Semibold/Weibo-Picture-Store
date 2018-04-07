@@ -4,9 +4,7 @@
  * found in the LICENSE file.
  */
 
-import "./background/boot.js";
-import "./background/start-popup.js";
-import "./background/tab-selector.js";
-import {tracker} from "./sharre/tracker.js";
-
-tracker.pageview();
+/**
+ * @desc Core Share Module
+ */
+export const coreAPIs = self.SharreM = {_core_: true};
