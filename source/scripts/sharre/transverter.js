@@ -5,6 +5,7 @@
  */
 
 import {Config} from "./config.js";
+import {tracker} from "./tracker.js";
 
 class PartialHander {
 
@@ -33,6 +34,10 @@ class PartialHander {
       if (r.selectindex >= pl && r.selectindex < l.length) {
         if (Config.inactived[x]) {
           r.selectindex = Config.selectindex;
+          tracker.exception({
+            exDescription: "Transverter: expired slectindex",
+            exFatal: false,
+          });
         }
       }
 
@@ -45,6 +50,10 @@ class PartialHander {
     // selectindex 超出数据长度重置为默认
     if (z.selectindex >= l.length) {
       z.selectindex = Config.selectindex;
+      tracker.exception({
+        exDescription: "Transverter: overflowed slectindex",
+        exFatal: false,
+      });
     }
 
     return z;
@@ -62,7 +71,7 @@ class PartialHander {
     Config.sspt.forEach(x => {
       const validkeys = Object.keys(Config.ssptdata[x]);
 
-      // 如果某个 SSPT 被禁用则不存储其数据，已有数据也会被丢弃
+      // 如果某个类型被禁用则不存储其数据，已有数据也会被丢弃
       if (Config.inactived[x]) return;
 
       r[x] = sdata[x].map(item => validkeys.reduce((ac, k) => {
@@ -77,7 +86,8 @@ class PartialHander {
 
 /**
  * @async
- * @param {boolean} [sync]
+ * @desc 存取 UserData 专用
+ * @param {boolean} [sync] - 只有在 Storage.onChanged 事件中才有用
  * @return {Promise<Object>}
  */
 export async function getUserData(sync) {
@@ -90,6 +100,10 @@ export async function getUserData(sync) {
     }
     chrome.storage.sync.get([synckey], items => {
       if (chrome.runtime.lastError) {
+        tracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
         reject(chrome.runtime.lastError);
         return;
       }
@@ -99,6 +113,10 @@ export async function getUserData(sync) {
     return new Promise((resolve, reject) => {
       chrome.storage[t].get([synckey, selectkey, ...Config.sspt], items => {
         if (chrome.runtime.lastError) {
+          tracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
           reject(chrome.runtime.lastError);
           return;
         }
@@ -110,17 +128,26 @@ export async function getUserData(sync) {
 
 /**
  * @async
+ * @desc 存取 UserData 专用
  * @param {Object} sdata
  * @return {Promise<void>}
  */
 export async function setUserData(sdata) {
   if (!sdata) {
+    tracker.exception({
+      exDescription: "Transverter: wrong data structure",
+      exFatal: true,
+    });
     throw new Error("Wrong data structure");
   }
   const t = PartialHander.storageType(sdata.syncdata);
   return new Promise((resolve, reject) => {
     chrome.storage[t].set(PartialHander.encodeData(sdata), () => {
       if (chrome.runtime.lastError) {
+        tracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
         reject(chrome.runtime.lastError);
       } else{
         resolve();

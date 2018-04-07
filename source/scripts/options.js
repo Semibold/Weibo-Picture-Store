@@ -6,10 +6,14 @@
 
 import {i18nLocaleTexts, i18nLocaleAttrs} from "./sharre/i18n-locale.js";
 import {Config} from "./sharre/config.js";
-import {setUserData, getUserData} from "./sharre/transverter.js";
+import {setUserData} from "./sharre/transverter.js";
+import {tracker} from "./sharre/tracker.js";
 
 i18nLocaleTexts();
 i18nLocaleAttrs();
+tracker.pageview();
+
+const bws = chrome.extension.getBackgroundPage();
 
 class UserData {
 
@@ -67,6 +71,10 @@ class UserData {
           this.list.push(Object.assign(item, {foreign}));
         });
       } else {
+        tracker.exception({
+          exDescription: "Options: wrong data structure",
+          exFatal: true,
+        });
         throw new Error("Wrong data structure");
       }
     });
@@ -161,13 +169,17 @@ class UserData {
     }
     if (index < 0) return;
     if (index >= this.list.length) {
+      tracker.exception({
+        exDescription: "Options: overflowed array index",
+        exFatal: true,
+      });
       throw new Error(`Invalid index: ${index}`);
     }
     for (const tab of tabs) {
       tab.dataset.selected = false;
     }
     tabs[index].dataset.selected = true;
-    tabs[index].scrollIntoView();
+    tabs[index].scrollIntoView({block: "nearest", inline: "nearest"});
     this.renderSelectedConfig(index);
     if (this.sdata.selectindex !== index) {
       this.sdata.selectindex = index;
@@ -256,6 +268,11 @@ class UserData {
     input.addEventListener("click", e => {
       this.sdata.syncdata = input.checked;
       setUserData(this.sdata);
+      tracker.event({
+        eventCategory: e.target.tagName,
+        eventAction: e.type,
+        eventLabel: "options_sync_data",
+      });
     });
   }
 
@@ -270,6 +287,11 @@ class UserData {
         if (Config.inactived[d.sspt]) return;
         const i = this.list.findIndex(cv => cv === d);
         this.renderSelectedTab(i);
+        tracker.event({
+          eventCategory: e.target.tagName,
+          eventAction: e.type,
+          eventLabel: "options_tabmenu_switching",
+        });
       }
     });
   }
@@ -288,6 +310,11 @@ class UserData {
       this[cd.sspt](cd, "update");
       this.renderRemark(this.ssptab.querySelector(`nav[data-selected="true"]`));
       setUserData(this.sdata);
+      tracker.event({
+        eventCategory: e.target.tagName,
+        eventAction: e.type,
+        eventLabel: "options_update_button",
+      });
     });
     saveasbtn.addEventListener("click", e => {
       // @todo 验证数据
@@ -305,6 +332,11 @@ class UserData {
       const index = this.list.findIndex(cv => cv === nd);
       this.renderSelectedTab(index);
       setUserData(this.sdata);
+      tracker.event({
+        eventCategory: e.target.tagName,
+        eventAction: e.type,
+        eventLabel: "options_saveas_button",
+      });
     });
     deletebtn.addEventListener("click", e => {
       const cd = this.list[this.sdata.selectindex];
@@ -319,6 +351,11 @@ class UserData {
         break;
       }
       setUserData(this.sdata);
+      tracker.event({
+        eventCategory: e.target.tagName,
+        eventAction: e.type,
+        eventLabel: "options_delete_button",
+      });
     });
   }
 
@@ -331,6 +368,6 @@ class UserData {
 
 }
 
-getUserData().then(d => {
-  new UserData(d).init();
+bws.SharreM.sdataPromise.then(ts => {
+  new UserData(ts.timelysdata).init();
 });
