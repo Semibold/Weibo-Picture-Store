@@ -1,0 +1,198 @@
+/*
+ * Copyright (c) 2018 The Weibo-Picture-Store Authors. All rights reserved.
+ * Use of this source code is governed by a MIT-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  font-size: 87.5%;
+  font-family: "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+ol, ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+a {
+  outline-style: none;
+  text-decoration: none;
+}
+
+img {
+  vertical-align: middle;
+  border-style: none;
+}
+
+button, input, select {
+  font: inherit;
+  margin: 0;
+  outline-style: none;
+  overflow: visible;
+}
+
+textarea {
+  font: inherit;
+  margin: 0;
+  outline-style: none;
+  overflow: auto;
+  resize: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+#app {
+  --layout-display: grid;
+  padding-bottom: 1rem;
+}
+
+#app[data-selected-sspt="weibo_com"] .options-userdata[data-sspt="weibo_com"],
+#app[data-selected-sspt="tencent_com"] .options-userdata[data-sspt="tencent_com"],
+#app[data-selected-sspt="qiniu_com"] .options-userdata[data-sspt="qiniu_com"],
+#app[data-selected-sspt="aliyun_com"] .options-userdata[data-sspt="aliyun_com"],
+#app[data-selected-sspt="upyun_com"] .options-userdata[data-sspt="upyun_com"] {
+  display: var(--layout-display);
+}
+
+.options-header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.options-title {
+  font-size: 1.02rem;
+  line-height: 2rem;
+}
+
+.options-syncdata {
+  line-height: 2rem;
+  text-align: right;
+  user-select: none;
+}
+
+.options-syncdata > label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.options-syncdata > label > input {
+  border-radius: 0;
+}
+
+.options-syncdata > label > span {
+  margin-left: 0.2rem;
+}
+
+.options-content {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-template-rows: fit-content(24rem);
+  grid-gap: 1rem;
+  margin-top: 1rem;
+}
+
+.options-ssptab {
+  padding: 1px;
+  border: 1px solid #aeaeae;
+  overflow-y: auto;
+  user-select: none;
+}
+
+.options-ssptab > nav {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  transition: background-color 80ms;
+}
+
+.options-ssptab > nav[hidden] {
+  display: none;
+}
+
+.options-ssptab > nav:not([hidden]):hover {
+  color: white;
+  background-color: rgba(0, 137, 167, 0.6);
+}
+
+.options-ssptab > nav:nth-of-type(odd) {
+  background-color: #f4f4f4;
+}
+
+.options-ssptab > nav[data-selected="true"] {
+  color: white;
+  background-color: rgb(0, 137, 167);
+}
+
+.options-ssplogo {
+  margin-right: 0.5rem;
+  width: 1.875rem;
+  height: 1.875rem;
+  background: center no-repeat;
+  background-size: contain;
+}
+
+[data-sspt="weibo_com"] .options-ssplogo {
+  background-image: url("../assets/brands/weibo.svg");
+}
+
+[data-sspt="tencent_com"] .options-ssplogo {
+  background-image: url("../assets/brands/qcloud.svg");
+}
+
+[data-sspt="qiniu_com"] .options-ssplogo {
+  background-image: url("../assets/brands/qiniu.svg");
+}
+
+[data-sspt="aliyun_com"] .options-ssplogo {
+  background-image: url("../assets/brands/aliyun.svg");
+}
+
+[data-sspt="upyun_com"] .options-ssplogo {
+  background-image: url("../assets/brands/upyun.svg");
+}
+
+.options-config {
+  border: 1px solid #aeaeae;
+  background-color: #f1f1f1;
+  min-height: 16rem;
+}
+
+.options-userdata {
+  display: var(--layout-display);
+  grid-template-columns: max-content max-content;
+  grid-gap: 1rem 0.5rem;
+  padding: 1rem;
+}
+
+.options-userdata.hidden {
+  display: none;
+}
+
+.options-userdata > span {
+  text-align: right;
+  align-self: center;
+}
+
+.options-userdata input {
+  width: 24rem;
+}
+
+.options-btns {
+  min-width: 21rem;
+  text-align: right;
+  grid-column-start: 2;
+}

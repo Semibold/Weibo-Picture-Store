@@ -18,13 +18,8 @@ charset = utf-8
 # 4 space indentation
 [*]
 indent_style = space
-indent_size = 4
+indent_size = 2
 
 # Tab indentation (no size specified)
 [Makefile]
 indent_style = tab
-
-# Matches the exact files
-[*.json]
-indent_style = space
-indent_size = 2
