@@ -147,4 +147,20 @@ export class Config {
     return InternalConf.headroom.structure;
   }
 
+  static get weiboPopup() {
+    return {
+      scheme: {
+        1: "http://",
+        2: "https://",
+        3: "//",
+      },
+      clipsize: {
+        1: "large",
+        2: "mw690",
+        3: "thumbnail",
+        4: "",
+      },
+    };
+  }
+
 }

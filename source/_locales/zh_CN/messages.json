@@ -5,6 +5,9 @@
   "ext_desc": {
     "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
   },
+  "radio_menu_switching": {
+    "message": "切换图床"
+  },
   "options_title": {
     "message": "存储选项"
   },
