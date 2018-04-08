@@ -20,16 +20,18 @@ class TabSelector {
 
   /**
    * @public
+   * @return {boolean}
    */
-  get syncAreaName() {
-    return this.sdata.syncdata;
+  get syncstate() {
+    return this.sdata[Config.synckey];
   }
 
   /**
    * @public
+   * @return {string} - ssp
    */
-  get timelycdata() {
-    return this.gendata().t[this.sdata.selectindex];
+  get ssp() {
+    return this.gendata().t[this.sdata.selectindex].ssp;
   }
 
   /**
@@ -57,7 +59,7 @@ class TabSelector {
         });
         return;
       }
-      this.createRadios()
+      this.createRadios();
     });
   }
 
@@ -141,6 +143,11 @@ class TabSelector {
   addChangeEvent() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName !== "sync" && areaName !== "local") return;
+      if (areaName === "sync" && changes[Config.synckey] &&
+        changes[Config.synckey].newValue !== this.sdata[Config.synckey]) {
+        this.sdata[Config.synckey] = Boolean(changes[Config.synckey].newValue);
+      }
+      if (this.sdata[Config.synckey] !== (areaName === "sync")) return;
 
       // 如果是当前菜单更新了 selectindex，则不用更新当前数据
       if (changes.selectindex && Object.keys(changes).length === 1 &&
@@ -149,7 +156,7 @@ class TabSelector {
       }
 
       if (Config.sakeys.some(k => !!changes[k])) {
-        getUserData(areaName, this.sdata.syncdata).then(d => this.regenerate(d));
+        getUserData(areaName === "sync").then(d => this.regenerate(d));
       }
     });
   }
