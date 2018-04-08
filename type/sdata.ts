@@ -35,7 +35,7 @@ interface UpyunItem {
  */
 interface SDataStructure {
   selectindex: number;
-  syncdata: boolean;
+  synced: boolean;
   weibo_com: WeiboItem[];
   qcloud_com: QCloudItem[];
   qiniu_com: QiniuItem[];

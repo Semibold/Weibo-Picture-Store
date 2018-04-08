@@ -78,6 +78,13 @@ class InternalConf {
 export class Config {
 
   /**
+   * @desc 同步控制 - 固定值
+   */
+  static get synckey() {
+    return "synced";
+  }
+
+  /**
    * @return {string} - 固定值
    */
   static get trackId() {

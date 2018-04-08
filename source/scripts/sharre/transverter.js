@@ -9,32 +9,21 @@ import {gtracker} from "../vendor/g-tracker.js";
 
 /**
  * @param {boolean} [sync]
- * @return {["sync", "local"]|["local", "sync"]}
+ * @return {"sync"|"local"}
  */
 function storageType(sync) {
-  return sync ? ["sync", "local"] : ["local", "sync"];
-}
-
-/**
- * @param {"sync"|"local"} areaName
- * @return {boolean}
- */
-function syncStorage(areaName) {
-  if (areaName === "sync") {
-    return true;
+  if (sync) {
+    return "sync";
+  } else {
+    return "local";
   }
-  if (areaName === "local") {
-    return false;
-  }
-  throw new Error("Invalid storage area name");
 }
 
 /**
  * @param {Object} items
- * @param {"sync"|"local"} areaName
  * @return {Object}
  */
-function decodeData(items, areaName) {
+function decodeData(items) {
   const l = [];
   const z = Config.ssps.reduce((r, x) => {
     const pl = l.length;
@@ -57,7 +46,7 @@ function decodeData(items, areaName) {
     return r;
   }, {
     selectindex: items.selectindex || Config.selectindex,
-    syncdata: syncStorage(areaName),
+    [Config.synckey]: Boolean(items[Config.synckey]),
   });
 
   // selectindex 超出数据长度重置为默认
@@ -96,44 +85,34 @@ function encodeData(sdata) {
 /**
  * @async
  * @desc 存取 UserData 专用
- * @param {"sync"|"local"} [areaName] - 只有在 Storage.onChanged 事件中才有用
- * @param {boolean} [preSyncState] - 只有在 Storage.onChanged 事件中才有用
+ * @param {boolean} [sync] - 只有在 Storage.onChanged 事件中才有用
  * @return {Promise<Object>}
  */
-export async function getUserData(areaName, preSyncState) {
+export async function getUserData(sync) {
   return new Promise((resolve, reject) => {
-    if (areaName === "sync" || areaName === "local") {
-      chrome.storage[areaName].get(Config.sakeys, items => {
-        if (chrome.runtime.lastError) {
-          gtracker.exception({
-            exDescription: chrome.runtime.lastError.message,
-            exFatal: true,
-          });
-          reject({specified: true});
-          return;
-        }
-        resolve(decodeData(items, areaName));
-
-        /**
-         * @desc 同步时 areaName 发生了变化，清理旧的 areaName 中的数据
-         */
-        if (typeof preSyncState === "boolean") {
-          const [t, r] = storageType(preSyncState);
-          if (t !== areaName) {
-            chrome.storage[r].remove(Config.sakeys);
-          }
-        }
-
-      });
-    } else {
+    if (typeof sync !== "boolean") {
       reject({specified: false});
+      return;
     }
+    const t = storageType(sync);
+    const keys = sync ? [...Config.sakeys, Config.synckey] : Config.sakeys;
+    chrome.storage[t].get(keys, items => {
+      if (chrome.runtime.lastError) {
+        gtracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
+        reject({specified: true});
+        return;
+      }
+      resolve(decodeData(items));
+    })
   }).catch(reason => {
     if (reason && reason.specified) {
       return Promise.reject(reason);
     }
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(Config.sakeys, items => {
+      chrome.storage.sync.get([...Config.sakeys, Config.synckey], items => {
         if (chrome.runtime.lastError) {
           gtracker.exception({
             exDescription: chrome.runtime.lastError.message,
@@ -142,8 +121,8 @@ export async function getUserData(areaName, preSyncState) {
           reject({specified: false});
           return;
         }
-        if (Object.keys(items).length) {
-          resolve(decodeData(items, "sync"));
+        if (items[Config.synckey]) {
+          resolve(decodeData(items));
         } else {
           reject({specified: false});
         }
@@ -163,7 +142,7 @@ export async function getUserData(areaName, preSyncState) {
           reject({specified: false});
           return;
         }
-        resolve(decodeData(items, "local"));
+        resolve(decodeData(items));
       });
     });
   });
@@ -171,16 +150,15 @@ export async function getUserData(areaName, preSyncState) {
 
 /**
  * @async
- * @desc 存取 UserData 专用
+ * @desc 存取 sdata 专用
  * @param {Object} sdata
- * @param {boolean} [areaNameChanged]
  * @return {Promise<void>}
  */
-export async function setUserData(sdata, areaNameChanged) {
+export async function setUserData(sdata) {
   if (!sdata) {
     throw new Error("Wrong data structure");
   }
-  const [t, r] = storageType(sdata.syncdata);
+  const t = storageType(sdata[Config.synckey]);
   return new Promise((resolve, reject) => {
     chrome.storage[t].set(encodeData(sdata), () => {
       if (chrome.runtime.lastError) {
@@ -191,9 +169,6 @@ export async function setUserData(sdata, areaNameChanged) {
         reject(chrome.runtime.lastError);
       } else {
         resolve();
-        if (areaNameChanged) {
-          chrome.storage[r].remove(Config.sakeys);
-        }
       }
     });
   });
