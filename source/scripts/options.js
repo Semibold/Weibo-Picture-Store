@@ -4,14 +4,12 @@
  * found in the LICENSE file.
  */
 
-import {i18nLocaleTexts, i18nLocaleAttrs} from "./sharre/i18n-locale.js";
+import {i18nLocale} from "./sharre/i18n-locale.js";
 import {Config} from "./sharre/config.js";
-import {setUserData} from "./sharre/transverter.js";
-import {tracker} from "./sharre/tracker.js";
+import {setUserData, getUserData} from "./sharre/transverter.js";
+import {gtracker} from "./vendor/g-tracker.js";
 
-i18nLocaleTexts();
-i18nLocaleAttrs();
-tracker.pageview();
+gtracker.pageview();
 
 const bws = chrome.extension.getBackgroundPage();
 
@@ -29,17 +27,17 @@ class UserData {
     this.tabfragment = document.importNode(this.ssptabtpl.content, true);
     this.dtnodes = {
       weibo_com: null,
-      tencent_com: null,
+      qcloud_com: null,
       qiniu_com: null,
       aliyun_com: null,
       upyun_com: null,
     };
     this.ddnodes = {
-      weibo_com: document.querySelector(`.options-userdata[data-sspt="weibo_com"]`),
-      tencent_com: document.querySelector(`.options-userdata[data-sspt="tencent_com"]`),
-      qiniu_com: document.querySelector(`.options-userdata[data-sspt="qiniu_com"]`),
-      aliyun_com: document.querySelector(`.options-userdata[data-sspt="aliyun_com"]`),
-      upyun_com: document.querySelector(`.options-userdata[data-sspt="upyun_com"]`),
+      weibo_com: document.querySelector(`.options-userdata[data-ssp="weibo_com"]`),
+      qcloud_com: document.querySelector(`.options-userdata[data-ssp="qcloud_com"]`),
+      qiniu_com: document.querySelector(`.options-userdata[data-ssp="qiniu_com"]`),
+      aliyun_com: document.querySelector(`.options-userdata[data-ssp="aliyun_com"]`),
+      upyun_com: document.querySelector(`.options-userdata[data-ssp="upyun_com"]`),
     };
   }
 
@@ -64,14 +62,14 @@ class UserData {
    */
   genlist() {
     this.list.length = 0;
-    Config.sspt.forEach(x => {
+    Config.ssps.forEach(x => {
       if (this.sdata[x] && this.sdata[x].length) {
         this.sdata[x].forEach((item, i) => {
-          const foreign = i === 0 ? Config.predefine[x] : Config.furtherer;
+          const foreign = i === 0 ? Config.predefine[x] : Config.preothers;
           this.list.push(Object.assign(item, {foreign}));
         });
       } else {
-        tracker.exception({
+        gtracker.exception({
           exDescription: "Options: wrong data structure",
           exFatal: true,
         });
@@ -85,8 +83,7 @@ class UserData {
    * @private
    */
   locales() {
-    i18nLocaleTexts(this.tabfragment);
-    i18nLocaleAttrs(this.tabfragment);
+    i18nLocale(this.tabfragment);
   }
 
   /**
@@ -103,23 +100,23 @@ class UserData {
   renderTabs() {
     const f = new DocumentFragment();
     const dt = this.tabfragment.cloneNode(true);
-    const tabs = this.ssptab.querySelectorAll(`nav[data-sspt]`);
+    const tabs = this.ssptab.querySelectorAll(`nav[data-ssp]`);
     Object.assign(this.dtnodes, {
-      weibo_com: dt.querySelector(`nav[data-sspt="weibo_com"]`),
-      tencent_com: dt.querySelector(`nav[data-sspt="tencent_com"]`),
-      qiniu_com: dt.querySelector(`nav[data-sspt="qiniu_com"]`),
-      aliyun_com: dt.querySelector(`nav[data-sspt="aliyun_com"]`),
-      upyun_com: dt.querySelector(`nav[data-sspt="upyun_com"]`),
+      weibo_com: dt.querySelector(`nav[data-ssp="weibo_com"]`),
+      qcloud_com: dt.querySelector(`nav[data-ssp="qcloud_com"]`),
+      qiniu_com: dt.querySelector(`nav[data-ssp="qiniu_com"]`),
+      aliyun_com: dt.querySelector(`nav[data-ssp="aliyun_com"]`),
+      upyun_com: dt.querySelector(`nav[data-ssp="upyun_com"]`),
     });
     f.append(dt);
-    Config.sspt.forEach(x => this.generateTabs(x));
+    Config.ssps.forEach(x => this.generateTabs(x));
     for (const tab of tabs) tab.remove();
     this.ssptab.append(f);
   }
 
   /**
    * @private
-   * @param {string} x - sspt
+   * @param {string} x - ssp
    */
   generateTabs(x) {
     const d0 = this.sdata[x][0];
@@ -129,7 +126,7 @@ class UserData {
       this.dtnodes[x].hidden = true;
     }
     const tf = new DocumentFragment();
-    const tn = this.tabfragment.querySelector(`nav[data-sspt="${x}"]`);
+    const tn = this.tabfragment.querySelector(`nav[data-ssp="${x}"]`);
     for (let i = 1; i < this.sdata[x].length; i++) {
       const node = tn.cloneNode(true);
       if (Config.inactived[x]) {
@@ -152,8 +149,8 @@ class UserData {
   renderRemark(node) {
     if (this.nodemap.has(node)) {
       const d = this.nodemap.get(node);
-      const cnode = node.querySelector("nav[data-sspt] > span:nth-of-type(2)");
-      const ctext = cnode.textContent.split("-").shift().trim();
+      const cnode = node.querySelector("nav[data-ssp] > span:nth-of-type(2)");
+      const ctext = chrome.i18n.getMessage(cnode.dataset.i18n);
       cnode.textContent = d.mark ? `${ctext} - ${d.mark}` : ctext;
     }
   }
@@ -163,13 +160,13 @@ class UserData {
    * @param {number} [index]
    */
   renderSelectedTab(index) {
-    const tabs = this.ssptab.querySelectorAll("nav[data-sspt]");
+    const tabs = this.ssptab.querySelectorAll("nav[data-ssp]");
     if (index == null) {
       index = this.sdata.selectindex || Config.selectindex;
     }
     if (index < 0) return;
     if (index >= this.list.length) {
-      tracker.exception({
+      gtracker.exception({
         exDescription: "Options: overflowed array index",
         exFatal: true,
       });
@@ -200,13 +197,13 @@ class UserData {
     updatebtn.disabled = d.foreign.updatebtn.disabled;
     saveasbtn.disabled = d.foreign.saveasbtn.disabled;
     deletebtn.disabled = d.foreign.deletebtn.disabled;
-    this[d.sspt](d, "render");
-    app.setAttribute("data-selected-sspt", d.sspt);
+    this[d.ssp](d, "render");
+    app.setAttribute("data-selected-ssp", d.ssp);
   }
 
   /**
    * @private
-   * @see sspt
+   * @see ssp
    * @enum role = "render" | "update"
    */
   weibo_com(d, role) {
@@ -216,14 +213,14 @@ class UserData {
 
   /**
    * @private
-   * @see sspt
+   * @see ssp
    */
-  tencent_com(d, role) {
-    const mark = this.ddnodes.tencent_com.querySelector(".input-mark");
-    const akey = this.ddnodes.tencent_com.querySelector(".input-akey");
-    const skey = this.ddnodes.tencent_com.querySelector(".input-skey");
-    const host = this.ddnodes.tencent_com.querySelector(".input-host");
-    const path = this.ddnodes.tencent_com.querySelector(".input-path");
+  qcloud_com(d, role) {
+    const mark = this.ddnodes.qcloud_com.querySelector(".input-mark");
+    const akey = this.ddnodes.qcloud_com.querySelector(".input-akey");
+    const skey = this.ddnodes.qcloud_com.querySelector(".input-skey");
+    const host = this.ddnodes.qcloud_com.querySelector(".input-host");
+    const path = this.ddnodes.qcloud_com.querySelector(".input-path");
     switch (role) {
       case "render":
         mark.value = d.mark;
@@ -244,19 +241,19 @@ class UserData {
 
   /**
    * @private
-   * @see sspt
+   * @see ssp
    */
   qiniu_com(d, role) {}
 
   /**
    * @private
-   * @see sspt
+   * @see ssp
    */
   aliyun_com(d, role) {}
 
   /**
    * @private
-   * @see sspt
+   * @see ssp
    */
   upyun_com(d, role) {}
 
@@ -267,8 +264,8 @@ class UserData {
     const input = document.querySelector(".input-syncdata");
     input.addEventListener("click", e => {
       this.sdata.syncdata = input.checked;
-      setUserData(this.sdata);
-      tracker.event({
+      setUserData(this.sdata, true);
+      gtracker.event({
         eventCategory: e.target.tagName,
         eventAction: e.type,
         eventLabel: "options_sync_data",
@@ -281,13 +278,13 @@ class UserData {
    */
   addTabsEvent() {
     this.ssptab.addEventListener("click", e => {
-      const tab = e.target.closest("nav[data-sspt]");
+      const tab = e.target.closest("nav[data-ssp]");
       if (this.nodemap.has(tab)) {
         const d = this.nodemap.get(tab);
-        if (Config.inactived[d.sspt]) return;
+        if (Config.inactived[d.ssp]) return;
         const i = this.list.findIndex(cv => cv === d);
         this.renderSelectedTab(i);
-        tracker.event({
+        gtracker.event({
           eventCategory: e.target.tagName,
           eventAction: e.type,
           eventLabel: "options_tabmenu_switching",
@@ -307,10 +304,10 @@ class UserData {
       // @todo 验证数据
       const cd = this.list[this.sdata.selectindex];
       if (cd.foreign.updatebtn.disabled) return;
-      this[cd.sspt](cd, "update");
+      this[cd.ssp](cd, "update");
       this.renderRemark(this.ssptab.querySelector(`nav[data-selected="true"]`));
       setUserData(this.sdata);
-      tracker.event({
+      gtracker.event({
         eventCategory: e.target.tagName,
         eventAction: e.type,
         eventLabel: "options_update_button",
@@ -325,14 +322,14 @@ class UserData {
         // @todo 超出最大条目提示
         return;
       }
-      const nd = Config.ssptdata[cd.sspt];
-      this.sdata[cd.sspt].push(nd);
-      this[cd.sspt](nd, "update");
+      const nd = Config.sspsdata[cd.ssp];
+      this.sdata[cd.ssp].push(nd);
+      this[cd.ssp](nd, "update");
       this.genlist();
       const index = this.list.findIndex(cv => cv === nd);
       this.renderSelectedTab(index);
       setUserData(this.sdata);
-      tracker.event({
+      gtracker.event({
         eventCategory: e.target.tagName,
         eventAction: e.type,
         eventLabel: "options_saveas_button",
@@ -341,17 +338,17 @@ class UserData {
     deletebtn.addEventListener("click", e => {
       const cd = this.list[this.sdata.selectindex];
       if (cd.foreign.deletebtn.disabled) return;
-      const index = this.sdata[cd.sspt].findIndex(cv => cv === cd);
-      this.sdata[cd.sspt].splice(index, 1);
+      const index = this.sdata[cd.ssp].findIndex(cv => cv === cd);
+      this.sdata[cd.ssp].splice(index, 1);
       this.genlist();
       for (let i = this.sdata.selectindex - 1; i >=0 ; i--) {
         const ld = this.list[i];
-        if (Config.inactived[ld.sspt]) continue;
+        if (Config.inactived[ld.ssp]) continue;
         this.renderSelectedTab(i);
         break;
       }
       setUserData(this.sdata);
-      tracker.event({
+      gtracker.event({
         eventCategory: e.target.tagName,
         eventAction: e.type,
         eventLabel: "options_delete_button",
@@ -363,11 +360,16 @@ class UserData {
    * @private
    */
   activatedlist() {
-    return this.list.filter(item => !Config.inactived[item.sspt]);
+    return this.list.filter(item => !Config.inactived[item.ssp]);
   }
 
 }
 
+/**
+ * @desc 这里需要数据的副本，而非引用
+ */
 bws.SharreM.sdataPromise.then(ts => {
-  new UserData(ts.timelysdata).init();
+  return getUserData(ts.syncAreaName);
+}).then(d => {
+  new UserData(d).init();
 });

@@ -102,7 +102,7 @@ function isPatternMatch(buffer, item) {
  * @param {ArrayBufferLike} buffer
  * @return {string}
  */
-export const parseMime = buffer => {
+export const bitmapMime = buffer => {
   for (const item of BITMAP_PATTERN_TABLE) {
     if (isPatternMatch(buffer, item)) {
       return item.type;

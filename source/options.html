@@ -13,35 +13,13 @@
   <link rel="stylesheet" href="sheets/options.css">
 </head>
 <body>
-<template id="options-ssptab-template">
-  <nav data-sspt="weibo_com">
-    <span class="options-ssplogo"></span>
-    <span data-i18n="ssp_weibo_com_name"></span>
-  </nav>
-  <nav data-sspt="tencent_com">
-    <span class="options-ssplogo"></span>
-    <span data-i18n="ssp_tencent_com_name"></span>
-  </nav>
-  <nav data-sspt="qiniu_com">
-    <span class="options-ssplogo"></span>
-    <span data-i18n="ssp_qiniu_com_name"></span>
-  </nav>
-  <nav data-sspt="aliyun_com">
-    <span class="options-ssplogo"></span>
-    <span data-i18n="ssp_aliyun_com_name"></span>
-  </nav>
-  <nav data-sspt="upyun_com">
-    <span class="options-ssplogo"></span>
-    <span data-i18n="ssp_upyun_com_name"></span>
-  </nav>
-</template>
-<div id="app" data-selected-sspt>
+<div id="app" data-selected-ssp>
   <div class="options-header">
-    <h2 class="options-title" data-i18n="options_title"></h2>
+    <h2 class="options-title">存储选项</h2>
     <div class="options-syncdata">
-      <label data-i18n-attrs="title options_syncdata_title">
+      <label title="在已登录相同账号的 Chrome 浏览器之间，共享配置数据">
         <input class="input-syncdata" type="checkbox">
-        <span data-i18n="options_syncdata"></span>
+        <span>同步数据</span>
       </label>
     </div>
   </div>
@@ -49,15 +27,15 @@
     <div class="options-ssptab"><!-- @see template#options-ssptab-template --></div>
     <div class="options-config">
       <!-- weibo -->
-      <div class="options-userdata hidden" data-sspt="weibo_com">
-        <span data-i18n="options_microalbum_desc_id"></span>
+      <div class="options-userdata hidden" data-ssp="weibo_com">
+        <span>相册标识符</span>
         <label><input class="input-microalbum-id" spellcheck="false" type="text" disabled readonly></label>
       </div>
       <!-- /weibo -->
 
       <!-- tencent -->
-      <div class="options-userdata hidden" data-sspt="tencent_com">
-        <span data-i18n="options_userdata_remark">Remark</span>
+      <div class="options-userdata hidden" data-ssp="qcloud_com">
+        <span>备注</span>
         <label><input class="input-mark" spellcheck="false" type="text" placeholder="Remark (e.g: animate-pics)"></label>
         <span>Access Key</span>
         <label><input class="input-akey" spellcheck="false" type="text" placeholder="AccessKey (SecretId)"></label>
@@ -71,25 +49,47 @@
       <!-- /tencent -->
 
       <!-- qiniu -->
-      <div class="options-userdata hidden" data-sspt="qiniu_com"></div>
+      <div class="options-userdata hidden" data-ssp="qiniu_com"></div>
       <!-- /qiniu -->
 
       <!-- aliyun-->
-      <div class="options-userdata hidden" data-sspt="aliyun_com"></div>
+      <div class="options-userdata hidden" data-ssp="aliyun_com"></div>
       <!-- /aliyun-->
 
       <!-- upyun -->
-      <div class="options-userdata hidden" data-sspt="upyun_com"></div>
+      <div class="options-userdata hidden" data-ssp="upyun_com"></div>
       <!-- /upyun -->
     </div>
 
     <div class="options-btns">
-      <button class="options-btn-update" data-i18n="options_btn_update"></button>
-      <button class="options-btn-saveas" data-i18n="options_btn_saveas"></button>
-      <button class="options-btn-delete" data-i18n="options_btn_delete"></button>
+      <button class="options-btn-update">更新</button>
+      <button class="options-btn-saveas">另存为</button>
+      <button class="options-btn-delete">删除</button>
     </div>
   </div>
 </div>
+<template id="options-ssptab-template">
+  <nav data-ssp="weibo_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="weibo_com"></span>
+  </nav>
+  <nav data-ssp="qcloud_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="qcloud_com"></span>
+  </nav>
+  <nav data-ssp="qiniu_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="qiniu_com"></span>
+  </nav>
+  <nav data-ssp="aliyun_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="aliyun_com"></span>
+  </nav>
+  <nav data-ssp="upyun_com">
+    <span class="options-ssplogo"></span>
+    <span data-i18n="upyun_com"></span>
+  </nav>
+</template>
 <script src="scripts/vendor/g-analytics.js"></script>
 <script type="module" src="scripts/options.js"></script>
 </body>

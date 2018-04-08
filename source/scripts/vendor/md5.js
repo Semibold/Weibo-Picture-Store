@@ -383,7 +383,11 @@ function bit_rol(num, cnt) {
  *           const hash = md5("value", true);
  */
 export function md5(data, raw_output = false) {
-  return raw_output ? rstr_md5(str2rstr_utf8(data)) : hex_md5(data);
+  if (raw_output) {
+    return rstr_md5(str2rstr_utf8(data));
+  } else {
+    return hex_md5(data);
+  }
 }
 
 /**
@@ -398,5 +402,9 @@ export function md5(data, raw_output = false) {
  *           const hash = hmac_md5("value", "key", true);
  */
 export function hmac_md5(data, key, raw_output = false) {
-  return raw_output ? rstr_hmac_md5(str2rstr_utf8(key), str2rstr_utf8(data)) : hex_hmac_md5(key, data) ;
+  if (raw_output) {
+    return rstr_hmac_md5(str2rstr_utf8(key), str2rstr_utf8(data));
+  } else {
+    return hex_hmac_md5(key, data);
+  }
 }

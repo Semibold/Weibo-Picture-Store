@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {Base64} from "./base64.js";
+import {Base64} from "../vendor/base64.js";
 
 export class Utils {
 

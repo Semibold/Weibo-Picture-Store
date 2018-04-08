@@ -5,122 +5,165 @@
  */
 
 import {Config} from "./config.js";
-import {tracker} from "./tracker.js";
+import {gtracker} from "../vendor/g-tracker.js";
 
-class PartialHander {
+/**
+ * @param {boolean} [sync]
+ * @return {["sync", "local"]|["local", "sync"]}
+ */
+function storageType(sync) {
+  return sync ? ["sync", "local"] : ["local", "sync"];
+}
 
-  /**
-   * @param {boolean} syncdata
-   * @return {"sync"|"local"}
-   */
-  static storageType(syncdata) {
-    return syncdata ? "sync" : "local";
+/**
+ * @param {"sync"|"local"} areaName
+ * @return {boolean}
+ */
+function syncStorage(areaName) {
+  if (areaName === "sync") {
+    return true;
   }
+  if (areaName === "local") {
+    return false;
+  }
+  throw new Error("Invalid storage area name");
+}
 
-  /**
-   * @param {Object} items
-   * @return {Object}
-   */
-  static decodeData(items) {
-    const l = [];
-    const z = Config.sspt.reduce((r, x) => {
-      const pl = l.length;
-      const a = Array.isArray(items[x]) ? items[x] : [];
-      if (!a.length) a.push(Config.ssptdata[x]);
-      r[x] = a;
-      l.push(...a);
+/**
+ * @param {Object} items
+ * @param {"sync"|"local"} areaName
+ * @return {Object}
+ */
+function decodeData(items, areaName) {
+  const l = [];
+  const z = Config.ssps.reduce((r, x) => {
+    const pl = l.length;
+    const a = Array.isArray(items[x]) ? items[x] : [];
+    if (!a.length) a.push(Config.sspsdata[x]);
+    r[x] = a;
+    l.push(...a);
 
-      // 配置锁定可能会让之前的 selectindex 数据无效
-      if (r.selectindex >= pl && r.selectindex < l.length) {
-        if (Config.inactived[x]) {
-          r.selectindex = Config.selectindex;
-          tracker.exception({
-            exDescription: "Transverter: expired slectindex",
-            exFatal: false,
-          });
-        }
+    // 配置锁定可能会让之前的 selectindex 数据无效
+    if (r.selectindex >= pl && r.selectindex < l.length) {
+      if (Config.inactived[x]) {
+        r.selectindex = Config.selectindex;
+        gtracker.exception({
+          exDescription: "Transverter: expired slectindex",
+          exFatal: false,
+        });
       }
-
-      return r;
-    }, {
-      selectindex: items.selectindex || Config.selectindex,
-      syncdata: items.syncdata || Config.syncdata,
-    });
-
-    // selectindex 超出数据长度重置为默认
-    if (z.selectindex >= l.length) {
-      z.selectindex = Config.selectindex;
-      tracker.exception({
-        exDescription: "Transverter: overflowed slectindex",
-        exFatal: false,
-      });
     }
 
-    return z;
-  }
-
-  /**
-   * @param {Object} sdata
-   * @return {Object}
-   */
-  static encodeData(sdata) {
-    const r = {
-      selectindex: sdata.selectindex,
-      syncdata: sdata.syncdata,
-    };
-    Config.sspt.forEach(x => {
-      const validkeys = Object.keys(Config.ssptdata[x]);
-
-      // 如果某个类型被禁用则不存储其数据，已有数据也会被丢弃
-      if (Config.inactived[x]) return;
-
-      r[x] = sdata[x].map(item => validkeys.reduce((ac, k) => {
-        ac[k] = item[k] || Config.ssptdata[x][k]; return ac;
-      }, {}));
-    });
     return r;
+  }, {
+    selectindex: items.selectindex || Config.selectindex,
+    syncdata: syncStorage(areaName),
+  });
+
+  // selectindex 超出数据长度重置为默认
+  if (z.selectindex >= l.length) {
+    z.selectindex = Config.selectindex;
+    gtracker.exception({
+      exDescription: "Transverter: overflowed slectindex",
+      exFatal: false,
+    });
   }
 
+  return z;
+}
+
+/**
+ * @param {Object} sdata
+ * @return {Object}
+ */
+function encodeData(sdata) {
+  const r = {selectindex: sdata.selectindex};
+  Config.ssps.forEach(x => {
+    const validkeys = Object.keys(Config.sspsdata[x]);
+
+    // 如果某个类型被禁用则不存储其数据，已有数据也会被丢弃
+    if (Config.inactived[x]) return;
+
+    r[x] = sdata[x].map(item => validkeys.reduce((ac, k) => {
+      ac[k] = item[k] || Config.sspsdata[x][k];
+      return ac;
+    }, {}));
+  });
+  return r;
 }
 
 
 /**
  * @async
  * @desc 存取 UserData 专用
- * @param {boolean} [sync] - 只有在 Storage.onChanged 事件中才有用
+ * @param {"sync"|"local"} [areaName] - 只有在 Storage.onChanged 事件中才有用
+ * @param {boolean} [preSyncState] - 只有在 Storage.onChanged 事件中才有用
  * @return {Promise<Object>}
  */
-export async function getUserData(sync) {
-  const synckey = "syncdata";
-  const selectkey = "selectindex";
+export async function getUserData(areaName, preSyncState) {
   return new Promise((resolve, reject) => {
-    if (sync != null) {
-      resolve(PartialHander.storageType(sync));
-      return;
-    }
-    chrome.storage.sync.get([synckey], items => {
-      if (chrome.runtime.lastError) {
-        tracker.exception({
-          exDescription: chrome.runtime.lastError.message,
-          exFatal: true,
-        });
-        reject(chrome.runtime.lastError);
-        return;
-      }
-      resolve(PartialHander.storageType(items[synckey]));
-    });
-  }).then(t => {
-    return new Promise((resolve, reject) => {
-      chrome.storage[t].get([synckey, selectkey, ...Config.sspt], items => {
+    if (areaName === "sync" || areaName === "local") {
+      chrome.storage[areaName].get(Config.sakeys, items => {
         if (chrome.runtime.lastError) {
-          tracker.exception({
+          gtracker.exception({
             exDescription: chrome.runtime.lastError.message,
             exFatal: true,
           });
-          reject(chrome.runtime.lastError);
+          reject({specified: true});
           return;
         }
-        resolve(PartialHander.decodeData(items));
+        resolve(decodeData(items, areaName));
+
+        /**
+         * @desc 同步时 areaName 发生了变化，清理旧的 areaName 中的数据
+         */
+        if (typeof preSyncState === "boolean") {
+          const [t, r] = storageType(preSyncState);
+          if (t !== areaName) {
+            chrome.storage[r].remove(Config.sakeys);
+          }
+        }
+
+      });
+    } else {
+      reject({specified: false});
+    }
+  }).catch(reason => {
+    if (reason && reason.specified) {
+      return Promise.reject(reason);
+    }
+    return new Promise((resolve, reject) => {
+      chrome.storage.sync.get(Config.sakeys, items => {
+        if (chrome.runtime.lastError) {
+          gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
+          reject({specified: false});
+          return;
+        }
+        if (Object.keys(items).length) {
+          resolve(decodeData(items, "sync"));
+        } else {
+          reject({specified: false});
+        }
+      });
+    });
+  }).catch(reason => {
+    if (reason && reason.specified) {
+      return Promise.reject(reason);
+    }
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get(Config.sakeys, items => {
+        if (chrome.runtime.lastError) {
+          gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
+          reject({specified: false});
+          return;
+        }
+        resolve(decodeData(items, "local"));
       });
     });
   });
@@ -130,27 +173,27 @@ export async function getUserData(sync) {
  * @async
  * @desc 存取 UserData 专用
  * @param {Object} sdata
+ * @param {boolean} [areaNameChanged]
  * @return {Promise<void>}
  */
-export async function setUserData(sdata) {
+export async function setUserData(sdata, areaNameChanged) {
   if (!sdata) {
-    tracker.exception({
-      exDescription: "Transverter: wrong data structure",
-      exFatal: true,
-    });
     throw new Error("Wrong data structure");
   }
-  const t = PartialHander.storageType(sdata.syncdata);
+  const [t, r] = storageType(sdata.syncdata);
   return new Promise((resolve, reject) => {
-    chrome.storage[t].set(PartialHander.encodeData(sdata), () => {
+    chrome.storage[t].set(encodeData(sdata), () => {
       if (chrome.runtime.lastError) {
-        tracker.exception({
+        gtracker.exception({
           exDescription: chrome.runtime.lastError.message,
           exFatal: true,
         });
         reject(chrome.runtime.lastError);
-      } else{
+      } else {
         resolve();
+        if (areaNameChanged) {
+          chrome.storage[r].remove(Config.sakeys);
+        }
       }
     });
   });

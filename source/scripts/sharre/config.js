@@ -12,15 +12,7 @@ class InternalConf {
   static get headroom() {
     return {
       selectindex: 0,
-      syncdata: false,
-      inactived: {
-        weibo_com: false,
-        tencent_com: false,
-        qiniu_com: true,
-        aliyun_com: true,
-        upyun_com: true,
-      },
-      furtherer: {
+      preothers: {
         updatebtn: {disabled: false},
         saveasbtn: {disabled: false},
         deletebtn: {disabled: false},
@@ -31,7 +23,7 @@ class InternalConf {
           saveasbtn: {disabled: true},
           deletebtn: {disabled: true},
         },
-        tencent_com: {
+        qcloud_com: {
           updatebtn: {disabled: false},
           saveasbtn: {disabled: false},
           deletebtn: {disabled: true},
@@ -54,10 +46,10 @@ class InternalConf {
       },
       structure: {
         weibo_com: {
-          sspt: "weibo_com",
+          ssp: "weibo_com",
         },
-        tencent_com: {
-          sspt: "tencent_com",
+        qcloud_com: {
+          ssp: "qcloud_com",
           mark: "",
           akey: "",
           skey: "",
@@ -65,13 +57,13 @@ class InternalConf {
           path: "",
         },
         qiniu_com: {
-          sspt: "qiniu_com",
+          ssp: "qiniu_com",
         },
         aliyun_com: {
-          sspt: "aliyun_com",
+          ssp: "aliyun_com",
         },
         upyun_com: {
-          sspt: "upyun_com",
+          ssp: "upyun_com",
         },
       },
     };
@@ -109,42 +101,55 @@ export class Config {
   }
 
   /**
-   * @enum
-   * @desc Storage Service Provider Type (as identity)
+   * @desc 存储的 keys 数组，只能有一个 StroageArea 存这部分数据
    * @return {string[]}
    */
-  static get sspt() {
+  static get sakeys() {
+    return ["selectindex", ...Config.ssps];
+  }
+
+  /**
+   * @enum
+   * @desc Storage Service Provider (as identity)
+   * @return {string[]}
+   */
+  static get ssps() {
     return [
       "weibo_com",
-      "tencent_com",
+      "qcloud_com",
       "qiniu_com",
       "aliyun_com",
       "upyun_com",
     ];
   }
 
+  /**
+   * @desc 禁用配置项
+   */
   static get inactived() {
-    return InternalConf.headroom.inactived;
+    return {
+      weibo_com: false,
+      tencent_com: false,
+      qiniu_com: true,
+      aliyun_com: true,
+      upyun_com: true,
+    };
   }
 
   static get selectindex() {
     return InternalConf.headroom.selectindex;
   }
 
-  static get syncdata() {
-    return InternalConf.headroom.syncdata;
+  static get sspsdata() {
+    return InternalConf.headroom.structure;
   }
 
-  static get furtherer() {
-    return InternalConf.headroom.furtherer;
+  static get preothers() {
+    return InternalConf.headroom.preothers;
   }
 
   static get predefine() {
     return InternalConf.headroom.predefine;
-  }
-
-  static get ssptdata() {
-    return InternalConf.headroom.structure;
   }
 
   static get weiboPopup() {

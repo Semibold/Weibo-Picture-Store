@@ -5,7 +5,7 @@
  */
 
 import {getUserData, setUserData} from "../sharre/transverter.js";
-import {tracker} from "../sharre/tracker.js";
+import {gtracker} from "../vendor/g-tracker.js";
 import {Config} from "../sharre/config.js";
 import {coreAPIs} from "./boot.js";
 
@@ -21,15 +21,15 @@ class TabSelector {
   /**
    * @public
    */
-  get timelysdata() {
-    return this.sdata;
+  get syncAreaName() {
+    return this.sdata.syncdata;
   }
 
   /**
    * @public
    */
   get timelycdata() {
-    return this.sdata[this.sdata.selectindex];
+    return this.gendata().t[this.sdata.selectindex];
   }
 
   /**
@@ -47,10 +47,14 @@ class TabSelector {
    */
   createMenus() {
     this.parentMenuId = chrome.contextMenus.create({
-      title: chrome.i18n.getMessage("radio_menu_switching"),
+      title: "切换存储桶",
       contexts: ["browser_action"],
     }, () => {
       if (chrome.runtime.lastError) {
+        gtracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
         return;
       }
       this.createRadios()
@@ -65,7 +69,7 @@ class TabSelector {
     const target = obj.t[this.sdata.selectindex];
     const index = obj.p.findIndex(item => item === target);
     obj.p.forEach((d, i) => {
-      const sspname = chrome.i18n.getMessage(`ssp_${d.sspt}_name`);
+      const sspname = chrome.i18n.getMessage(d.ssp);
       const id = chrome.contextMenus.create({
         type: "radio",
         title: d.mark ? `${sspname} - ${d.mark}` : sspname,
@@ -77,8 +81,8 @@ class TabSelector {
             const td = this.idmap.get(info.menuItemId);
             const si = obj.t.findIndex(item => item === td);
             if (si < 0 || si >= obj.t.length) {
-              tracker.exception({
-                exDescription: "Tabmenu: invalid array index",
+              gtracker.exception({
+                exDescription: "TabSelector: invalid array index",
                 exFatal: true,
               });
               throw new Error("Invalid array index");
@@ -89,7 +93,7 @@ class TabSelector {
         },
       }, () => {
         if (chrome.runtime.lastError) {
-          tracker.exception({
+          gtracker.exception({
             exDescription: chrome.runtime.lastError.message,
             exFatal: true,
           });
@@ -110,17 +114,17 @@ class TabSelector {
       p: [], // partial
       t: [], // total
     };
-    Config.sspt.forEach(x => {
+    Config.ssps.forEach(x => {
       if (this.sdata[x] && this.sdata[x].length) {
         this.sdata[x].forEach((item, i) => {
-          const foreign = i === 0 ? Config.predefine[x] : Config.furtherer;
+          const foreign = i === 0 ? Config.predefine[x] : Config.preothers;
           const d = Object.assign(item, {foreign});
           if (!Config.inactived[x]) obj.p.push(d);
           obj.t.push(d);
         });
       } else {
-        tracker.exception({
-          exDescription: "TabMenu: wrong data structure",
+        gtracker.exception({
+          exDescription: "TabSelector: wrong data structure",
           exFatal: true,
         });
         throw new Error("Wrong data structure");
@@ -136,17 +140,16 @@ class TabSelector {
    */
   addChangeEvent() {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName === "sync" || areaName === "local") {
+      if (areaName !== "sync" && areaName !== "local") return;
 
-        // 如果是菜单更新了 selectindex，则不用更新当前数据
-        if (changes.selectindex && Object.keys(changes).length === 1 &&
-          changes.selectindex.newValue === this.sdata.selectindex) {
-          return;
-        }
+      // 如果是当前菜单更新了 selectindex，则不用更新当前数据
+      if (changes.selectindex && Object.keys(changes).length === 1 &&
+        changes.selectindex.newValue === this.sdata.selectindex) {
+        return;
+      }
 
-        if (Object.keys(this.sdata).some(k => !!changes[k])) {
-          getUserData().then(d => this.regenerate(d));
-        }
+      if (Config.sakeys.some(k => !!changes[k])) {
+        getUserData(areaName, this.sdata.syncdata).then(d => this.regenerate(d));
       }
     });
   }
@@ -154,16 +157,17 @@ class TabSelector {
   /**
    * @private
    * @desc 如果有菜单已打开时，销毁重新创建菜单，则已有的菜单事件将会丢失。
-   *        这个情况很少见，并且没有很好方式去处理。
+   *        这个情况很少见，并且没有很好的方法来处理这个问题。
    */
   regenerate(sdata) {
     const list = this.subMenuIds.map(id => new Promise((resolve, reject) => {
       chrome.contextMenus.remove(id, () => {
         if (chrome.runtime.lastError) {
-          tracker.exception({
+          gtracker.exception({
             exDescription: chrome.runtime.lastError.message,
             exFatal: true,
           });
+          reject(chrome.runtime.lastError);
         }
         resolve();
       });

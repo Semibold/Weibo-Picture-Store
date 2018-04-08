@@ -5,7 +5,7 @@
  */
 
 import {hash_hmac} from "../../source/scripts/sharre/hash-hmac.js";
-import {Base64} from "../../source/scripts/sharre/base64.js";
+import {Base64} from "../../source/scripts/vendor/base64.js";
 
 const appId = "200001";
 const bucket = "newbucket";

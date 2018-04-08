@@ -8,7 +8,7 @@
  * @see https://developers.google.com/analytics/devguides/collection/analyticsjs/
  * @desc depend on google analytics
  */
-class InternalTracker {
+class GTracker {
 
   constructor() {
     this.ga = self.ga;
@@ -31,7 +31,7 @@ class InternalTracker {
    * @param {string} [obj.title]
    * @param {string} [obj.location] - location 和 page 二选一
    * @param {string} [obj.page] - location 和 page 二选一
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   pageview(obj) {
     if (this.disabled) return this;
@@ -49,7 +49,7 @@ class InternalTracker {
    * @param {string} [obj.eventLabel]
    * @param {number} [obj.eventValue]
    * @param {boolean} [obj.nonInteraction]
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   event(obj) {
     if (this.disabled) return this;
@@ -62,7 +62,7 @@ class InternalTracker {
    * @param {Object} [obj]
    * @param {string} [obj.exDescription]
    * @param {boolean} [obj.exFatal]
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   exception(obj) {
     if (this.disabled) return this;
@@ -76,7 +76,7 @@ class InternalTracker {
    * @param {string} obj.socialNetwork
    * @param {string} obj.socialAction
    * @param {string} obj.socialTarget
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   social(obj) {
     if (this.disabled) return this;
@@ -92,7 +92,7 @@ class InternalTracker {
    * @param {string} [obj.appId]
    * @param {string} [obj.appVersion]
    * @param {string} [obj.appInstallerId]
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   screenview(obj) {
     if (this.disabled) return this;
@@ -107,7 +107,7 @@ class InternalTracker {
    * @param {string} obj.timingVar
    * @param {number} obj.timingValue
    * @param {string} [obj.timingLabel]
-   * @return {InternalTracker}
+   * @return {GTracker}
    */
   timing(obj) {
     if (this.disabled) return this;
@@ -117,4 +117,4 @@ class InternalTracker {
 
 }
 
-export const tracker = new InternalTracker();
+export const gtracker = new GTracker();
