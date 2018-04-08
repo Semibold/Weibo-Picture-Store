@@ -16,7 +16,7 @@ const bws = chrome.extension.getBackgroundPage();
 class UserData {
 
   /**
-   * @see /test/structs/userdata.js
+   * @see /type/sdata.ts
    */
   constructor(sdata) {
     this.sdata = sdata;
