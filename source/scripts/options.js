@@ -6,7 +6,7 @@
 
 import {i18nLocale} from "./sharre/i18n-locale.js";
 import {Config} from "./sharre/config.js";
-import {setUserData, getUserData} from "./sharre/transverter.js";
+import {setUserData} from "./sharre/transverter.js";
 import {gtracker} from "./vendor/g-tracker.js";
 
 gtracker.pageview();
@@ -49,11 +49,33 @@ class UserData {
     this.locales();
     this.genlist();
     this.renderSync();
+    this.renderTabs();
     this.renderSelectedTab();
     this.addSyncEvent();
     this.addTabsEvent();
     this.addBtnsEvent();
     return this;
+  }
+
+  /**
+   * @public
+   * @param {Object} sdata
+   */
+  rerenderSync(sdata) {
+    this.sdata = sdata;
+    this.renderSync();
+  }
+
+  /**
+   * @public
+   * @param {Object} sdata
+   */
+  regenerate(sdata) {
+    this.sdata = sdata;
+    this.genlist();
+    this.renderSync();
+    this.renderTabs();
+    this.renderSelectedTab();
   }
 
   /**
@@ -63,20 +85,8 @@ class UserData {
   genlist() {
     this.list.length = 0;
     Config.ssps.forEach(x => {
-      if (this.sdata[x] && this.sdata[x].length) {
-        this.sdata[x].forEach((item, i) => {
-          const foreign = i === 0 ? Config.predefine[x] : Config.preothers;
-          this.list.push(Object.assign(item, {foreign}));
-        });
-      } else {
-        gtracker.exception({
-          exDescription: "Options: wrong data structure",
-          exFatal: true,
-        });
-        throw new Error("Wrong data structure");
-      }
+      this.sdata[x].forEach(item => this.list.push(item));
     });
-    this.renderTabs();
   }
 
   /**
@@ -91,7 +101,7 @@ class UserData {
    */
   renderSync() {
     const input = document.querySelector(".input-syncdata");
-    input.checked = this.sdata.syncdata;
+    input.checked = this.sdata[Config.synckey];
   }
 
   /**
@@ -178,10 +188,6 @@ class UserData {
     tabs[index].dataset.selected = true;
     tabs[index].scrollIntoView({block: "nearest", inline: "nearest"});
     this.renderSelectedConfig(index);
-    if (this.sdata.selectindex !== index) {
-      this.sdata.selectindex = index;
-      setUserData(this.sdata);
-    }
   }
 
   /**
@@ -263,8 +269,19 @@ class UserData {
   addSyncEvent() {
     const input = document.querySelector(".input-syncdata");
     input.addEventListener("click", e => {
-      this.sdata.syncdata = input.checked;
-      setUserData(this.sdata, true);
+      this.sdata[Config.synckey] = input.checked;
+      chrome.storage.sync.set({
+        [Config.synckey]: input.checked,
+      }, () => {
+        if (chrome.runtime.lastError) {
+          gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
+          return;
+        }
+        setUserData(this.sdata);
+      });
       gtracker.event({
         eventCategory: e.target.tagName,
         eventAction: e.type,
@@ -283,7 +300,13 @@ class UserData {
         const d = this.nodemap.get(tab);
         if (Config.inactived[d.ssp]) return;
         const i = this.list.findIndex(cv => cv === d);
-        this.renderSelectedTab(i);
+        if (i >= 0 && i < this.list.length &&
+          this.sdata.selectindex !== i) {
+          this.sdata.selectindex = i;
+          setUserData(this.sdata);
+        } else {
+          this.renderSelectedTab(i);
+        }
         gtracker.event({
           eventCategory: e.target.tagName,
           eventAction: e.type,
@@ -305,7 +328,6 @@ class UserData {
       const cd = this.list[this.sdata.selectindex];
       if (cd.foreign.updatebtn.disabled) return;
       this[cd.ssp](cd, "update");
-      this.renderRemark(this.ssptab.querySelector(`nav[data-selected="true"]`));
       setUserData(this.sdata);
       gtracker.event({
         eventCategory: e.target.tagName,
@@ -326,8 +348,7 @@ class UserData {
       this.sdata[cd.ssp].push(nd);
       this[cd.ssp](nd, "update");
       this.genlist();
-      const index = this.list.findIndex(cv => cv === nd);
-      this.renderSelectedTab(index);
+      this.sdata.selectindex = this.list.findIndex(cv => cv === nd);
       setUserData(this.sdata);
       gtracker.event({
         eventCategory: e.target.tagName,
@@ -341,10 +362,10 @@ class UserData {
       const index = this.sdata[cd.ssp].findIndex(cv => cv === cd);
       this.sdata[cd.ssp].splice(index, 1);
       this.genlist();
-      for (let i = this.sdata.selectindex - 1; i >=0 ; i--) {
+      for (let i = this.sdata.selectindex - 1; i >= 0; i--) {
         const ld = this.list[i];
         if (Config.inactived[ld.ssp]) continue;
-        this.renderSelectedTab(i);
+        this.sdata.selectindex = i;
         break;
       }
       setUserData(this.sdata);
@@ -369,7 +390,15 @@ class UserData {
  * @desc 这里需要数据的副本，而非引用
  */
 bws.SharreM.sdataPromise.then(ts => {
-  return getUserData(ts.syncAreaName);
-}).then(d => {
-  new UserData(d).init();
+  const ud = new UserData(ts.syncsdata).init();
+  chrome.runtime.onMessage.addListener(message => {
+    if (message && message.data &&
+      message.type === Config.synckey) {
+      if (message.sync) {
+        ud.rerenderSync(message.data);
+      } else {
+        ud.regenerate(message.data);
+      }
+    }
+  });
 });

@@ -28,7 +28,10 @@ function decodeData(items) {
   const z = Config.ssps.reduce((r, x) => {
     const pl = l.length;
     const a = Array.isArray(items[x]) ? items[x] : [];
-    if (!a.length) a.push(Config.sspsdata[x]);
+    if (!a.length) {
+      // 每种类型至少要有一个数据
+      a.push(Config.sspsdata[x]);
+    }
     r[x] = a;
     l.push(...a);
 
@@ -43,6 +46,10 @@ function decodeData(items) {
       }
     }
 
+    a.forEach((item, i) => {
+      const foreign = i === 0 ? Config.predefine[x] : Config.preothers;
+      Object.assign(item, {foreign});
+    });
     return r;
   }, {
     selectindex: items.selectindex || Config.selectindex,

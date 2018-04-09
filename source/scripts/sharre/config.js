@@ -79,6 +79,8 @@ export class Config {
 
   /**
    * @desc 同步控制 - 固定值
+   * @desc 也用作数据同步的事件类型
+   * @return {string}
    */
   static get synckey() {
     return "synced";
@@ -108,7 +110,7 @@ export class Config {
   }
 
   /**
-   * @desc 存储的 keys 数组，只能有一个 StroageArea 存这部分数据
+   * @desc 存储用户配置的 keys 数组
    * @return {string[]}
    */
   static get sakeys() {
@@ -132,6 +134,7 @@ export class Config {
 
   /**
    * @desc 禁用配置项
+   * @return {Object}
    */
   static get inactived() {
     return {
@@ -143,22 +146,37 @@ export class Config {
     };
   }
 
+  /**
+   * @return {number}
+   */
   static get selectindex() {
     return InternalConf.headroom.selectindex;
   }
 
+  /**
+   * @return {Object}
+   */
   static get sspsdata() {
     return InternalConf.headroom.structure;
   }
 
+  /**
+   * @return {Object}
+   */
   static get preothers() {
     return InternalConf.headroom.preothers;
   }
 
+  /**
+   * @return {Object}
+   */
   static get predefine() {
     return InternalConf.headroom.predefine;
   }
 
+  /**
+   * @return {Object}
+   */
   static get weiboPopup() {
     return {
       scheme: {
