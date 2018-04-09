@@ -5,104 +5,151 @@
  */
 
 import {Config} from "./config.js";
+import {gtracker} from "../vendor/g-tracker.js";
 
-class PartialHander {
-
-  /**
-   * @param {boolean} syncdata
-   * @return {"sync"|"local"}
-   */
-  static storageType(syncdata) {
-    return syncdata ? "sync" : "local";
+/**
+ * @param {boolean} [sync]
+ * @return {"sync"|"local"}
+ */
+function storageType(sync) {
+  if (sync) {
+    return "sync";
+  } else {
+    return "local";
   }
+}
 
-  /**
-   * @param {Object} items
-   * @return {Object}
-   */
-  static decodeData(items) {
-    const l = [];
-    const z = Config.sspt.reduce((r, x) => {
-      const pl = l.length;
-      const a = Array.isArray(items[x]) ? items[x] : [];
-      if (!a.length) a.push(Config.ssptdata[x]);
-      r[x] = a;
-      l.push(...a);
+/**
+ * @param {Object} items
+ * @return {Object}
+ */
+function decodeData(items) {
+  const l = [];
+  const z = Config.ssps.reduce((r, x) => {
+    const pl = l.length;
+    const a = Array.isArray(items[x]) ? items[x] : [];
+    if (!a.length) {
+      // 每种类型至少要有一个数据
+      a.push(Config.sspsdata[x]);
+    }
+    r[x] = a;
+    l.push(...a);
 
-      // 配置锁定可能会让之前的 selectindex 数据无效
-      if (r.selectindex >= pl && r.selectindex < l.length) {
-        if (Config.inactived[x]) {
-          r.selectindex = Config.selectindex;
-        }
+    // 配置锁定可能会让之前的 selectindex 数据无效
+    if (r.selectindex >= pl && r.selectindex < l.length) {
+      if (Config.inactived[x]) {
+        r.selectindex = Config.selectindex;
+        gtracker.exception({
+          exDescription: "Transverter: expired slectindex",
+          exFatal: false,
+        });
       }
-
-      return r;
-    }, {
-      selectindex: items.selectindex || Config.selectindex,
-      syncdata: items.syncdata || Config.syncdata,
-    });
-
-    // selectindex 超出数据长度重置为默认
-    if (z.selectindex >= l.length) {
-      z.selectindex = Config.selectindex;
     }
 
-    return z;
-  }
-
-  /**
-   * @param {Object} sdata
-   * @return {Object}
-   */
-  static encodeData(sdata) {
-    const r = {
-      selectindex: sdata.selectindex,
-      syncdata: sdata.syncdata,
-    };
-    Config.sspt.forEach(x => {
-      const validkeys = Object.keys(Config.ssptdata[x]);
-
-      // 如果某个 SSPT 被禁用则不存储其数据，已有数据也会被丢弃
-      if (Config.inactived[x]) return;
-
-      r[x] = sdata[x].map(item => validkeys.reduce((ac, k) => {
-        ac[k] = item[k] || Config.ssptdata[x][k]; return ac;
-      }, {}));
+    a.forEach((item, i) => {
+      const foreign = i === 0 ? Config.predefine[x] : Config.preothers;
+      Object.assign(item, {foreign});
     });
     return r;
+  }, {
+    selectindex: items.selectindex || Config.selectindex,
+    [Config.synckey]: Boolean(items[Config.synckey]),
+  });
+
+  // selectindex 超出数据长度重置为默认
+  if (z.selectindex >= l.length) {
+    z.selectindex = Config.selectindex;
+    gtracker.exception({
+      exDescription: "Transverter: overflowed slectindex",
+      exFatal: false,
+    });
   }
 
+  return z;
+}
+
+/**
+ * @param {Object} sdata
+ * @return {Object}
+ */
+function encodeData(sdata) {
+  const r = {selectindex: sdata.selectindex};
+  Config.ssps.forEach(x => {
+    const validkeys = Object.keys(Config.sspsdata[x]);
+
+    // 如果某个类型被禁用则不存储其数据，已有数据也会被丢弃
+    if (Config.inactived[x]) return;
+
+    r[x] = sdata[x].map(item => validkeys.reduce((ac, k) => {
+      ac[k] = item[k] || Config.sspsdata[x][k];
+      return ac;
+    }, {}));
+  });
+  return r;
 }
 
 
 /**
  * @async
- * @param {boolean} [sync]
+ * @desc 存取 UserData 专用
+ * @param {boolean} [sync] - 只有在 Storage.onChanged 事件中才有用
  * @return {Promise<Object>}
  */
 export async function getUserData(sync) {
-  const synckey = "syncdata";
-  const selectkey = "selectindex";
   return new Promise((resolve, reject) => {
-    if (sync != null) {
-      resolve(PartialHander.storageType(sync));
+    if (typeof sync !== "boolean") {
+      reject({specified: false});
       return;
     }
-    chrome.storage.sync.get([synckey], items => {
+    const t = storageType(sync);
+    const keys = sync ? [...Config.sakeys, Config.synckey] : Config.sakeys;
+    chrome.storage[t].get(keys, items => {
       if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+        gtracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
+        reject({specified: true});
         return;
       }
-      resolve(PartialHander.storageType(items[synckey]));
-    });
-  }).then(t => {
+      resolve(decodeData(items));
+    })
+  }).catch(reason => {
+    if (reason && reason.specified) {
+      return Promise.reject(reason);
+    }
     return new Promise((resolve, reject) => {
-      chrome.storage[t].get([synckey, selectkey, ...Config.sspt], items => {
+      chrome.storage.sync.get([...Config.sakeys, Config.synckey], items => {
         if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
+          gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
+          reject({specified: false});
           return;
         }
-        resolve(PartialHander.decodeData(items));
+        if (items[Config.synckey]) {
+          resolve(decodeData(items));
+        } else {
+          reject({specified: false});
+        }
+      });
+    });
+  }).catch(reason => {
+    if (reason && reason.specified) {
+      return Promise.reject(reason);
+    }
+    return new Promise((resolve, reject) => {
+      chrome.storage.local.get(Config.sakeys, items => {
+        if (chrome.runtime.lastError) {
+          gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+          });
+          reject({specified: false});
+          return;
+        }
+        resolve(decodeData(items));
       });
     });
   });
@@ -110,6 +157,7 @@ export async function getUserData(sync) {
 
 /**
  * @async
+ * @desc 存取 sdata 专用
  * @param {Object} sdata
  * @return {Promise<void>}
  */
@@ -117,12 +165,16 @@ export async function setUserData(sdata) {
   if (!sdata) {
     throw new Error("Wrong data structure");
   }
-  const t = PartialHander.storageType(sdata.syncdata);
+  const t = storageType(sdata[Config.synckey]);
   return new Promise((resolve, reject) => {
-    chrome.storage[t].set(PartialHander.encodeData(sdata), () => {
+    chrome.storage[t].set(encodeData(sdata), () => {
       if (chrome.runtime.lastError) {
+        gtracker.exception({
+          exDescription: chrome.runtime.lastError.message,
+          exFatal: true,
+        });
         reject(chrome.runtime.lastError);
-      } else{
+      } else {
         resolve();
       }
     });

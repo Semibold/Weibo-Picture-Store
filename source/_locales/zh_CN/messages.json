@@ -5,43 +5,19 @@
   "ext_desc": {
     "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
   },
-  "options_title": {
-    "message": "存储选项"
-  },
-  "options_syncdata": {
-    "message": "同步数据"
-  },
-  "options_syncdata_title": {
-    "message": "在已登录相同账号的 Chrome 浏览器之间，共享配置数据"
-  },
-  "options_userdata_remark": {
-    "message": "备注"
-  },
-  "options_btn_update": {
-    "message": "更新"
-  },
-  "options_btn_saveas": {
-    "message": "另存为"
-  },
-  "options_btn_delete": {
-    "message": "删除"
-  },
-  "options_microalbum_desc_id": {
-    "message": "相册标识符"
-  },
-  "ssp_weibo_com_name": {
+  "weibo_com": {
     "message": "微博图床"
   },
-  "ssp_tencent_com_name": {
+  "qcloud_com": {
     "message": "腾讯云(COS)"
   },
-  "ssp_qiniu_com_name": {
+  "qiniu_com": {
     "message": "七牛云存储"
   },
-  "ssp_aliyun_com_name": {
+  "aliyun_com": {
     "message": "阿里云(OSS)"
   },
-  "ssp_upyun_com_name": {
+  "upyun_com": {
     "message": "又拍云(USS)"
   }
 }

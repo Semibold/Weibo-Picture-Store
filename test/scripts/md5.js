@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {md5, hmac_md5} from "../../source/scripts/sharre/md5.js";
+import {md5, hmac_md5} from "../../source/scripts/vendor/md5.js";
 
 /**
  * @see A.5 Test suite of http://www.ietf.org/rfc/rfc1321.txt

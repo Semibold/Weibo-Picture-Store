@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {Base64} from "../../source/scripts/sharre/base64.js";
+import {Base64} from "../../source/scripts/vendor/base64.js";
 
 const kdata = [[[0, 0, 0], "AAAA"], [[0, 0, 1], "AAAB"], [[0, 1, -1], "AAH/"], [[1, 1, 1], "AQEB"]];
 

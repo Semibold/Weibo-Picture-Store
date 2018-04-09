@@ -4,9 +4,3 @@
  * found in the LICENSE file.
  */
 
-import "./background/boot.js";
-import "./background/start-popup.js";
-import "./background/tab-selector.js";
-import {gtracker} from "./vendor/g-tracker.js";
-
-gtracker.pageview();

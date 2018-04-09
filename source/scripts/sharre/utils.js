@@ -4,9 +4,14 @@
  * found in the LICENSE file.
  */
 
-import {Base64} from "./base64.js";
+import {Base64} from "../vendor/base64.js";
 
 export class Utils {
+
+  /**
+   * @readonly
+   */
+  static noop() {}
 
   /**
    * @param {number} [future = 0] - Second time
@@ -84,6 +89,21 @@ export class Utils {
     const fragment = new DocumentFragment();
     fragment.append(...children);
     return fragment;
+  }
+
+  /**
+   * @param {number} n
+   * @return {string}
+   */
+  static randomString(n = 0) {
+    const buffer = [];
+    const charPool = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+    while (n--) {
+      buffer.push(charPool[Math.floor(Math.random() * charPool.length)]);
+    }
+
+    return buffer.join("");
   }
 
   /**

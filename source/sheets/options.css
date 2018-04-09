@@ -57,11 +57,11 @@ table {
   padding-bottom: 1rem;
 }
 
-#app[data-selected-sspt="weibo_com"] .options-userdata[data-sspt="weibo_com"],
-#app[data-selected-sspt="tencent_com"] .options-userdata[data-sspt="tencent_com"],
-#app[data-selected-sspt="qiniu_com"] .options-userdata[data-sspt="qiniu_com"],
-#app[data-selected-sspt="aliyun_com"] .options-userdata[data-sspt="aliyun_com"],
-#app[data-selected-sspt="upyun_com"] .options-userdata[data-sspt="upyun_com"] {
+#app[data-selected-ssp="weibo_com"] .options-userdata[data-ssp="weibo_com"],
+#app[data-selected-ssp="qcloud_com"] .options-userdata[data-ssp="qcloud_com"],
+#app[data-selected-ssp="qiniu_com"] .options-userdata[data-ssp="qiniu_com"],
+#app[data-selected-ssp="aliyun_com"] .options-userdata[data-ssp="aliyun_com"],
+#app[data-selected-ssp="upyun_com"] .options-userdata[data-ssp="upyun_com"] {
   display: var(--layout-display);
 }
 
@@ -145,23 +145,23 @@ table {
   background-size: contain;
 }
 
-[data-sspt="weibo_com"] .options-ssplogo {
+[data-ssp="weibo_com"] .options-ssplogo {
   background-image: url("../assets/brands/weibo.svg");
 }
 
-[data-sspt="tencent_com"] .options-ssplogo {
+[data-ssp="qcloud_com"] .options-ssplogo {
   background-image: url("../assets/brands/qcloud.svg");
 }
 
-[data-sspt="qiniu_com"] .options-ssplogo {
+[data-ssp="qiniu_com"] .options-ssplogo {
   background-image: url("../assets/brands/qiniu.svg");
 }
 
-[data-sspt="aliyun_com"] .options-ssplogo {
+[data-ssp="aliyun_com"] .options-ssplogo {
   background-image: url("../assets/brands/aliyun.svg");
 }
 
-[data-sspt="upyun_com"] .options-ssplogo {
+[data-ssp="upyun_com"] .options-ssplogo {
   background-image: url("../assets/brands/upyun.svg");
 }
 
