@@ -28,6 +28,15 @@ class TabSelector {
 
   /**
    * @public
+   * @return {Object}
+   */
+  get syncselectdata() {
+    const {t, p} = this.gendata();
+    return t[this.sdata.selectindex];
+  }
+
+  /**
+   * @public
    * @return {TabSelector}
    */
   init() {

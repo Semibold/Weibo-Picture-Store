@@ -43,7 +43,7 @@ class OptionsTree {
 
   /**
    * @public
-   * @return {UserData}
+   * @return {OptionsTree}
    */
   init() {
     this.locales();

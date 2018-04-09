@@ -248,14 +248,33 @@ export class Dispatcher {
 
   /** @private */
   transformData(data) {
-
-    // @todo 生成[M]
-
+    if (!data || !data.pid) {
+      return data;
+    }
+    const {scheme, clipsize} = Config.weiboPopup;
+    const chip = {
+      scheme: scheme[this.config.scheme],
+      host: data.host,
+      pid: data.pid,
+      url: null,
+    };
+    switch (data.ssp) {
+      case "weibo_com":
+        chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.pid}`;
+        break;
+      case "qcloud_com":
+        // @todo thumbnail
+        break;
+      case "qiniu_com":
+      case "aliyun_com":
+      case "upyun_com":
+      default: return data;
+    }
     return Object.assign(data, {
-      URL: url,
-      HTML: `<img src="${url}" alt="image">`,
-      UBB: `[IMG]${url}[/IMG]`,
-      Markdown: `![image](${url})`,
+      URL: chip.url,
+      HTML: `<img src="${chip.url}" alt="image">`,
+      UBB: `[IMG]${chip.url}[/IMG]`,
+      Markdown: `![image](${chip.url})`,
     });
   }
 

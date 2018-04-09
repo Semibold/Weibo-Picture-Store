@@ -17,6 +17,7 @@ interface URLData {
 interface PopupItem extends URLData {
   ssp: string;
   pid: string;
+  host: string;
   blob: Blob | File;
   buffer: ArrayBufferLike;
   readType: string;
