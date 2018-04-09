@@ -13,7 +13,7 @@ gtracker.pageview();
 
 const bws = chrome.extension.getBackgroundPage();
 
-class UserData {
+class OptionsTree {
 
   /**
    * @see /type/sdata.ts
@@ -390,14 +390,14 @@ class UserData {
  * @desc 这里需要数据的副本，而非引用
  */
 bws.SharreM.sdataPromise.then(ts => {
-  const ud = new UserData(ts.syncsdata).init();
+  const ot = new OptionsTree(ts.syncsdata).init();
   chrome.runtime.onMessage.addListener(message => {
     if (message && message.data &&
       message.type === Config.synckey) {
       if (message.sync) {
-        ud.rerenderSync(message.data);
+        ot.rerenderSync(message.data);
       } else {
-        ud.regenerate(message.data);
+        ot.regenerate(message.data);
       }
     }
   });
