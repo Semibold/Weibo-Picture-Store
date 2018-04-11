@@ -7,6 +7,10 @@
 import "./background/start-popup.js";
 import {fetchBlob} from "./background/fetch-blob.js";
 
+import {gtracker} from "./plugin/g-tracker.js";
+
+gtracker.pageview();
+
 /**
  * @desc Core Share Module (APIs)
  */

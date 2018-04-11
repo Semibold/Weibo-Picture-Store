@@ -4,3 +4,6 @@
  * found in the LICENSE file.
  */
 
+import {gtracker} from "./plugin/g-tracker.js";
+
+gtracker.pageview();
