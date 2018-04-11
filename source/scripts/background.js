@@ -5,8 +5,11 @@
  */
 
 import "./background/start-popup.js";
+import {fetchBlob} from "./background/fetch-blob.js";
 
 /**
  * @desc Core Share Module (APIs)
  */
-self.coreAPIs = {};
+self.coreAPIs = {
+    fetchBlob,
+};
