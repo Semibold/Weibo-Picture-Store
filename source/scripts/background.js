@@ -6,6 +6,7 @@
 
 import "./background/start-popup.js";
 import {fetchBlob} from "./background/fetch-blob.js";
+import {syncedSData} from "./background/synced-sdata.js";
 
 import {gtracker} from "./plugin/g-tracker.js";
 
@@ -16,4 +17,5 @@ gtracker.pageview();
  */
 self.coreAPIs = {
     fetchBlob,
+    syncedSData,
 };
