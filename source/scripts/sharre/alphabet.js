@@ -5,6 +5,7 @@
  */
 
 /**
- * @desc Core Share Module (APIs)
+ * @desc 用于非 Background 脚本
  */
-self.coreAPIs = {};
+export const backWindow = chrome.extension.getBackgroundPage();
+export const SharreM = backWindow.coreAPIs;
