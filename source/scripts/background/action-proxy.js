@@ -5,9 +5,8 @@
  */
 
 import {FileProgress} from "./file-progress.js";
-import {FP_ACTION_UPLOAD} from "./file-progress.js";
 
-export const AP_ACTION_UPLOAD = 1;
+const ACTION_UPLOAD = 1;
 
 export class ActionProxy {
 
@@ -22,10 +21,10 @@ export class ActionProxy {
      * @return {ActionProxy}
      */
     init() {
-        if (this.action === AP_ACTION_UPLOAD) {
+        if (this.action === ACTION_UPLOAD) {
             this.tailer.done = true;
             this.tailer.iterator = this.genUploadQueues();
-            this.tailer.progress = new FileProgress(FP_ACTION_UPLOAD);
+            this.tailer.progress = new FileProgress(FileProgress.ACTION_UPLOAD);
         }
         return this;
     }
@@ -36,7 +35,7 @@ export class ActionProxy {
      * @param {Function} [cb]
      */
     startAutoIteration(cb) {
-        if (this.action === AP_ACTION_UPLOAD) {
+        if (this.action === ACTION_UPLOAD) {
             if (this.tailer.done && this.queues.length) {
                 this.runIteration(cb);
                 this.tailer.progress.trigger();
@@ -75,7 +74,7 @@ export class ActionProxy {
      * @param {Object[]} list
      */
     addQueues(list) {
-        if (this.action === AP_ACTION_UPLOAD) {
+        if (this.action === ACTION_UPLOAD) {
             this.queues.push(...list);
             this.tailer.progress.padding(list.length);
         }
@@ -95,3 +94,7 @@ export class ActionProxy {
     }
 
 }
+
+Object.defineProperties(ActionProxy, {
+    ACTION_UPLOAD: {value: ACTION_UPLOAD},
+});
