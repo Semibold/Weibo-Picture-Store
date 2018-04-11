@@ -1,13 +1,12 @@
 /**
- * Gulp
+ * @file gulpfile
  */
+
 const gulp = require("gulp");
-const gulpZip = require("gulp-zip");
+const gulp_zip = require("gulp-zip");
 
-
-gulp.task("deploy", () => {
-    return gulp
-        .src("./source/**")
-        .pipe(gulpZip("weibo-picture-store.zip"))
-        .pipe(gulp.dest("./deploy/"));
+gulp.task("deploy", function () {
+    return gulp.src("source/**")
+        .pipe(gulp_zip("bundle.zip"))
+        .pipe(gulp.dest("deploy"))
 });

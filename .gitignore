@@ -5,4 +5,4 @@ node_modules
 deploy
 test
 
-npm-debug.log
+npm-debug.log*
