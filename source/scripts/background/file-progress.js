@@ -13,8 +13,8 @@ const fps = 25;
 const storeMap = new Map();
 const nextFrame = callback => setTimeout(callback, 1000 / fps);
 
-export const ACTION_UPLOAD = 1;
-export const ACTION_DOWNLOAD = 2;
+export const FP_ACTION_UPLOAD = 1;
+export const FP_ACTION_DOWNLOAD = 2;
 
 /**
  * @desc 用于支持多类型
@@ -69,11 +69,11 @@ function coreInternalHander(tid) {
     }
 
     switch (tid) {
-        case ACTION_UPLOAD:
+        case FP_ACTION_UPLOAD:
             message = "当前提示在上传完成后会自动关闭";
             contextMessage = "加速上传中，请耐心等候";
             break;
-        case ACTION_DOWNLOAD:
+        case FP_ACTION_DOWNLOAD:
             message = "当前提示在下载完成后会自动关闭";
             contextMessage = "正在获取远程文件，请耐心等候";
             break;
@@ -102,7 +102,7 @@ function coreInternalHander(tid) {
                 dtd.requestId && clearTimeout(dtd.requestId);
                 dtd.reformat();
                 chrome.notifications.clear(notificationId, wasCleared => {
-                    if (wasCleared && tid === ACTION_UPLOAD) {
+                    if (wasCleared && tid === FP_ACTION_UPLOAD) {
                         chrome.notifications.create(dtd.notifyId, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("notify_icon"),
@@ -122,8 +122,8 @@ function coreInternalHander(tid) {
     return true;
 }
 
-storeMap.set(ACTION_UPLOAD, new TypeEntry());
-storeMap.set(ACTION_DOWNLOAD, new TypeEntry());
+storeMap.set(FP_ACTION_UPLOAD, new TypeEntry());
+storeMap.set(FP_ACTION_DOWNLOAD, new TypeEntry());
 
 /**
  * @desc Progress 的内部实现是用单例模式（上传、下载各一种）

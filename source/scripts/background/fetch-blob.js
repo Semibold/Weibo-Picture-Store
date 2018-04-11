@@ -5,7 +5,7 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {FileProgress, ACTION_DOWNLOAD} from "./file-progress.js";
+import {FileProgress, FP_ACTION_DOWNLOAD} from "./file-progress.js";
 
 const failedId = Utils.randomString(16);
 
@@ -16,7 +16,7 @@ const failedId = Utils.randomString(16);
  */
 export async function fetchBlob(url) {
     const delayInfo = {interval: 500, requestId: null};
-    const progress = new FileProgress(ACTION_DOWNLOAD);
+    const progress = new FileProgress(FP_ACTION_DOWNLOAD);
 
     progress.padding(1);
     delayInfo.requestId = setTimeout(() => progress.trigger(), delayInfo.interval);
