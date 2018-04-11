@@ -1,0 +1,51 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_ext_name__",
+  "version": "4.0.0",
+  "default_locale": "zh_CN",
+  "description": "__MSG_ext_desc__",
+  "icons": {
+    "32": "icons/32.png",
+    "64": "icons/64.png",
+    "128": "icons/128.png"
+  },
+  "browser_action": {
+    "default_title": "__MSG_ext_name__"
+  },
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Shift+Alt+W"
+      }
+    }
+  },
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
+  "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
+  "minimum_chrome_version": "65",
+  "optional_permissions": [
+    "downloads"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
+  "permissions": [
+    "clipboardWrite",
+    "clipboardRead",
+    "contextMenus",
+    "notifications",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    "scripts/*"
+  ]
+}

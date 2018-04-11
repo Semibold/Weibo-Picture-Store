@@ -1,0 +1,23 @@
+{
+  "ext_name": {
+    "message": "微博图床"
+  },
+  "ext_desc": {
+    "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
+  },
+  "weibo_com": {
+    "message": "微博图床"
+  },
+  "qcloud_com": {
+    "message": "腾讯云(COS)"
+  },
+  "qiniu_com": {
+    "message": "七牛云存储"
+  },
+  "aliyun_com": {
+    "message": "阿里云(OSS)"
+  },
+  "upyun_com": {
+    "message": "又拍云(USS)"
+  }
+}
