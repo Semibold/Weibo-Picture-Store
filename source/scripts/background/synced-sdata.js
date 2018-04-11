@@ -6,7 +6,7 @@
 
 import {Config} from "../sharre/config.js";
 import {gtracker} from "../plugin/g-tracker.js";
-import {T_DATA_CHANGED, T_SYNC_CHANGED} from "../plugin/constant.js";
+import {T_DATA_CHANGED} from "../plugin/constant.js";
 
 class SyncedSData extends EventTarget {
 
@@ -187,12 +187,12 @@ class SyncedSData extends EventTarget {
             if (areaName === "sync" && changes[Config.synckey] &&
                 changes[Config.synckey].newValue !== this._sdata[Config.synckey]) {
                 this._sdata[Config.synckey] = Boolean(changes[Config.synckey].newValue);
-                this.dispatchEvent(new CustomEvent(T_SYNC_CHANGED, {detail: {sdata: this._sdata, syncOnly: true}}));
+                this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: this._sdata, syncOnly: true}}));
             }
             if (this._sdata[Config.synckey] !== (areaName === "sync")) return;
             if (Config.sakeys.some(k => !!changes[k])) {
                 this.constructor.getUserData(areaName === "sync").then(d => {
-                    this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: d}}));
+                    this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: d, syncOnly: false}}));
                 });
             }
         });

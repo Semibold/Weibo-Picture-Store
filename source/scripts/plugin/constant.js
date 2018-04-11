@@ -11,5 +11,4 @@ export const MAXIMUM_EDGE = 2 ** 15 - 1;
 
 export const TRACKER_ID = "since-20170309";
 
-export const T_SYNC_CHANGED = "sync_changed";
 export const T_DATA_CHANGED = "data_changed";
