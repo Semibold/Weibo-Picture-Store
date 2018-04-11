@@ -150,4 +150,40 @@ export class Config {
         return InternalConf.headroom.predefine;
     }
 
+    /**
+     * @see https://support.google.com/webmasters/answer/2598805
+     * @see https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+     * @return {string[]}
+     */
+    static get chromeSupportedTypes() {
+        return [
+            "image/jpeg",
+            "image/png",
+            "image/apng",
+            "image/gif",
+            "image/bmp",
+            "image/webp",
+            "image/x-icon",
+        ];
+    }
+
+    /**
+     * @return {Object}
+     */
+    static get weiboPopup() {
+        return {
+            scheme: {
+                1: "http://",
+                2: "https://",
+                3: "//",
+            },
+            clipsize: {
+                1: "large",
+                2: "mw690",
+                3: "thumbnail",
+                4: "",
+            },
+        };
+    }
+
 }

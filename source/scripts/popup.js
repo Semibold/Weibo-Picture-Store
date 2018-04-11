@@ -4,6 +4,39 @@
  * found in the LICENSE file.
  */
 
+import "./popup/fragment.js";
+import {Config} from "./sharre/config.js";
+import {Dispatcher} from "./popup/dispatcher.js";
+import {backWindow} from "./sharre/alphabet.js";
+
 import {gtracker} from "./plugin/g-tracker.js";
 
 gtracker.pageview();
+document.title = chrome.i18n.getMessage("ext_name");
+
+const dispatcher = new Dispatcher().init();
+const fileInput = document.querySelector("#file-input");
+const browsingHistory = document.querySelector(".head-browsing-history");
+
+fileInput.accept = Config.chromeSupportedTypes.join(",");
+fileInput.addEventListener("change", e => {
+    dispatcher.requester(e.target.files);
+});
+
+browsingHistory.addEventListener("click", e => {
+    backWindow.chrome.tabs.create({url: "history.html"});
+});
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        chrome.windows.getCurrent(result => {
+            chrome.windows.remove(result.id);
+        });
+    }
+});
+
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => {
+    e.preventDefault();
+    dispatcher.requester(e.dataTransfer.files);
+});

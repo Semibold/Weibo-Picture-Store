@@ -10,6 +10,11 @@
 export class Utils {
 
     /**
+     * @nosideeffects
+     */
+    static noop() {}
+
+    /**
      * @param {number} [future] - seconds
      * @return {number} - seconds
      */
