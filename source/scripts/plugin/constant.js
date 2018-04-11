@@ -12,3 +12,7 @@ export const MAXIMUM_EDGE = 2 ** 15 - 1;
 export const TRACKER_ID = "since-20170309";
 
 export const T_DATA_CHANGED = "data_changed";
+
+export const WEIBO_ALBUM_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUWFdcwtlGEX2w";
+
+export const MAX_SUBMENU_LENGTH = 12;

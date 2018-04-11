@@ -5,6 +5,7 @@
  */
 
 import "./background/start-popup.js";
+import "./background/menu-selector.js";
 import {fetchBlob} from "./background/fetch-blob.js";
 import {syncedSData} from "./background/synced-sdata.js";
 
