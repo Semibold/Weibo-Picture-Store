@@ -44,6 +44,23 @@ class InternalConf {
                     deletebtn: {disabled: true},
                 },
             },
+            restricte: {
+                weibo_com: {
+                    filesize: 20 * 1024 ** 2 - 1, // 20MB
+                },
+                qcloud_com: {
+                    filesize: 5 * 1024 ** 3 - 1, // 5GB
+                },
+                qiniu_com: {
+                    filesize: 0,
+                },
+                aliyun_com: {
+                    filesize: 0,
+                },
+                upyun_com: {
+                    filesize: 0,
+                },
+            },
             structure: {
                 weibo_com: {
                     ssp: "weibo_com",
@@ -151,6 +168,13 @@ export class Config {
     }
 
     /**
+     * @return {Object}
+     */
+    static get restricte() {
+        return InternalConf.headroom.restricte;
+    }
+
+    /**
      * @see https://support.google.com/webmasters/answer/2598805
      * @see https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
      * @return {string[]}
@@ -182,6 +206,30 @@ export class Config {
                 2: "mw690",
                 3: "thumbnail",
                 4: "",
+            },
+        };
+    }
+
+    /**
+     * @desc 微博支持的图片类型
+     */
+    static get weiboAcceptType() {
+        return {
+            "image/jpeg": {
+                type: ".jpg",
+                typo: ".jpg",
+            },
+            "image/png": {
+                type: ".png",
+                typo: ".jpg",
+            },
+            "image/apng": {
+                type: ".png",
+                typo: ".jpg",
+            },
+            "image/gif": {
+                type: ".gif",
+                typo: ".gif",
             },
         };
     }
