@@ -4,6 +4,8 @@
  * found in the LICENSE file.
  */
 
+import "./background/start-popup.js";
+
 /**
  * @desc Core Share Module (APIs)
  */
