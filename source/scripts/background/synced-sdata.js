@@ -182,10 +182,16 @@ class SyncedSData extends EventTarget {
         super();
         this._sdata = null;
         this._promise = this.constructor.getUserData().then(d => this._sdata = d);
+    }
+
+    /**
+     * @public
+     * @return {SyncedSData}
+     */
+    init() {
         chrome.storage.onChanged.addListener((changes, areaName) => {
             if (areaName !== "sync" && areaName !== "local") return;
-            if (areaName === "sync" && changes[Config.synckey] &&
-                changes[Config.synckey].newValue !== this._sdata[Config.synckey]) {
+            if (areaName === "sync" && changes[Config.synckey]) {
                 this._sdata[Config.synckey] = Boolean(changes[Config.synckey].newValue);
                 this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: this._sdata, syncOnly: true}}));
             }
@@ -196,6 +202,7 @@ class SyncedSData extends EventTarget {
                 });
             }
         });
+        return this;
     }
 
     /**
@@ -203,7 +210,7 @@ class SyncedSData extends EventTarget {
      * @return {Object}
      */
     get sdata() {
-        return Object.assign({_copy_: true}, this._sdata);
+        return this._sdata;
     }
 
     /**
@@ -251,4 +258,4 @@ class SyncedSData extends EventTarget {
 
 }
 
-export const syncedSData = new SyncedSData();
+export const syncedSData = new SyncedSData().init();
