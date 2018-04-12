@@ -4,4 +4,5 @@
 node_modules
 deploy
 
+tests/key.js
 npm-debug.log*
