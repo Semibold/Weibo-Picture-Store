@@ -107,7 +107,7 @@ function coreInternalHander(tid) {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("notify_icon"),
                             title: chrome.i18n.getMessage("info_title"),
-                            message: "图片上传流程结束啦！",
+                            message: "文件上传流程结束啦！",
                         });
                     }
                 });

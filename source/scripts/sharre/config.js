@@ -46,19 +46,24 @@ class InternalConf {
             },
             restricte: {
                 weibo_com: {
-                    filesize: 20 * 1024 ** 2 - 1, // 20MB
+                    filesize: 20 * 1024 ** 2 - 1,
+                    sizename: "20MB",
                 },
                 qcloud_com: {
-                    filesize: 5 * 1024 ** 3 - 1, // 5GB
+                    filesize: 5 * 1024 ** 3 - 1,
+                    sizename: "5GB",
                 },
                 qiniu_com: {
                     filesize: 0,
+                    sizename: "0B",
                 },
                 aliyun_com: {
                     filesize: 0,
+                    sizename: "0B",
                 },
                 upyun_com: {
                     filesize: 0,
+                    sizename: "0B",
                 },
             },
             structure: {

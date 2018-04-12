@@ -36,7 +36,7 @@ export async function refineFile(item) {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
             title: chrome.i18n.getMessage("info_title"),
-            message: "检测到某些图片的大小超过20M，自动丢弃这些图片",
+            message: `检测到某些文件的大小超过${Config.restricte[x].sizename}，自动丢弃这些文件`,
         });
         return null;
     }
