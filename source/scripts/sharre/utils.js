@@ -123,7 +123,11 @@ export class Utils {
      * @return {Uint8Array}
      */
     static bufferFromText(byteSequence = "") {
-        return Uint8Array.from([...byteSequence], char => char.codePointAt(0));
+        const bufferView = new Uint8Array(byteSequence.length);
+        for (let i = 0; i < byteSequence.length; i++) {
+            bufferView[i] = byteSequence.codePointAt(i);
+        }
+        return bufferView;
     }
 
     /**
@@ -132,8 +136,12 @@ export class Utils {
      * @return {string}
      */
     static textFromBuffer(buffer) {
+        const r = [];
         const bufferView = new Uint8Array(buffer);
-        return String.fromCodePoint(...bufferView);
+        for (let i = 0; i < bufferView.byteLength; i++) {
+            r.push(String.fromCodePoint(bufferView[i]));
+        }
+        return r.join("");
     }
 
     /**
@@ -156,7 +164,7 @@ export class Utils {
      */
     static hexitFromBuffer(buffer) {
         const bv = new Uint8Array(buffer);
-        return [...bv].map(x => x.toString(16).padStart(2, "0")).join("").toLowerCase();
+        return Array.from(bv).map(x => x.toString(16).padStart(2, "0")).join("").toLowerCase();
     }
 
     /**
