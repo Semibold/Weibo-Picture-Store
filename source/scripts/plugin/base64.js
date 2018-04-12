@@ -4,6 +4,8 @@
  * found in the LICENSE file.
  */
 
+import {Utils} from "../sharre/utils.js";
+
 /**
  * @static
  * @see https://github.com/beatgammit/base64-js
@@ -87,7 +89,7 @@ export class Base64 {
      */
     static decode(base64 = "") {
         const bufferView = Base64.toBuffer(text);
-        return String.fromCodePoint(...bufferView);
+        return Utils.textFromBuffer(bufferView);
     }
 
     /**
@@ -97,7 +99,7 @@ export class Base64 {
      * @return {string}
      */
     static encode(text = "") {
-        const buffer = Uint8Array.from([...text], char => char.codePointAt(0));
+        const buffer = Utils.bufferFromText(text);
         return Base64.fromBuffer(buffer);
     }
 
