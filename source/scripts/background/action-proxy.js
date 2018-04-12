@@ -6,7 +6,7 @@
 
 import {FileProgress} from "./file-progress.js";
 import {syncedSData} from "./synced-sdata.js";
-import {gtracker} from "../plugin/g-tracker";
+import {gtracker} from "../plugin/g-tracker.js";
 import {weiboRandomHost} from "../weibo/channel.js";
 
 const ACTION_UPLOAD = 1;

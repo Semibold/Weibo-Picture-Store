@@ -297,8 +297,9 @@ export class Dispatcher {
     }
 
     /** @public */
-    requester(list) {
-        if (Array.isArray(list) && list.length) {
+    requester(blobs) {
+        const list = blobs ? Array.from(blobs) : [];
+        if (list.length) {
             this.actionProxy.addQueues(list);
             if (this.checkout.clear) {
                 this.actionProxy.startAutoIteration(it => {
