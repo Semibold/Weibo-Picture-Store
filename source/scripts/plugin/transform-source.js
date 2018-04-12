@@ -16,8 +16,8 @@ import {MAXIMUM_EDGE} from "./constant.js";
 export async function transformSource(blob) {
     return createImageBitmap(blob)
         .then(bitmap => {
-            const width = Math.ceil(bitmap.width);
-            const height = Math.ceil(bitmap.height);
+            const width = bitmap.width;
+            const height = bitmap.height;
 
             if (width > MAXIMUM_EDGE || height > MAXIMUM_EDGE) {
                 return Promise.reject("Beyond the border");

@@ -5,6 +5,9 @@
  */
 
 import {FileProgress} from "./file-progress.js";
+import {syncedSData} from "./synced-sdata.js";
+import {gtracker} from "../plugin/g-tracker";
+import {weiboRandomHost} from "../weibo/channel.js";
 
 const ACTION_UPLOAD = 1;
 
@@ -72,12 +75,35 @@ export class ActionProxy {
     /**
      * @public
      * @param {Object[]} list
+     * @return {boolean}
      */
     addQueues(list) {
         if (this.action === ACTION_UPLOAD) {
-            this.queues.push(...list);
-            this.tailer.progress.padding(list.length);
+            const cd = syncedSData.cdata; // Serve async as sync
+            if (cd) {
+                for (let i = 0; i < list.length; i++) {
+                    const item = list[i];
+                    const z = item.type.split("/")[1];
+                    this.queues.push(Object.assign({
+                        data: cd,
+                        host: cd.ssp === "weibo_com" ? weiboRandomHost() : cd.host,
+                        blob: item,
+                        mime: {
+                            type: item.type,
+                            suffix: z ? `.${z}` : "",
+                        },
+                    }));
+                }
+                this.tailer.progress.padding(list.length);
+            } else {
+                gtracker.exception({
+                    exDescription: "ActionProxy: Cannot get selected data",
+                    exFatal: true,
+                });
+            }
+            return Boolean(cd);
         }
+        return false;
     }
 
     /**

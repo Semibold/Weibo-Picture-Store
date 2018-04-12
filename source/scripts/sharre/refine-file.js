@@ -21,7 +21,7 @@ export async function refineFile(item) {
     }
     const x = item.data.ssp;
     if (x === "weibo_com") {
-        if (!Config.weiboAcceptType[item.mimeType]) {
+        if (!Config.weiboAcceptType[item.mime.type]) {
             chrome.notifications.create(typeId, {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notify_icon"),

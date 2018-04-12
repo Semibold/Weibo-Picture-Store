@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+const UNKOWN_BITMAP_MIME = "";
 const BITMAP_PATTERN_TABLE = [
     {
         pattern: [0x00, 0x00, 0x01, 0x00],
@@ -107,5 +108,5 @@ export const bitmapMime = buffer => {
             return item.type;
         }
     }
-    return "";
+    return UNKOWN_BITMAP_MIME;
 };
