@@ -247,22 +247,19 @@ class OptionsTree {
      * @private
      * @see ssp
      */
-    qiniu_com(d, role) {
-    }
+    qiniu_com(d, role) {}
 
     /**
      * @private
      * @see ssp
      */
-    aliyun_com(d, role) {
-    }
+    aliyun_com(d, role) {}
 
     /**
      * @private
      * @see ssp
      */
-    upyun_com(d, role) {
-    }
+    upyun_com(d, role) {}
 
     /**
      * @private
@@ -384,9 +381,6 @@ class OptionsTree {
 
 }
 
-/**
- * @desc 这里需要数据的副本，而非引用
- */
 SharreM.syncedSData.promise.then(sdata => {
     const optionsTree = new OptionsTree(sdata).init();
     SharreM.syncedSData.addEventListener(T_DATA_CHANGED, e => {
