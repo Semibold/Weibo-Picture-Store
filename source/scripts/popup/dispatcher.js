@@ -255,18 +255,18 @@ export class Dispatcher {
     }
 
     /** @private */
-    transformData(data) {
-        if (!data || !data.pid) {
-            return data;
+    transformData(item) {
+        if (!item || !item.pid) {
+            return item;
         }
         const {scheme, clipsize} = Config.weiboPopup;
         const chip = {
             scheme: scheme[this.config.scheme],
-            host: data.host,
-            pid: data.pid,
-            url: `${scheme[this.config.scheme] + data.host}/${data.pid}`,
+            host: item.host,
+            pid: item.pid,
+            url: `${scheme[this.config.scheme] + item.host}/${item.pid}`,
         };
-        switch (data.ssp) {
+        switch (item.data.ssp) {
             case "weibo_com":
                 chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.pid}`;
                 break;
@@ -276,9 +276,9 @@ export class Dispatcher {
             case "aliyun_com":
             case "upyun_com":
             default:
-                return data;
+                return item;
         }
-        return Object.assign(data, {
+        return Object.assign(item, {
             URL: chip.url,
             HTML: `<img src="${chip.url}" alt="image">`,
             UBB: `[IMG]${chip.url}[/IMG]`,

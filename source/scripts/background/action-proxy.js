@@ -8,6 +8,7 @@ import {FileProgress} from "./file-progress.js";
 import {syncedSData} from "./synced-sdata.js";
 import {gtracker} from "../plugin/g-tracker.js";
 import {weiboRandomHost} from "../weibo/channel.js";
+import {ActionUpload} from "./action-upload.js";
 
 const ACTION_UPLOAD = 1;
 
@@ -58,6 +59,7 @@ export class ActionProxy {
                     this.tailer.progress.consume(this.queues.length + 1);
                     this.queues.length = 0;
                 }
+                typeof cb === "function" && cb(it);
                 this.tailer.done = it.done;
                 this.tailer.iterator = this.genUploadQueues();
             } else {
@@ -114,8 +116,7 @@ export class ActionProxy {
      */
     async *genUploadQueues() {
         while (this.queues.length) {
-            // @todo 这里处理上传.catch
-            yield this.queues.shift();
+            yield await ActionUpload.trigger(this.queues.shift());
         }
     }
 
