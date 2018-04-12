@@ -15,7 +15,7 @@ const typeId = Utils.randomString(16);
  * @param item
  * @return {Promise<item|null>}
  */
-export async function refineFile(item) {
+export async function filePurity(item) {
     if (!item) {
         return null;
     }
