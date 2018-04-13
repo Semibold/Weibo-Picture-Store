@@ -35,48 +35,6 @@ export class ActionProxy {
 
     /**
      * @public - ACTION_UPLOAD
-     * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
-     * @param {Function} [cb]
-     */
-    startAutoIteration(cb) {
-        if (this.action === ACTION_UPLOAD) {
-            if (this.tailer.done && this.queues.length) {
-                this.runIteration(cb);
-                this.tailer.progress.trigger();
-            }
-        }
-    }
-
-    /**
-     * @private
-     * @param {Function} [cb]
-     */
-    runIteration(cb) {
-        this.tailer.iterator.next().then(it => {
-            if (it.done) {
-                if (this.queues.length) {
-                    // 迭代器提前终止的情况
-                    this.tailer.progress.consume(this.queues.length);
-                    this.queues.length = 0;
-                }
-                typeof cb === "function" && cb(it);
-                this.tailer.done = it.done;
-                this.tailer.iterator = this.genUploadQueues();
-            } else {
-                typeof cb === "function" && cb(it);
-                this.tailer.progress.consume();
-                this.tailer.done = it.done;
-                this.runIteration(cb);
-            }
-        }).catch(reason => {
-            // 迭代器提前终止，但是最终 done 的值需要为 true，因此继续下一次迭代
-            this.tailer.progress.consume();
-            this.runIteration(cb);
-        });
-    }
-
-    /**
-     * @public - ACTION_UPLOAD
      * @param {Object[]} list
      * @return {boolean}
      */
@@ -110,8 +68,50 @@ export class ActionProxy {
     }
 
     /**
+     * @public - ACTION_UPLOAD
+     * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
+     * @param {Function} [cb]
+     */
+    startAutoIteration(cb) {
+        if (this.action === ACTION_UPLOAD) {
+            if (this.tailer.done && this.queues.length) {
+                this.runIteration(cb);
+                this.tailer.progress.trigger();
+            }
+        }
+    }
+
+    /**
+     * @private - ACTION_UPLOAD
+     * @param {Function} [cb]
+     */
+    runIteration(cb) {
+        this.tailer.iterator.next().then(it => {
+            if (it.done) {
+                if (this.queues.length) {
+                    // 迭代器提前终止的情况
+                    this.tailer.progress.consume(this.queues.length);
+                    this.queues.length = 0;
+                }
+                typeof cb === "function" && cb(it);
+                this.tailer.done = it.done;
+                this.tailer.iterator = this.genUploadQueues();
+            } else {
+                typeof cb === "function" && cb(it);
+                this.tailer.progress.consume();
+                this.tailer.done = it.done;
+                this.runIteration(cb);
+            }
+        }).catch(reason => {
+            // 迭代器提前终止，但是最终 done 的值需要为 true，因此继续下一次迭代
+            this.tailer.progress.consume();
+            this.runIteration(cb);
+        });
+    }
+
+    /**
      * @async
-     * @private
+     * @private - ACTION_UPLOAD
      * @desc 迭代器迭代过程中遇到 Promise.reject，会造成迭代器提前结束
      *        为避免非致命性错误造成迭代器提前结束，异步生成器中需要处理这类错误
      */
