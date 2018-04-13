@@ -162,23 +162,45 @@ export class Dispatcher {
      * @public
      */
     deleteResources() {
-        const list = [];
+        const cache = [];
+        const tailer = {list: [], promise: null};
         this.selected.forEach(n => {
             const d = this.nodemap.get(n);
-            d && list.push(d);
+            d && tailer.list.push(d);
+            cache.push(n);
         });
+        this.selected.clear();
         switch (this.cdata.ssp) {
-            case "weibo_com":
-                SharreM.ActionDelete.fetcher("weibo_com", {
+            case "weibo_com": {
+                const photoIds = tailer.list.map(d => d.photoId);
+                tailer.promise = SharreM.ActionDelete.fetcher("weibo_com", {
                     albumId: this.checkout.albumId,
-                    photoIds: list.map(d => d.photoId),
+                    photoIds: photoIds,
+                }).then(json => {
+                    sessionStorage.setItem(SKEY_REMOVED_PHOTO_ID, photoIds.join(","));
+                    return json;
                 });
                 break;
+            }
             case "qcloud_com": break;
             case "qiniu_com": break;
             case "aliyun_com": break;
             case "upyun_com": break;
+            default:
+                return;
         }
+        tailer.promise && tailer.promise.finally(() => {
+            cache.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
+        }).then(json => {
+            chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
+        }).catch(reason => {
+            chrome.notifications.create(this.notifyId, {
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("info_title"),
+                message: "操作失败：移除文件没有成功哈~",
+            });
+        });
     }
 
     /** @private */
