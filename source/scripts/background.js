@@ -17,6 +17,7 @@ import "./background/weibo-referer.js";
 import {fetchBlob} from "./background/fetch-blob.js";
 import {syncedSData} from "./background/synced-sdata.js";
 import {ActionProxy} from "./background/action-proxy.js";
+import {ActionUpload} from "./background/action-upload.js";
 
 /**
  * @desc 其他
@@ -32,4 +33,5 @@ self.coreAPIs = {
     fetchBlob,
     syncedSData,
     ActionProxy,
+    ActionUpload,
 };

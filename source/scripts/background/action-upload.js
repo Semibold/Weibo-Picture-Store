@@ -4,29 +4,124 @@
  * found in the LICENSE file.
  */
 
+import {FileProgress} from "./file-progress.js";
+import {syncedSData} from "./synced-sdata.js";
+
+import {weiboRandomHost} from "../weibo/channel.js";
 import {filePurity} from "../sharre/file-purity.js";
 import {readFile} from "../weibo/read-file.js";
 import {fileUpload} from "../weibo/file-upload.js";
-import {Utils} from "../sharre/utils.js";
 
-/**
- * @static
- */
+import {gtracker} from "../plugin/g-tracker.js";
+
 export class ActionUpload {
 
-    /** @public */
-    static async trigger(item) {
-        if (item) {
-            return await ActionUpload[item.data.ssp](item).catch(Utils.noop);
+    constructor() {
+        this.queues = [];
+        this.tailer = {};
+    }
+
+    /**
+     * @public
+     * @return {ActionProxy}
+     */
+    init() {
+        this.tailer.done = true;
+        this.tailer.iterator = this.genUploadQueues();
+        this.tailer.progress = new FileProgress(FileProgress.ACTION_UPLOAD);
+        return this;
+    }
+
+    /**
+     * @public
+     * @param {Object[]} list
+     * @return {boolean}
+     */
+    addQueues(list) {
+        const cd = syncedSData.cdata; // Serve async as sync
+        if (cd) {
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i];
+                const z = item.type.split("/")[1];
+                this.queues.push(Object.assign({
+                    data: cd,
+                    host: cd.ssp === "weibo_com" ? weiboRandomHost() : cd.host,
+                    blob: item,
+                    mime: {
+                        type: item.type,
+                        suffix: z ? `.${z}` : "",
+                    },
+                }));
+            }
+            this.tailer.progress.padding(list.length);
+        } else {
+            gtracker.exception({
+                exDescription: "ActionProxy: Cannot get selected data",
+                exFatal: true,
+            });
+        }
+        return Boolean(cd);
+    }
+
+    /**
+     * @public
+     * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
+     * @param {Function} [cb]
+     */
+    startAutoIteration(cb) {
+        if (this.tailer.done && this.queues.length) {
+            this.runIteration(cb);
+            this.tailer.progress.trigger();
+        }
+    }
+
+    /**
+     * @private - ACTION_UPLOAD
+     * @param {Function} [cb]
+     */
+    runIteration(cb) {
+        this.tailer.iterator.next().then(it => {
+            if (it.done) {
+                if (this.queues.length) {
+                    // 迭代器提前终止的情况
+                    this.tailer.progress.consume(this.queues.length);
+                    this.queues.length = 0;
+                }
+                typeof cb === "function" && cb(it);
+                this.tailer.done = it.done;
+                this.tailer.iterator = this.genUploadQueues();
+            } else {
+                typeof cb === "function" && cb(it);
+                this.tailer.progress.consume();
+                this.tailer.done = it.done;
+                this.runIteration(cb);
+            }
+        }).catch(reason => {
+            // 迭代器提前终止，但是最终 done 的值需要为 true，因此继续下一次迭代
+            this.tailer.progress.consume();
+            this.runIteration(cb);
+        });
+    }
+
+    /**
+     * @async
+     * @private
+     * @desc 迭代器迭代过程中遇到 Promise.reject，会造成迭代器提前结束
+     *        为避免非致命性错误造成迭代器提前结束，异步生成器中需要处理这类错误
+     */
+    async *genUploadQueues() {
+        while (this.queues.length) {
+            const item = this.queues.shift();
+            yield await this[item.data.ssp](item);
         }
     }
 
     /** @private */
-    static async weibo_com(s1) {
-        const s2 = await readFile(s1);
-        const s3 = await filePurity(s2);
-        if (s3) {
-            return await fileUpload(s3);
+    static async weibo_com(d0) {
+        const d1 = await readFile(d0);
+        const d2 = await filePurity(d1);
+        if (d2) {
+            return await fileUpload(d2);
         }
     }
 
