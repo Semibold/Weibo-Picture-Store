@@ -112,7 +112,7 @@ export class ActionUpload {
     async *genUploadQueues() {
         while (this.queues.length) {
             const item = this.queues.shift();
-            yield await this[item.data.ssp](item);
+            yield await this.constructor[item.data.ssp](item);
         }
     }
 
