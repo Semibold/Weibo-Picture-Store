@@ -35,7 +35,7 @@ export class Dispatcher {
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
         this.copyId = Utils.randomString(16);
-        this.actionProxy = new SharreM.ActionProxy(SharreM.ActionProxy.ACTION_UPLOAD).init();
+        this.actionUpload = new SharreM.ActionUpload().init();
     }
 
     /** @public */
@@ -312,9 +312,9 @@ export class Dispatcher {
     requester(blobs) {
         const list = blobs ? Array.from(blobs) : [];
         if (list.length) {
-            this.actionProxy.addQueues(list);
+            this.actionUpload.addQueues(list);
             if (this.checkout.clear) {
-                this.actionProxy.startAutoIteration(it => {
+                this.actionUpload.startAutoIteration(it => {
                     if (it.done) {
                         this.checkout.clear = true;
                     } else {

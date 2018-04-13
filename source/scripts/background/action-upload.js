@@ -23,7 +23,7 @@ export class ActionUpload {
 
     /**
      * @public
-     * @return {ActionProxy}
+     * @return {ActionUpload}
      */
     init() {
         this.tailer.done = true;
@@ -56,7 +56,7 @@ export class ActionUpload {
             this.tailer.progress.padding(list.length);
         } else {
             gtracker.exception({
-                exDescription: "ActionProxy: Cannot get selected data",
+                exDescription: "ActionUpload: Cannot get selected data",
                 exFatal: true,
             });
         }
@@ -76,7 +76,7 @@ export class ActionUpload {
     }
 
     /**
-     * @private - ACTION_UPLOAD
+     * @private
      * @param {Function} [cb]
      */
     runIteration(cb) {
