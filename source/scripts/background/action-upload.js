@@ -17,7 +17,6 @@ export class ActionUpload {
     /** @public */
     static async trigger(item) {
         if (item) {
-            console.log(item)
             return await ActionUpload[item.data.ssp](item).catch(Utils.noop);
         }
     }

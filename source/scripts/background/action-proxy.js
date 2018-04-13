@@ -56,7 +56,7 @@ export class ActionProxy {
             if (it.done) {
                 if (this.queues.length) {
                     // 迭代器提前终止的情况
-                    this.tailer.progress.consume(this.queues.length + 1);
+                    this.tailer.progress.consume(this.queues.length);
                     this.queues.length = 0;
                 }
                 typeof cb === "function" && cb(it);
@@ -70,6 +70,7 @@ export class ActionProxy {
             }
         }).catch(reason => {
             // 迭代器提前终止，但是最终 done 的值需要为 true，因此继续下一次迭代
+            this.tailer.progress.consume();
             this.runIteration(cb);
         });
     }
