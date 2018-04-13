@@ -16,11 +16,12 @@ export class ActionDelete {
      * @param {string} ssp
      * @param {Object} obj
      *
-     * @param {string} [obj.albumId]
-     * @param {string[]} [obj.photoIds]
+     * @param {Object} [obj.weibo_com]
+     * @param {string} [obj.weibo_com.albumId]
+     * @param {string[]} [obj.weibo_com.photoIds]
      */
     static async fetcher(ssp, obj) {
-        return await this[ssp](obj);
+        return await this[ssp](obj[ssp]);
     }
 
     /** @private */

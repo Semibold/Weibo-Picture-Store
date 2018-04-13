@@ -29,8 +29,8 @@ browsingHistory.addEventListener("click", e => {
 
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
-        chrome.windows.getCurrent(result => {
-            chrome.windows.remove(result.id);
+        chrome.tabs.getCurrent(tab => {
+            chrome.tabs.remove(tab.id);
         });
     }
 });

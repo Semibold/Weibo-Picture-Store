@@ -61,7 +61,13 @@ export class Dispatcher {
         const albumInfo = albumId ? {albumId} : null;
 
         // 服务器可能返回不准确的分页数据，会导致空白分页
-        SharreM.ActionHistory.fetcher(this.page, this.count, {weibo_com: albumInfo}).then(json => {
+        SharreM.ActionHistory.fetcher(this.cdata.ssp, {
+            weibo_com: {
+                page: this.page,
+                count: this.count,
+                albumInfo: albumInfo,
+            },
+        }).then(json => {
             sessionStorage.setItem(SKEY_ALBUM_ID, json.albumId);
             this.checkout.pages = Math.ceil(json.total / this.count);
             this.checkout.albumId = json.albumId;
@@ -72,7 +78,7 @@ export class Dispatcher {
                 this.errorInjector("没有分页数据，欸嘿~");
             } else {
                 const lastpid = sessionStorage.getItem(SKEY_REMOVED_PHOTO_ID);
-                const removed = lastpid ? new Set(lastpid.split(",")) : new Set();
+                const removed = new Set(lastpid ? lastpid.split(",") : []);
                 for (const item of json.list) {
                     if (removed.has(item.photoId)) continue;
                     const fragment = this.constructor.importNode();
@@ -162,20 +168,23 @@ export class Dispatcher {
      * @public
      */
     deleteResources() {
-        const cache = [];
-        const tailer = {list: [], promise: null};
+        const nodes = [];
+        const cache = {list: [], promise: null};
         this.selected.forEach(n => {
             const d = this.nodemap.get(n);
-            d && tailer.list.push(d);
-            cache.push(n);
+            d && cache.list.push(d);
+            n.dataset.removing = true;
+            nodes.push(n);
         });
         this.selected.clear();
         switch (this.cdata.ssp) {
             case "weibo_com": {
-                const photoIds = tailer.list.map(d => d.photoId);
-                tailer.promise = SharreM.ActionDelete.fetcher("weibo_com", {
-                    albumId: this.checkout.albumId,
-                    photoIds: photoIds,
+                const photoIds = cache.list.map(d => d.photoId);
+                cache.promise = SharreM.ActionDelete.fetcher("weibo_com", {
+                    weibo_com: {
+                        albumId: this.checkout.albumId,
+                        photoIds: photoIds,
+                    },
                 }).then(json => {
                     sessionStorage.setItem(SKEY_REMOVED_PHOTO_ID, photoIds.join(","));
                     return json;
@@ -189,8 +198,8 @@ export class Dispatcher {
             default:
                 return;
         }
-        tailer.promise && tailer.promise.finally(() => {
-            cache.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
+        cache.promise && cache.promise.finally(() => {
+            nodes.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
         }).then(json => {
             chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
         }).catch(reason => {
@@ -261,7 +270,7 @@ export class Dispatcher {
         const html = `
             <section>
                 <div class="image-body">
-                    <a class="image-remove" title="移除这张图片"><i class="fa fa-trash-o"></i></a>
+                    <a class="image-remove" title="移除当前文件"><i class="fa fa-trash-o"></i></a>
                     <a class="image-linker" title="点击查看原图" target="_blank">
                         <img src="${chrome.i18n.getMessage("image_placeholder")}" alt="preview">
                     </a>

@@ -5,7 +5,6 @@
  */
 
 import {getAllPhoto} from "../weibo/get-all-photo.js";
-import {syncedSData} from "./synced-sdata.js";
 
 /**
  * @static
@@ -14,21 +13,21 @@ export class ActionHistory {
 
     /**
      * @public
-     * @param {number} page
-     * @param {number} size
-     * @param {Object} [extra]
+     * @param {string} ssp
+     * @param {Object} obj
      *
-     * @param {Object|null} [extra.weibo_com]
-     * @param {string} [extra.weibo_com.albumId]
+     * @param {Object} [obj.weibo_com]
+     * @param {number} [obj.weibo_com.page]
+     * @param {number} [obj.weibo_com.count]
+     * @param {string} [obj.weibo_com.albumInfo]
      */
-    static async fetcher(page, size, extra = {}) {
-        const data = syncedSData.cdata; // Serve async as sync
-        return await ActionHistory[data.ssp](page, size, extra);
+    static async fetcher(ssp, obj) {
+        return await ActionHistory[ssp](obj[ssp]);
     }
 
     /** @private */
-    static async weibo_com(page, size, extra) {
-        return await getAllPhoto(extra.weibo_com, page, size);
+    static async weibo_com(o) {
+        return await getAllPhoto(o.albumInfo, o.page, o.count);
     }
 
     /** @private */

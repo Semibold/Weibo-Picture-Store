@@ -5,7 +5,7 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {Config} from "./config.js";
+import {Config} from "../sharre/config.js";
 
 const slopId = Utils.randomString(16);
 const typeId = Utils.randomString(16);

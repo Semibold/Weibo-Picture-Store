@@ -5,14 +5,25 @@
  */
 
 import {BATCH_DELETE_MENU_ID} from "../plugin/constant.js";
+import {gtracker} from "../plugin/g-tracker.js";
 
 /**
  * @desc 上传记录的批量删除菜单
  */
 chrome.contextMenus.create({
-    title: "删除已选中的文件",
+    title: "移除选中的文件",
     id: BATCH_DELETE_MENU_ID,
     contexts: ["link"],
     visible: false,
-    documentUrlPatterns: [chrome.runtime.getURL("history.html")],
+    documentUrlPatterns: [
+        chrome.runtime.getURL("history.html"),
+        chrome.runtime.getURL("history.html?*"),
+    ],
+}, () => {
+    if (chrome.runtime.lastError) {
+        gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+        });
+    }
 });

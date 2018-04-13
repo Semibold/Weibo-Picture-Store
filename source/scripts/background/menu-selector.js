@@ -6,13 +6,13 @@
 
 import {syncedSData} from "./synced-sdata.js";
 import {gtracker} from "../plugin/g-tracker.js";
-import {T_DATA_CHANGED} from "../plugin/constant.js";
+import {T_DATA_CHANGED, MAX_SUBMENU_LENGTH} from "../plugin/constant.js";
 
 class MenuSelector {
 
     constructor(sdata) {
         this.sdata = sdata;
-        this.parentMenuId = "bucket_switching_0";
+        this.parentMenuId = "buckets_switching_0";
         this.subMenuIds = [];
         this.subMenuMap = new Map();
     }
@@ -22,9 +22,19 @@ class MenuSelector {
      * @return {MenuSelector}
      */
     init() {
+        this.genSubMenuIds();
         this.createContextMenus();
         this.addContextMenuEvent();
         return this;
+    }
+
+    /**
+     * @private
+     */
+    genSubMenuIds() {
+        for (let i = 0; i < MAX_SUBMENU_LENGTH; i++) {
+            this.subMenuIds.push(`submenu_bucket_${i}`);
+        }
     }
 
     /**
@@ -41,7 +51,6 @@ class MenuSelector {
                     exDescription: chrome.runtime.lastError.message,
                     exFatal: true,
                 });
-                return;
             }
             this.createSubMenus();
         });
@@ -51,18 +60,49 @@ class MenuSelector {
      * @private
      */
     createSubMenus() {
-        const {valid, total} = syncedSData.genlist();
+        const list = this.subMenuIds.map(id => {
+            return new Promise((resolve, reject) => {
+                chrome.contextMenus.create({
+                    type: "radio",
+                    title: "title",
+                    id: id,
+                    checked: false,
+                    contexts: ["browser_action"],
+                    parentId: this.parentMenuId,
+                    visible: false,
+                }, () => {
+                    resolve();
+                    if (chrome.runtime.lastError) {
+                        gtracker.exception({
+                            exDescription: chrome.runtime.lastError.message,
+                            exFatal: true,
+                        });
+                    }
+                });
+            });
+        });
+        Promise.all(list).then(result => this.updateSubMenus());
+    }
+
+    /**
+     * @private
+     * @desc 如果有菜单已打开时，此时更新菜单，则已有的菜单事件将会丢失。
+     *        这个情况很少见，并且没有很好的方法来处理这个问题。
+     */
+    updateSubMenus() {
+        const {valid, total} = syncedSData.genlist(this.sdata);
         const target = total[this.sdata.selectindex];
         const index = valid.findIndex(item => item === target);
-        valid.forEach((d, i) => {
-            const sspname = chrome.i18n.getMessage(d.ssp);
-            const id = chrome.contextMenus.create({
-                type: "radio",
-                title: d.mark ? `${sspname} - ${d.mark}` : sspname,
-                checked: i === index,
-                contexts: ["browser_action"],
-                parentId: this.parentMenuId,
-            }, () => {
+        this.subMenuIds.forEach((id, i) => {
+            const d = valid[i];
+            const o = {title: "title", checked: false, visible: false};
+            if (d) {
+                const sspname = chrome.i18n.getMessage(d.ssp);
+                o.title = d.mark ? `${sspname} - ${d.mark}` : sspname;
+                o.checked = i === index;
+                o.visible = true;
+            }
+            chrome.contextMenus.update(id, o, () => {
                 if (chrome.runtime.lastError) {
                     gtracker.exception({
                         exDescription: chrome.runtime.lastError.message,
@@ -70,8 +110,9 @@ class MenuSelector {
                     });
                     return;
                 }
-                this.subMenuIds.push(id);
-                this.subMenuMap.set(id, d);
+                if (d) {
+                    this.subMenuMap.set(id, d);
+                }
             });
         });
     }
@@ -83,7 +124,7 @@ class MenuSelector {
         chrome.contextMenus.onClicked.addListener((info, tab) => {
             if (!info.wasChecked && info.checked &&
                 this.subMenuMap.has(info.menuItemId)) {
-                const {total} = syncedSData.genlist();
+                const {total} = syncedSData.genlist(this.sdata);
                 const td = this.subMenuMap.get(info.menuItemId);
                 const si = total.findIndex(item => item === td);
                 if (si < 0 || si >= total.length) {
@@ -100,38 +141,12 @@ class MenuSelector {
     }
 
     /**
-     * @private
-     * @desc 如果有菜单已打开时，销毁重新创建菜单，则已有的菜单事件将会丢失。
-     *        这个情况很少见，并且没有很好的方法来处理这个问题。
-     */
-    regenerate() {
-        const list = this.subMenuIds.map(id => new Promise((resolve, reject) => {
-            chrome.contextMenus.remove(id, () => {
-                if (chrome.runtime.lastError) {
-                    gtracker.exception({
-                        exDescription: chrome.runtime.lastError.message,
-                        exFatal: true,
-                    });
-                    reject(chrome.runtime.lastError);
-                    return;
-                }
-                resolve();
-            });
-        }));
-        Promise.all(list).then(() => {
-            this.subMenuIds.length = 0;
-            this.subMenuMap.clear();
-            this.createSubMenus();
-        });
-    }
-
-    /**
      * @public
      * @param {Object} sdata
      */
     redispatch(sdata) {
         this.sdata = sdata;
-        this.regenerate();
+        this.updateSubMenus();
     }
 
 }

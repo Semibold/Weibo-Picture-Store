@@ -3,6 +3,7 @@
  * Use of this source code is governed by a MIT-style license that can be
  * found in the LICENSE file.
  */
+
 import {i18nLocale} from "./plugin/i18n-locale.js";
 import {Config} from "./sharre/config.js";
 import {SharreM} from "./sharre/alphabet.js";
@@ -81,7 +82,7 @@ class OptionsTree {
      * @desc 数据有新增、删除时，这个列表需要重新生成
      */
     genlist() {
-        const {valid, total} = SharreM.syncedSData.genlist();
+        const {valid, total} = SharreM.syncedSData.genlist(this.sdata);
         this.valid = valid;
         this.total = total;
     }
@@ -383,9 +384,9 @@ class OptionsTree {
 
 SharreM.syncedSData.promise.then(sdata => {
     const optionsTree = new OptionsTree(sdata).init();
-    SharreM.syncedSData.addEventListener(T_DATA_CHANGED, e => {
-        if (e.detail && e.detail.sdata) {
-            optionsTree.redispatch(e.detail.sdata);
+    chrome.runtime.onMessage.addListener(message => {
+        if (message.type === T_DATA_CHANGED && message.sdata) {
+            optionsTree.redispatch(message.sdata);
         }
     });
 });

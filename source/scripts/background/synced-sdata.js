@@ -182,7 +182,7 @@ class SyncedSData extends EventTarget {
     constructor() {
         super();
         this._sdata = null;
-        // 这里 getUserData 方法使用 false 参数是用于禁用数据同步
+        /** @preserve 这里 getUserData 方法使用 false 参数表示不读取同步数据 */
         this._promise = this.constructor.getUserData(false).then(d => this._sdata = d);
         this.notifyId = Utils.randomString(16);
     }
@@ -197,6 +197,7 @@ class SyncedSData extends EventTarget {
 
     /**
      * @public
+     * @desc 保证在 this.promise 完成后可以获取
      * @return {Object}
      */
     get sdata() {
@@ -217,11 +218,24 @@ class SyncedSData extends EventTarget {
         }
         this._sdata = this.constructor.decodeData(sdata);
         this.constructor.setUserData(this._sdata);
+
+        /**
+         * @desc 仅用于当前 context，引用传值
+         */
         this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: this._sdata}}));
+
+        /**
+         * @desc 仅用于其他 context，拷贝传值
+         * @desc 这个事件得到的数据和调用本实例方法得到的数据引用不同，注意避免引用不同而导致的错误
+         */
+        chrome.runtime.sendMessage({type: T_DATA_CHANGED, sdata: this._sdata});
     }
 
     /**
      * @public
+     * @desc Serve async as sync
+     * @desc 仅供读取当前的数据用
+     * @desc 当前数据的正确引用需要用己方的 sdata 查询
      * @return {Object|void}
      */
     get cdata() {
@@ -248,13 +262,16 @@ class SyncedSData extends EventTarget {
 
     /**
      * @public
+     * @desc 他方调用，建议传参。否则不保证引用正确
+     * @param {Object} [sdata = this._sdata]
      * @return {Object}
      */
-    genlist() {
+    genlist(sdata) {
         const valid = [];
         const total = [];
+        const sd = sdata || this._sdata;
         Config.ssps.forEach(x => {
-            this._sdata[x].forEach(item => {
+            sd[x].forEach(item => {
                 if (!Config.inactived[x]) {
                     valid.push(item);
                 }

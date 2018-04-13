@@ -8,7 +8,7 @@ import {FileProgress} from "./file-progress.js";
 import {syncedSData} from "./synced-sdata.js";
 
 import {weiboRandomHost} from "../weibo/channel.js";
-import {filePurity} from "../sharre/file-purity.js";
+import {filePurity} from "./file-purity.js";
 import {readFile} from "../weibo/read-file.js";
 import {fileUpload} from "../weibo/file-upload.js";
 
