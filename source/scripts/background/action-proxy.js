@@ -9,8 +9,10 @@ import {syncedSData} from "./synced-sdata.js";
 import {gtracker} from "../plugin/g-tracker.js";
 import {weiboRandomHost} from "../weibo/channel.js";
 import {ActionUpload} from "./action-upload.js";
+import {ActionHistory} from "./action-history.js";
 
 const ACTION_UPLOAD = 1;
+const ACTION_HISTORY = 2;
 
 export class ActionProxy {
 
@@ -121,8 +123,18 @@ export class ActionProxy {
         }
     }
 
+    /**
+     * @public - ACTION_HISTORY
+     */
+    fetchHistoryData(page, size, extra) {
+        if (this.action === ACTION_HISTORY) {
+            return ActionHistory.trigger(page, size, extra);
+        }
+    }
+
 }
 
 Object.defineProperties(ActionProxy, {
     ACTION_UPLOAD: {value: ACTION_UPLOAD},
+    ACTION_HISTORY: {value: ACTION_HISTORY},
 });
