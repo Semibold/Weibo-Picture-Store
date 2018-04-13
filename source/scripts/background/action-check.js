@@ -14,7 +14,7 @@ export class ActionCheck {
     /**
      * @public
      */
-    static async trigger() {}
+    static async fetcher() {}
 
     /** @private */
     static async weibo_com() {}

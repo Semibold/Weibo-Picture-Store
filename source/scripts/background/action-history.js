@@ -21,7 +21,7 @@ export class ActionHistory {
      * @param {Object|null} [extra.weibo_com]
      * @param {string} [extra.weibo_com.albumId]
      */
-    static async trigger(page, size, extra = {}) {
+    static async fetcher(page, size, extra = {}) {
         const data = syncedSData.cdata; // Serve async as sync
         return await ActionHistory[data.ssp](page, size, extra);
     }

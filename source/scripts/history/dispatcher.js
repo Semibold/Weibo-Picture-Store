@@ -6,6 +6,7 @@
 
 import {Utils} from "../sharre/utils.js";
 import {SharreM} from "../sharre/alphabet.js";
+import {SKEY_ALBUM_ID, SKEY_REMOVED_PHOTO_ID} from "../plugin/constant.js";
 
 export class Dispatcher {
 
@@ -21,9 +22,8 @@ export class Dispatcher {
         this.checkout = {albumId: null, pages: null};
         this.searchParams = new URLSearchParams(location.search);
         this.loading = document.createElement("div");
-        this.albumIdStorageKey = "album_id";
-        this.removedPhotoIdStorageKey = "removed_photo_id";
         this.nodemap = new WeakMap();
+        this.selected = new Set();
         this.cdata = SharreM.syncedSData.cdata;
     }
 
@@ -57,12 +57,12 @@ export class Dispatcher {
 
     /** @private */
     weibo_com() {
-        const albumId = sessionStorage.getItem(this.albumIdStorageKey);
+        const albumId = sessionStorage.getItem(SKEY_ALBUM_ID);
         const albumInfo = albumId ? {albumId} : null;
 
         // 服务器可能返回不准确的分页数据，会导致空白分页
-        SharreM.ActionHistory.trigger(this.page, this.count, {albumInfo}).then(json => {
-            sessionStorage.setItem(this.albumIdStorageKey, json.albumId);
+        SharreM.ActionHistory.fetcher(this.page, this.count, {weibo_com: albumInfo}).then(json => {
+            sessionStorage.setItem(SKEY_ALBUM_ID, json.albumId);
             this.checkout.pages = Math.ceil(json.total / this.count);
             this.checkout.albumId = json.albumId;
             this.loading.remove();
@@ -71,9 +71,10 @@ export class Dispatcher {
             if (!json.list.length) {
                 this.errorInjector("没有分页数据，欸嘿~");
             } else {
-                const removedPhotoId = sessionStorage.getItem(this.removedPhotoIdStorageKey);
+                const lastpid = sessionStorage.getItem(SKEY_REMOVED_PHOTO_ID);
+                const removed = lastpid ? new Set(lastpid.split(",")) : new Set();
                 for (const item of json.list) {
-                    if (item.photoId === removedPhotoId) continue;
+                    if (removed.has(item.photoId)) continue;
                     const fragment = this.constructor.importNode();
                     const section = fragment.querySelector("section");
                     const linker = section.querySelector(".image-linker");
@@ -89,7 +90,7 @@ export class Dispatcher {
                 this.main.append(this.fragment);
             }
         }).catch(reason => {
-            sessionStorage.removeItem(this.albumIdStorageKey);
+            sessionStorage.removeItem(SKEY_ALBUM_ID);
             this.loading.remove();
             this.renderPaging();
             this.errorInjector("获取图片失败，欸嘿~");
@@ -123,7 +124,45 @@ export class Dispatcher {
                 this.nextPageHandler();
             }
         });
+
+        document.addEventListener("click", e => {
+            if (e.ctrlKey) {
+                const section = e.target.closest("section");
+                if (section) {
+                    e.preventDefault();
+                    if (this.selected.has(section)) {
+                        this.selected.delete(section);
+                        section.dataset.selected = false;
+                    } else {
+                        this.selected.add(section);
+                        section.dataset.selected = true;
+                    }
+                }
+            } else {
+                if (this.selected.size) {
+                    this.selected.forEach(n => {
+                        n.dataset.selected = false;
+                    });
+                    this.selected.clear();
+                } else {
+                    const rb = e.target.closest("a.image-remove");
+                    if (rb) {
+                        const section = e.target.closest("section");
+                        if (section) {
+                            const d = this.nodemap.get(section);
+                            d && this.deleteResources({
+                                albumId: this.checkout.albumId,
+                                photoIds: [d.photoId],
+                            });
+                        }
+                    }
+                }
+            }
+        });
     }
+
+    /** @private */
+    deleteResources() {}
 
     /** @private */
     prevPageHandler() {
@@ -183,7 +222,7 @@ export class Dispatcher {
         const html = `
             <section>
                 <div class="image-body">
-                    <a class="image-remove" title="从当前相册中移除这张图片"><i class="fa fa-trash-o"></i></a>
+                    <a class="image-remove" title="移除这张图片"><i class="fa fa-trash-o"></i></a>
                     <a class="image-linker" title="点击查看原图" target="_blank">
                         <img src="${chrome.i18n.getMessage("image_placeholder")}" alt="preview">
                     </a>

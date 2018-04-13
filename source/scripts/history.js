@@ -6,10 +6,18 @@
 
 import "./history/fragment.js";
 import {Dispatcher} from "./history/dispatcher.js";
+import {BATCH_DELETE_MENU_ID} from "./plugin/constant.js";
 
 import {gtracker} from "./plugin/g-tracker.js";
 
 gtracker.pageview();
 
 document.title = `上传记录 - ${chrome.i18n.getMessage("ext_name")}`;
-new Dispatcher().init();
+const dispatcher = new Dispatcher().init();
+
+document.addEventListener("contextmenu", e => {
+    const section = e.target.closest("section");
+    if (section) {
+        chrome.contextMenus.update(BATCH_DELETE_MENU_ID, {visible: dispatcher.selected.has(section)});
+    }
+}, true);
