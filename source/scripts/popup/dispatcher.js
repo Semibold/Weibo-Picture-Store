@@ -4,7 +4,6 @@
  * found in the LICENSE file.
  */
 
-import {Config} from "../sharre/config.js";
 import {Utils} from "../sharre/utils.js";
 import {BuildItem} from "./build-item.js";
 import {SharreM} from "../sharre/alphabet.js";
@@ -15,10 +14,23 @@ export class Dispatcher {
         this.batch = false;
         this.config = null;
         this.list = new Map();
+        this.starter = {
+            scheme: {
+                1: "http://",
+                2: "https://",
+                3: "//",
+            },
+            clipsize: {
+                1: "large",
+                2: "mw690",
+                3: "thumbnail",
+                4: "",
+            },
+        };
         this.main = document.querySelector("#main");
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clipsize");
-        this.external = Config.weiboPopup.clipsize;
+        this.external = this.starter.clipsize;
         this.checkout = {clear: true};
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
@@ -50,7 +62,7 @@ export class Dispatcher {
 
         if (customConfig) {
             for (const name of Object.keys(padding)) {
-                if (typeof Config.weiboPopup[name][customConfig[name]] === "string") {
+                if (typeof this.starter[name][customConfig[name]] === "string") {
                     padding[name] = customConfig[name];
                 }
             }
@@ -259,7 +271,7 @@ export class Dispatcher {
         if (!item || !item.pid) {
             return item;
         }
-        const {scheme, clipsize} = Config.weiboPopup;
+        const {scheme, clipsize} = this.starter;
         const chip = {
             scheme: scheme[this.config.scheme],
             host: item.host,

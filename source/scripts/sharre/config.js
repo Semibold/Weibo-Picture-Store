@@ -197,25 +197,6 @@ export class Config {
     }
 
     /**
-     * @return {Object}
-     */
-    static get weiboPopup() {
-        return {
-            scheme: {
-                1: "http://",
-                2: "https://",
-                3: "//",
-            },
-            clipsize: {
-                1: "large",
-                2: "mw690",
-                3: "thumbnail",
-                4: "",
-            },
-        };
-    }
-
-    /**
      * @desc 微博支持的图片类型
      */
     static get weiboAcceptType() {
