@@ -128,13 +128,10 @@ class MenuSelector {
     /**
      * @public
      * @param {Object} sdata
-     * @param {boolean} [syncOnly] - 只改变了 sdata[Config.synckey] 的值
      */
-    redispatch(sdata, syncOnly) {
+    redispatch(sdata) {
         this.sdata = sdata;
-        if (!syncOnly) {
-            this.regenerate();
-        }
+        this.regenerate();
     }
 
 }
@@ -142,8 +139,8 @@ class MenuSelector {
 syncedSData.promise.then(sdata => {
     const menuSelector = new MenuSelector(sdata).init();
     syncedSData.addEventListener(T_DATA_CHANGED, e => {
-        if (e.detail) {
-            menuSelector.redispatch(e.detail.sdata, e.detail.syncOnly);
+        if (e.detail && e.detail.sdata) {
+            menuSelector.redispatch(e.detail.sdata);
         }
     });
 });

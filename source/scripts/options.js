@@ -50,7 +50,6 @@ class OptionsTree {
         this.renderSync();
         this.renderTabs();
         this.renderSelectedTab();
-        this.addSyncEvent();
         this.addTabsEvent();
         this.addBtnsEvent();
         return this;
@@ -69,7 +68,7 @@ class OptionsTree {
      * @public
      * @param {Object} sdata
      */
-    regenerate(sdata) {
+    redispatch(sdata) {
         this.sdata = sdata;
         this.genlist();
         this.renderSync();
@@ -263,6 +262,7 @@ class OptionsTree {
 
     /**
      * @private
+     * @desc 同步已经禁用
      */
     addSyncEvent() {
         const input = document.querySelector(".input-syncdata");
@@ -384,12 +384,8 @@ class OptionsTree {
 SharreM.syncedSData.promise.then(sdata => {
     const optionsTree = new OptionsTree(sdata).init();
     SharreM.syncedSData.addEventListener(T_DATA_CHANGED, e => {
-        if (e.detail) {
-            if (e.detail.syncOnly) {
-                optionsTree.rerenderSync(e.detail.sdata);
-            } else {
-                optionsTree.regenerate(e.detail.sdata);
-            }
+        if (e.detail && e.detail.sdata) {
+            optionsTree.redispatch(e.detail.sdata);
         }
     });
 });

@@ -7,6 +7,7 @@
 import {Config} from "../sharre/config.js";
 import {gtracker} from "../plugin/g-tracker.js";
 import {T_DATA_CHANGED} from "../plugin/constant.js";
+import {Utils} from "../sharre/utils.js";
 
 class SyncedSData extends EventTarget {
 
@@ -181,7 +182,9 @@ class SyncedSData extends EventTarget {
     constructor() {
         super();
         this._sdata = null;
-        this._promise = this.constructor.getUserData().then(d => this._sdata = d);
+        // 这里 getUserData 方法使用 false 参数是用于禁用数据同步
+        this._promise = this.constructor.getUserData(false).then(d => this._sdata = d);
+        this.notifyId = Utils.randomString(16);
     }
 
     /**
@@ -189,19 +192,6 @@ class SyncedSData extends EventTarget {
      * @return {SyncedSData}
      */
     init() {
-        chrome.storage.onChanged.addListener((changes, areaName) => {
-            if (areaName !== "sync" && areaName !== "local") return;
-            if (areaName === "sync" && changes[Config.synckey]) {
-                this._sdata[Config.synckey] = Boolean(changes[Config.synckey].newValue);
-                this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: this._sdata, syncOnly: true}}));
-            }
-            if (this._sdata[Config.synckey] !== (areaName === "sync")) return;
-            if (Config.sakeys.some(k => !!changes[k])) {
-                this.constructor.getUserData(areaName === "sync").then(d => {
-                    this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: d, syncOnly: false}}));
-                });
-            }
-        });
         return this;
     }
 
@@ -218,14 +208,32 @@ class SyncedSData extends EventTarget {
      * @param {Object} sdata
      */
     set sdata(sdata) {
-        this.constructor.setUserData(sdata).then(result => this._sdata = sdata);
+        if (!sdata) {
+            gtracker.exception({
+                exDescription: "SyncedSData: wrong data structure",
+                exFatal: true,
+            });
+            return;
+        }
+        this._sdata = this.constructor.decodeData(sdata);
+        this.constructor.setUserData(this._sdata);
+        this.dispatchEvent(new CustomEvent(T_DATA_CHANGED, {detail: {sdata: this._sdata}}));
     }
 
     /**
      * @public
-     * @return {Object}
+     * @return {Object|void}
      */
     get cdata() {
+        if (!this._sdata) {
+            chrome.notifications.create(this.notifyId, {
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("warn_title"),
+                message: "行为异常：配置数据读取失败，请稍后再试",
+            });
+            return;
+        }
         const {total} = this.genlist();
         return total[this._sdata.selectindex];
     }
