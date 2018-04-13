@@ -4,13 +4,22 @@
  * found in the LICENSE file.
  */
 
+/**
+ * @desc 仅需要引入让其执行
+ */
 import "./background/start-popup.js";
 import "./background/menu-selector.js";
-import "./background/file-progress.js";
+
+/**
+ * @desc 不需要初始化，但是需要导出到外部
+ */
 import {fetchBlob} from "./background/fetch-blob.js";
 import {syncedSData} from "./background/synced-sdata.js";
 import {ActionProxy} from "./background/action-proxy.js";
 
+/**
+ * @desc 其他
+ */
 import {gtracker} from "./plugin/g-tracker.js";
 
 gtracker.pageview();
