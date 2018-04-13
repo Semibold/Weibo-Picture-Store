@@ -14,20 +14,6 @@ import {USER_INFO_CACHE, weiboSingleton} from "./channel.js";
 
 const url = "http://photo.weibo.com/albums/create";
 
-function refererHandler(details) {
-    const url = new URL(details.url);
-    const name = "referer";
-    const value = `${url.protocol}//photo.weibo.com/`;
-    for (let i = 0; i < details.requestHeaders.length; i++) {
-        if (details.requestHeaders[i].name.toLowerCase() === name) {
-            details.requestHeaders.splice(i, 1);
-            break;
-        }
-    }
-    details.requestHeaders.push({name, value});
-    return {requestHeaders: details.requestHeaders};
-}
-
 async function createNewAlbumRequest() {
     const method = "POST";
     const body = Utils.createSearchParams({
@@ -38,9 +24,6 @@ async function createNewAlbumRequest() {
         question: "",
         album_id: "",
     });
-    chrome.webRequest.onBeforeSendHeaders.addListener(refererHandler, {
-        urls: ["http://photo.weibo.com/*", "https://photo.weibo.com/*"],
-    }, ["requestHeaders", "blocking"]);
     return Utils.fetch(url, {method, body}).then(response => {
         return response.ok ? response.json() : Promise.reject(response.status);
     }).then(json => {
@@ -51,8 +34,6 @@ async function createNewAlbumRequest() {
         } else {
             return Promise.reject("Invalid Data");
         }
-    }).finally(() => {
-        chrome.webRequest.onBeforeSendHeaders.removeListener(refererHandler);
     });
 }
 
