@@ -39,8 +39,14 @@ body {
     margin: 0.8em 0.8em 2.4em;
     padding: var(--gap);
     transition: 0.2s;
+    color: #99a2aa;
     background-color: #f9f9f9;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
+}
+
+#main > section[data-selected="true"] {
+    color: #fff;
+    background-color: #ff6347;
 }
 
 #main > section[data-removing="true"] img[alt="preview"] {
@@ -123,7 +129,6 @@ body {
 }
 
 .image-update {
-    color: #99a2aa;
     cursor: default;
 }
 

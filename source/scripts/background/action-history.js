@@ -18,8 +18,8 @@ export class ActionHistory {
      * @param {number} size
      * @param {Object} [extra]
      *
-     * @param {Object|null} [extra.albumInfo]
-     * @param {string} [extra.albumInfo.albumId]
+     * @param {Object|null} [extra.weibo_com]
+     * @param {string} [extra.weibo_com.albumId]
      */
     static async trigger(page, size, extra = {}) {
         const data = syncedSData.cdata; // Serve async as sync
@@ -28,7 +28,7 @@ export class ActionHistory {
 
     /** @private */
     static async weibo_com(page, size, extra) {
-        return await getAllPhoto(extra.albumInfo, page, size);
+        return await getAllPhoto(extra.weibo_com, page, size);
     }
 
     /** @private */
