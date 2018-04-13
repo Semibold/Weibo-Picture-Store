@@ -13,11 +13,11 @@ const typeId = Utils.randomString(16);
 /**
  * @async
  * @param item
- * @return {Promise<item|null>}
+ * @return {Promise<item|void>}
  */
 export async function filePurity(item) {
     if (!item) {
-        return null;
+        return;
     }
     const x = item.data.ssp;
     if (x === "weibo_com") {
@@ -28,7 +28,7 @@ export async function filePurity(item) {
                 title: chrome.i18n.getMessage("info_title"),
                 message: "暂不支持当前选中的文件格式",
             });
-            return null;
+            return;
         }
     }
     if (item.blob.size > Config.restricte[x].filesize) {
@@ -38,7 +38,7 @@ export async function filePurity(item) {
             title: chrome.i18n.getMessage("info_title"),
             message: `检测到某些文件的大小超过${Config.restricte[x].sizename}，自动丢弃这些文件`,
         });
-        return null;
+        return;
     }
     return item;
 }

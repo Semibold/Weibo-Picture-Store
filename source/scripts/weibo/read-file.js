@@ -16,7 +16,7 @@ async function reader(blob, readType = "arrayBuffer") {
             if (e.target.readyState === e.target.DONE) {
                 resolve(e.target.result);
             } else {
-                resolve(null);
+                resolve();
             }
         };
         fileReader[oneline.readType](blob);
@@ -26,13 +26,13 @@ async function reader(blob, readType = "arrayBuffer") {
 /**
  * @param item
  * @param readType
- * @return {Promise<item|null>}
+ * @return {Promise<item|void>}
  */
 export async function readFile(item, readType = "arrayBuffer") {
     const oneline = Channel[readType];
     const r = await reader(item.blob, readType);
     if (!r) {
-        return null;
+        return;
     }
     const mime = oneline.mimeType(r);
     const csts = new Set(Config.chromeSupportedTypes);
