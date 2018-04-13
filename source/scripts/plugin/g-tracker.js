@@ -36,7 +36,10 @@ class GTracker {
      * @return {GTracker}
      */
     pageview(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.info("[pageview]", Object.assign({page: location.pathname}, obj));
+            return this;
+        }
         this.ga("send", "pageview", Object.assign({
             page: location.pathname,
         }, obj));
@@ -54,7 +57,10 @@ class GTracker {
      * @return {GTracker}
      */
     event(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.info("[event]", obj);
+            return this;
+        }
         this.ga("send", "event", obj);
         return this;
     }
@@ -67,7 +73,10 @@ class GTracker {
      * @return {GTracker}
      */
     exception(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.warn("[exception]", obj);
+            return this;
+        }
         this.ga("send", "exception", obj);
         return this;
     }
@@ -81,7 +90,10 @@ class GTracker {
      * @return {GTracker}
      */
     social(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.info("[social]", obj);
+            return this;
+        }
         this.ga("send", "social", obj);
         return this;
     }
@@ -97,7 +109,10 @@ class GTracker {
      * @return {GTracker}
      */
     screenview(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.info("[screenview]", obj);
+            return this;
+        }
         this.ga("send", "screenview", obj);
         return this;
     }
@@ -112,7 +127,10 @@ class GTracker {
      * @return {GTracker}
      */
     timing(obj) {
-        if (this.disabled) return this;
+        if (this.disabled) {
+            console.info("[timing]", obj);
+            return this;
+        }
         this.ga("send", "timing", obj);
         return this;
     }
