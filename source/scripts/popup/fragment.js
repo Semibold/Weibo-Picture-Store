@@ -43,7 +43,7 @@ const headHTML = `
         </div>
     </div>
     <div class="head-feature">
-        <a class="head-copy-mode" title="切换复制模式"><i class="fa fa-times"></i><i class="fa fa-check"></i></a>
+        <a class="head-copy-mode" title="切换复制模式"><i class="fa fa-circle-o"></i><i class="fa fa-check-circle-o"></i></a>
         <a class="head-browsing-history" title="查看上传记录"><i class="fa fa-history"></i></a>
     </div>`;
 

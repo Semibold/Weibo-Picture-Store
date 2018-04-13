@@ -96,8 +96,8 @@
     display: none;
 }
 
-.head-copy-mode[data-batch="true"] > .fa-check,
-.head-copy-mode[data-batch="false"] > .fa-times {
+.head-copy-mode[data-batch="true"] > .fa-check-circle-o,
+.head-copy-mode[data-batch="false"] > .fa-circle-o {
     display: inline-block;
 }
 
