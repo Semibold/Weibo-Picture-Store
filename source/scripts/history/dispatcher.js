@@ -25,7 +25,6 @@ export class Dispatcher {
         this.removedPhotoIdStorageKey = "removed_photo_id";
         this.nodemap = new WeakMap();
         this.cdata = SharreM.syncedSData.cdata;
-        this.actionProxy = new SharreM.ActionProxy(SharreM.ActionProxy.ACTION_HISTORY).init();
     }
 
     /** @public */
@@ -62,7 +61,7 @@ export class Dispatcher {
         const albumInfo = albumId ? {albumId} : null;
 
         // 服务器可能返回不准确的分页数据，会导致空白分页
-        this.actionProxy.fetchHistoryData(this.page, this.count, {albumInfo}).then(json => {
+        SharreM.ActionHistory.trigger(this.page, this.count, {albumInfo}).then(json => {
             sessionStorage.setItem(this.albumIdStorageKey, json.albumId);
             this.checkout.pages = Math.ceil(json.total / this.count);
             this.checkout.albumId = json.albumId;
@@ -86,7 +85,7 @@ export class Dispatcher {
                     create.textContent = item.updated;
                     this.fragment.append(section);
                     this.nodemap.set(section, item);
-            }
+                }
                 this.main.append(this.fragment);
             }
         }).catch(reason => {

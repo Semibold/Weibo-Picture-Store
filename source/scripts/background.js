@@ -16,6 +16,9 @@ import "./background/weibo-referer.js";
  */
 import {fetchBlob} from "./background/fetch-blob.js";
 import {syncedSData} from "./background/synced-sdata.js";
+import {ActionCheck} from "./background/action-check.js";
+import {ActionDelete} from "./background/action-delete.js";
+import {ActionHistory} from "./background/action-history.js";
 import {ActionUpload} from "./background/action-upload.js";
 
 /**
@@ -31,5 +34,8 @@ gtracker.pageview();
 self.coreAPIs = {
     fetchBlob,
     syncedSData,
+    ActionCheck,
+    ActionDelete,
+    ActionHistory,
     ActionUpload,
 };
