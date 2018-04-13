@@ -21,3 +21,9 @@ document.addEventListener("contextmenu", e => {
         chrome.contextMenus.update(BATCH_DELETE_MENU_ID, {visible: dispatcher.selected.has(section)});
     }
 }, true);
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === BATCH_DELETE_MENU_ID) {
+        dispatcher.deleteResources();
+    }
+});

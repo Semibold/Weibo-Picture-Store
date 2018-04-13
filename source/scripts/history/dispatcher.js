@@ -149,11 +149,8 @@ export class Dispatcher {
                     if (rb) {
                         const section = e.target.closest("section");
                         if (section) {
-                            const d = this.nodemap.get(section);
-                            d && this.deleteResources({
-                                albumId: this.checkout.albumId,
-                                photoIds: [d.photoId],
-                            });
+                            this.selected.add(section);
+                            this.deleteResources();
                         }
                     }
                 }
@@ -161,8 +158,28 @@ export class Dispatcher {
         });
     }
 
-    /** @private */
-    deleteResources() {}
+    /**
+     * @public
+     */
+    deleteResources() {
+        const list = [];
+        this.selected.forEach(n => {
+            const d = this.nodemap.get(n);
+            d && list.push(d);
+        });
+        switch (this.cdata.ssp) {
+            case "weibo_com":
+                SharreM.ActionDelete.fetcher("weibo_com", {
+                    albumId: this.checkout.albumId,
+                    photoIds: list.map(d => d.photoId),
+                });
+                break;
+            case "qcloud_com": break;
+            case "qiniu_com": break;
+            case "aliyun_com": break;
+            case "upyun_com": break;
+        }
+    }
 
     /** @private */
     prevPageHandler() {

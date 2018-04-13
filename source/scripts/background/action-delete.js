@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {syncedSData} from "./synced-sdata.js";
+import {removePhoto} from "../weibo/remove-photo.js";
 
 /**
  * @static
@@ -13,11 +13,20 @@ export class ActionDelete {
 
     /**
      * @public
+     * @param {string} ssp
+     * @param {Object} obj
+     *
+     * @param {string} [obj.albumId]
+     * @param {string[]} [obj.photoIds]
      */
-    static async fetcher() {}
+    static async fetcher(ssp, obj) {
+        return await this[ssp](obj);
+    }
 
     /** @private */
-    static async weibo_com() {}
+    static async weibo_com(o) {
+        return await removePhoto(o.albumId, o.photoIds);
+    }
 
     /** @private */
     static async qcloud_com() {}

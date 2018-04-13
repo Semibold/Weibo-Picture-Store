@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-import {syncedSData} from "./synced-sdata.js";
-
 /**
  * @static
  */
