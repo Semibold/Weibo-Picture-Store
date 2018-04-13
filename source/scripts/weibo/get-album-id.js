@@ -30,7 +30,7 @@ function refererHandler(details) {
 
 async function createNewAlbumRequest() {
     const method = "POST";
-    const body = Utils.createFormData({
+    const body = Utils.createSearchParams({
         property: "2",
         caption: "Weibo_Chrome",
         description: WEIBO_ALBUM_ID,

@@ -20,7 +20,7 @@ export async function removePhoto(albumId, photoIds, replay) {
 
     return Utils.fetch(url, {
         method: "POST",
-        body: Utils.createFormData({
+        body: Utils.createSearchParams({
             album_id: albumId,
             photo_id: photoIds.join(","),
         }),

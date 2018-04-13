@@ -14,7 +14,7 @@ const url = "http://weibo.com/aj/onoff/setstatus";
 
 async function setStatusRequest() {
     const method = "POST";
-    const body = Utils.createFormData({sid: 0, state: 0});
+    const body = Utils.createSearchParams({sid: 0, state: 0});
     return getStatus().then(json => {
         if (json.login) {
             return Promise.reject(json);

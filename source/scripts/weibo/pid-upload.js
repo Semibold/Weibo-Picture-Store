@@ -24,7 +24,7 @@ export async function pidUpload(pid, uid, retry) {
     albumInfoPromise.then(albumInfo => {
         return Utils.fetch(url, {
             method: "POST",
-            body: Utils.createFormData({
+            body: Utils.createSearchParams({
                 pid: pid,
                 isOrig: 1,
                 album_id: albumInfo.albumId,
