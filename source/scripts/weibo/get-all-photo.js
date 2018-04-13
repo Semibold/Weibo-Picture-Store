@@ -39,11 +39,10 @@ export async function getAllPhoto(albumInfo, page, count, replay) {
 
             for (const item of json.data.photo_list) {
                 list.push({
-                    pid: item.pid,
                     photoId: item.photo_id,
                     picHost: item.pic_host,
                     picName: item.pic_name,
-                    created: item.created_at,
+                    updated: item.updated_at,
                 });
             }
 
