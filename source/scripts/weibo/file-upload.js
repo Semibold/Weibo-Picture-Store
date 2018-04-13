@@ -42,7 +42,7 @@ export async function fileUpload(item, replay) {
                     pidUpload(pid);
                 }
                 return Object.assign(item, {
-                    pid: pid + item.mime.suffix,
+                    fid: pid + item.mime.suffix,
                 });
             } else {
                 return Promise.reject("Invalid Data");

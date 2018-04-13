@@ -30,7 +30,7 @@ interface WeiboExtra {
  * @desc Popup 弹窗单条数据的结构
  */
 interface PopupItem extends URLData, WeiboExtra {
-    pid: string;
+    fid: string;
     host: string;
     mime: MimeType;
     blob: Blob | File;

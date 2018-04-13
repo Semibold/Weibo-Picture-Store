@@ -268,19 +268,19 @@ export class Dispatcher {
 
     /** @private */
     transformData(item) {
-        if (!item || !item.pid) {
+        if (!item || !item.fid) {
             return item;
         }
         const {scheme, clipsize} = this.starter;
         const chip = {
             scheme: scheme[this.config.scheme],
             host: item.host,
-            pid: item.pid,
-            url: `${scheme[this.config.scheme] + item.host}/${item.pid}`,
+            fid: item.fid,
+            url: `${scheme[this.config.scheme] + item.host}/${item.fid}`,
         };
         switch (item.data.ssp) {
             case "weibo_com":
-                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.pid}`;
+                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.fid}`;
                 break;
             case "qcloud_com":
                 break;

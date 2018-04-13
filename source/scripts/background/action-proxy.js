@@ -34,7 +34,7 @@ export class ActionProxy {
     }
 
     /**
-     * @public
+     * @public - ACTION_UPLOAD
      * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
      * @param {Function} [cb]
      */
@@ -76,7 +76,7 @@ export class ActionProxy {
     }
 
     /**
-     * @public
+     * @public - ACTION_UPLOAD
      * @param {Object[]} list
      * @return {boolean}
      */
