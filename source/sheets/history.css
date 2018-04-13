@@ -122,7 +122,7 @@ body {
     transition: transform 0.25s 100ms, filter 0.15s 50ms;
 }
 
-.image-create {
+.image-update {
     color: #99a2aa;
     cursor: default;
 }

@@ -23,8 +23,7 @@ export class ActionHistory {
      */
     static async trigger(page, size, extra = {}) {
         const data = syncedSData.cdata; // Serve async as sync
-        const xdata = await ActionHistory[data.ssp](page, size, extra);
-        return Object.assign(xdata, {data: data});
+        return await ActionHistory[data.ssp](page, size, extra);
     }
 
     /** @private */

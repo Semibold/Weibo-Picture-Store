@@ -8,6 +8,9 @@
   "notify_icon": {
     "message": "assets/weibo.notify.svg"
   },
+  "image_placeholder": {
+    "message": "assets/transparent.gif"
+  },
   "info_title": {
     "message": "普通提示"
   },
