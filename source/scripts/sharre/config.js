@@ -197,6 +197,18 @@ export class Config {
     }
 
     /**
+     * @see https://en.wikipedia.org/wiki/Image_file_formats
+     */
+    static get filenameExtensions() {
+        return [
+            ".jpg", ".jpeg",
+            ".png", ".apng",
+            ".gif", ".bmp",
+            ".ico", ".webp",
+        ];
+    }
+
+    /**
      * @desc 微博支持的图片类型
      */
     static get weiboAcceptType() {
