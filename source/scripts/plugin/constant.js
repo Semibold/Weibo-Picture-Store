@@ -42,6 +42,9 @@ export const SKEY_ALBUM_ID = "album_id";
 export const SKEY_REMOVED_PHOTO_ID = "removed_photo_id";
 
 /**
- * @desc 上传记录批量删除的 ContextMenu id
+ * @desc contextmenu id
  */
 export const BATCH_DELETE_MENU_ID = "menu_batch_delete";
+export const HISTORY_UPLOADED_MENU_ID = "menu_history_uploaded";
+export const VIDEO_FRAME_MENU_ID = "menu_video_frame";
+export const UPLOAD_IMAGE_MENU_ID = "menu_upload_image";
