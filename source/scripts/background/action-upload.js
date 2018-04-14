@@ -134,8 +134,8 @@ export class ActionUpload {
         const {akey, skey, host, path} = d1.data;
         const qsa = new QCloudStorageAuth(akey, skey);
         const filename = await genFilename(d1.blob, true);
-        const filepath = `${path}/${filename}`;
-        const headers = await qsa.getAuthHeaders("PUT", filepath , host);
+        const filepath = `/${path + filename}`;
+        const headers = await qsa.getAuthHeaders("PUT", filepath, host);
         headers.set("Content-Type", d1.blob.type);
         headers.set("Content-Length", d1.blob.size);
         const res = await fetch(qsa.auths.url.toString(), {headers, method: qsa.auths.method, body: d1.blob});

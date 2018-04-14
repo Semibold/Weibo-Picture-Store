@@ -207,11 +207,11 @@ export class Utils {
      */
     static formatDirpath(dirpath = "") {
         dirpath = dirpath.trim();
-        if (!dirpath.startsWith("/")) {
-            dirpath = "/" + dirpath;
+        if (!dirpath.endsWith("/")) {
+            dirpath += "/";
         }
-        while (dirpath.endsWith("/")) {
-            dirpath = dirpath.slice(0 ,-1);
+        while (dirpath.startsWith("/")) {
+            dirpath = dirpath.slice(1);
         }
         return dirpath;
     }

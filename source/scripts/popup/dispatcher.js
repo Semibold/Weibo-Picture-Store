@@ -280,7 +280,7 @@ export class Dispatcher {
         };
         switch (item.data.ssp) {
             case "weibo_com":
-                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize] + chip.fid}`;
+                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.fid}`;
                 break;
             case "qcloud_com":
                 break;
