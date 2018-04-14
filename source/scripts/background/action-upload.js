@@ -4,6 +4,7 @@
  * found in the LICENSE file.
  */
 
+import {QCloudStorageAuth} from "../auth/qcloud-storage.js";
 import {FileProgress} from "./file-progress.js";
 import {syncedSData} from "./synced-sdata.js";
 
@@ -11,6 +12,7 @@ import {weiboRandomHost} from "../weibo/channel.js";
 import {filePurity} from "./file-purity.js";
 import {readFile} from "../weibo/read-file.js";
 import {fileUpload} from "../weibo/file-upload.js";
+import {genFilename} from "../plugin/gen-filename.js";
 
 import {gtracker} from "../plugin/g-tracker.js";
 
@@ -98,6 +100,7 @@ export class ActionUpload {
             }
         }).catch(reason => {
             // 迭代器提前终止，但是最终 done 的值需要为 true，因此继续下一次迭代
+            console.warn(reason);
             this.tailer.progress.consume();
             this.runIteration(cb);
         });
@@ -120,13 +123,27 @@ export class ActionUpload {
     static async weibo_com(d0) {
         const d1 = await readFile(d0);
         const d2 = await filePurity(d1);
-        if (d2) {
-            return await fileUpload(d2);
-        }
+        if (!d2) return;
+        return await fileUpload(d2);
     }
 
     /** @private */
-    static async qcloud_com() {}
+    static async qcloud_com(d0) {
+        const d1 = await filePurity(d0);
+        if (!d1) return;
+        const {akey, skey, host, path} = d1.data;
+        const qsa = new QCloudStorageAuth(akey, skey);
+        const filename = await genFilename(d1.blob, true);
+        const filepath = `${path}/${filename}`;
+        const headers = await qsa.getAuthHeaders("PUT", filepath , host);
+        headers.set("Content-Type", d1.blob.type);
+        headers.set("Content-Length", d1.blob.size);
+        const res = await fetch(qsa.auths.url.toString(), {headers, method: qsa.auths.method, body: d1.blob});
+        if (res.status === 200 && d1.blob.type.startsWith("image/")) {
+            return Object.assign(d1, {fid: filepath});
+        }
+    }
+
 
     /** @private */
     static async qiniu_com() {}

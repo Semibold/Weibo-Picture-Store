@@ -238,7 +238,7 @@ class OptionsTree {
                 d.akey = akey.value.trim();
                 d.skey = skey.value.trim();
                 d.host = host.value.trim();
-                d.path = path.value.trim();
+                d.path = Utils.formatDirpath(path.value);
                 break;
         }
     }

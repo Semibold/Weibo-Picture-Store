@@ -276,11 +276,11 @@ export class Dispatcher {
             scheme: scheme[this.config.scheme],
             host: item.host,
             fid: item.fid,
-            url: `${scheme[this.config.scheme] + item.host}/${item.fid}`,
+            url: `${scheme[this.config.scheme] + item.host + item.fid}`,
         };
         switch (item.data.ssp) {
             case "weibo_com":
-                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.fid}`;
+                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize] + chip.fid}`;
                 break;
             case "qcloud_com":
                 break;

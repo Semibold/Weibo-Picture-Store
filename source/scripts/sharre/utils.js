@@ -201,4 +201,19 @@ export class Utils {
         return new XMLSerializer().serializeToString(node);
     }
 
+    /**
+     * @param {string} dirpath
+     * @return {string}
+     */
+    static formatDirpath(dirpath = "") {
+        dirpath = dirpath.trim();
+        if (!dirpath.startsWith("/")) {
+            dirpath = "/" + dirpath;
+        }
+        while (dirpath.endsWith("/")) {
+            dirpath = dirpath.slice(0 ,-1);
+        }
+        return dirpath;
+    }
+
 }
