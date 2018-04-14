@@ -26,7 +26,7 @@
  * They take string arguments and return either hex or base-64 encoded strings
  */
 function raw_md5(s) {
-    return rstr_md5(str2rstr_utf8(data));
+    return rstr_md5(str2rstr_utf8(s));
 }
 
 function hex_md5(s) {
@@ -42,7 +42,7 @@ function any_md5(s, e) {
 }
 
 function raw_hmac_md5(k, d) {
-    return rstr_hmac_md5(str2rstr_utf8(key), str2rstr_utf8(data));
+    return rstr_hmac_md5(str2rstr_utf8(k), str2rstr_utf8(d));
 }
 
 function hex_hmac_md5(k, d) {
