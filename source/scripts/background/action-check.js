@@ -94,6 +94,7 @@ export class ActionCheck {
                 <MaxAgeSeconds>600</MaxAgeSeconds>
                 <ExposeHeader>x-cos-request-id</ExposeHeader>
                 <ExposeHeader>x-cos-trace-id</ExposeHeader>
+                <ExposeHeader>ETag</ExposeHeader>
             </CORSRule>`).children);
 
         // 设置 Bucket 的跨域资源共享权限
