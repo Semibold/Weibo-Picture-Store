@@ -323,11 +323,11 @@ class OptionsTree {
         const saveasbtn = document.querySelector(".options-btn-saveas");
         const deletebtn = document.querySelector(".options-btn-delete");
         updatebtn.addEventListener("click", e => {
-            // @todo 验证数据
             const cd = this.total[this.sdata.selectindex];
             if (cd.foreign.updatebtn.disabled) return;
             this[cd.ssp](cd, "update");
             SharreM.syncedSData.sdata = this.sdata;
+            SharreM.ActionCheck.fetcher(cd.ssp, {[cd.ssp]: cd});
             gtracker.event({
                 eventCategory: e.target.tagName,
                 eventAction: e.type,
@@ -335,7 +335,6 @@ class OptionsTree {
             });
         });
         saveasbtn.addEventListener("click", e => {
-            // @todo 验证数据
             const cd = this.total[this.sdata.selectindex];
             if (cd.foreign.saveasbtn.disabled) return;
             if (this.valid.length >= MAX_SUBMENU_LENGTH) {
@@ -353,6 +352,7 @@ class OptionsTree {
             this.genlist();
             this.sdata.selectindex = this.total.findIndex(cv => cv === nd);
             SharreM.syncedSData.sdata = this.sdata;
+            SharreM.ActionCheck.fetcher(nd.ssp, {[nd.ssp]: nd});
             gtracker.event({
                 eventCategory: e.target.tagName,
                 eventAction: e.type,

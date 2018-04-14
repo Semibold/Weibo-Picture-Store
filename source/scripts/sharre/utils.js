@@ -185,4 +185,20 @@ export class Utils {
         return result;
     }
 
+    /**
+     * @param {string} text
+     * @return {Document}
+     */
+    static parseXML(text) {
+        return new DOMParser().parseFromString(text, "text/xml");
+    }
+
+    /**
+     * @param {Node} node
+     * @return {string}
+     */
+    static serializeXML(node) {
+        return new XMLSerializer().serializeToString(node);
+    }
+
 }
