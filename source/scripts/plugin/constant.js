@@ -21,6 +21,7 @@ export const T_DATA_CHANGED = "data_changed";
 
 /**
  * @desc 固定的 64 位特征码
+ * @desc 这个[不是]微博专用的
  */
 export const WEIBO_ALBUM_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUWFdcwtlGEX2w";
 
