@@ -13,14 +13,6 @@ const headHTML = `
     </h1>`;
 
 const footHTML = `
-    <div class="foot-navigator">
-        <a class="prev" data-disabled="true" title="上一页"><i class="fa fa-chevron-left"></i></a>
-        <a class="hint">
-            <span class="pagination">- / -</span>
-            <span>Ctrl+左右方向键也可以翻页</span>
-        </a>
-        <a class="next" data-disabled="true" title="下一页"><i class="fa fa-chevron-right"></i></a>
-    </div>
     <div class="foot-bottom">
         <div class="foot-line"></div>
         <div class="foot-menu">

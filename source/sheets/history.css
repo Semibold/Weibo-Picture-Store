@@ -8,6 +8,46 @@ body {
     background-color: rgb(242, 242, 242);
 }
 
+#progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background-clip: padding-box;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+#progress-bar[data-hidden="true"] {
+    display: none;
+}
+
+#progress-bar .indeterminate::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+    background-color: #b91f1f;
+    will-change: left, right;
+}
+
+#progress-bar .indeterminate::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+    animation-delay: 1.15s;
+    background-color: #b91f1f;
+    will-change: left, right;
+}
+
 #app {
     margin: auto;
     padding: 2em;
@@ -136,49 +176,6 @@ body {
     margin-bottom: 1em;
 }
 
-.foot-navigator {
-    display: flex;
-    justify-content: space-around;
-    color: #bbb;
-    user-select: none;
-}
-
-.foot-navigator .hint {
-    align-self: center;
-}
-
-.foot-navigator .hint > span {
-    display: block;
-    text-align: center;
-}
-
-.foot-navigator .prev,
-.foot-navigator .next {
-    display: inline-block;
-    width: 4em;
-    height: 2em;
-    font-size: 2em;
-    line-height: 2em;
-    text-align: center;
-    transition: color 0.2s;
-}
-
-.foot-navigator .prev[data-disabled="false"],
-.foot-navigator .next[data-disabled="false"] {
-    cursor: pointer;
-}
-
-.foot-navigator .prev[data-disabled="false"]:hover,
-.foot-navigator .next[data-disabled="false"]:hover {
-    color: #555;
-}
-
-.foot-navigator .prev[data-disabled="true"],
-.foot-navigator .next[data-disabled="true"] {
-    color: #e9e9e9;
-    cursor: default;
-}
-
 .foot-bottom {
     margin-top: 2em;
 }
@@ -221,6 +218,28 @@ body {
     line-height: 3;
     text-align: center;
     user-select: none;
+}
+
+[data-bio="throw-button"] {
+    padding-bottom: 1em;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+[data-bio="throw-button"] > button {
+    padding: 0 1.5em;
+    line-height: 2.6em;
+    border: 0;
+    border-radius: 1.3em;
+    color: #fff;
+    background-color: #00a1d6;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    transition: background-color 0.25s ease-out;
+    cursor: pointer;
+}
+
+[data-bio="throw-button"] > button:hover {
+    background-color: #00b5e5;
 }
 
 [data-bio="loading"] {

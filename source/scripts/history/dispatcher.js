@@ -6,131 +6,207 @@
 
 import {Utils} from "../sharre/utils.js";
 import {SharreM} from "../sharre/alphabet.js";
-import {SKEY_ALBUM_ID, SKEY_REMOVED_PHOTO_ID} from "../plugin/constant.js";
 
 export class Dispatcher {
 
     constructor() {
-        this.page = 1;
-        this.count = 40;
+        this.checkout = {
+            page: 1,
+            pages: 1,
+            count: 50,
+            albumId: 0,
+            nextMarker: "",
+        };
+        this.error = false;
+        this.ended = false;
+        this.maxselected = 100;
         this.notifyId = Utils.randomString(16);
         this.main = document.querySelector("#main");
-        this.prev = document.querySelector(".foot-navigator > .prev");
-        this.next = document.querySelector(".foot-navigator > .next");
-        this.pagination = document.querySelector(".foot-navigator .pagination");
-        this.fragment = document.createDocumentFragment();
-        this.checkout = {albumId: null, pages: null};
-        this.searchParams = new URLSearchParams(location.search);
+        this.foot = document.querySelector("#foot");
+        this.progressbar = document.querySelector("#progress-bar");
         this.loading = document.createElement("div");
-        this.nodemap = new WeakMap();
+        this.exception = document.createElement("div");
+        this.fragment = document.createDocumentFragment();
+        this.sections = new Map();
         this.selected = new Set();
+        this.observer = new IntersectionObserver((entries, observer) => {
+            this.observerCallback(entries, observer);
+        }, {rootMargin: "0%", threshold: 0});
         this.cdata = SharreM.syncedSData.cdata;
     }
 
-    /** @public */
+    /**
+     * @public
+     */
     init() {
-        this.buildLoadingHinter();
-        this.resolveQueryString();
-        this.fetchSpecialAlbum();
+        this.primaryStructure();
+        this.registerObserver();
         this.addGlobalListener();
         return this;
     }
 
-    /** @private */
-    buildLoadingHinter() {
+    /**
+     * @private
+     */
+    primaryStructure() {
+        const div = document.createElement("button");
+        div.textContent = "载入数据错误，点击再次加载";
+        this.exception.dataset.bio = "throw-button";
+        this.exception.append(div);
+
         this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
     }
 
-    /** @private */
-    resolveQueryString() {
-        const page = Number(this.searchParams.get("page"));
-        const count = Number(this.searchParams.get("count"));
-        if (Number.isInteger(page) && page > 0) this.page = page;
-        if (Number.isInteger(count) && count > 0) this.count = count;
+    /**
+     * @private
+     */
+    registerObserver() {
+        this.observer.observe(this.foot);
     }
 
-    /** @private */
-    fetchSpecialAlbum() {
-        this[this.cdata.ssp]();
+    /**
+     * @private
+     * @param {IntersectionObserverEntry[]} [entries]
+     * @param {IntersectionObserver} [observer]
+     */
+    observerCallback(entries, observer) {
+        if (this.needNextPage(entries)) {
+            const promise = this[this.cdata.ssp]();
+            this.progressbar.dataset.hidden = false;
+            promise.then(result => {
+                this.checkout.page++;
+                return result;
+            }).catch(reason => {
+                this.errorInjector();
+            }).finally(() => {
+                const {page, pages} = this.checkout;
+                if (!pages || page > pages) {
+                    this.ended = true;
+                }
+                if (this.ended) {
+                    this.observer.unobserve(this.foot);
+                }
+                if (this.loading.parentElement) {
+                    this.loading.remove();
+                }
+                this.progressbar.dataset.hidden = true;
+                this.observerCallback();
+            });
+        }
     }
 
-    /** @private */
+    /**
+     * @private
+     * @param {IntersectionObserverEntry[]} [entries]
+     * @return {boolean}
+     */
+    needNextPage(entries) {
+        if (this.ended || this.error) {
+            return false;
+        }
+        if (entries) {
+            return entries.some(entry => {
+                return entry.target === this.foot && entry.isIntersecting;
+            });
+        } else {
+            const foot = this.foot.getBoundingClientRect();
+            const scrollingElementHeight = document.scrollingElement.clientHeight;
+            return scrollingElementHeight >= foot.top;
+        }
+    }
+
+    /**
+     * @private
+     */
     weibo_com() {
-        const albumId = sessionStorage.getItem(SKEY_ALBUM_ID);
-        const albumInfo = albumId ? {albumId} : null;
-
-        // 服务器可能返回不准确的分页数据，会导致空白分页
-        SharreM.ActionHistory.fetcher(this.cdata.ssp, {
+        const albumInfo = this.checkout.albumId ? {albumId: this.checkout.albumId} : null;
+        return SharreM.ActionHistory.fetcher(this.cdata.ssp, {
             weibo_com: {
-                page: this.page,
-                count: this.count,
+                page: this.checkout.page,
+                count: this.checkout.count,
                 albumInfo: albumInfo,
             },
         }).then(json => {
-            sessionStorage.setItem(SKEY_ALBUM_ID, json.albumId);
-            this.checkout.pages = Math.ceil(json.total / this.count);
+            this.checkout.pages = Math.ceil(json.total / this.checkout.count);
             this.checkout.albumId = json.albumId;
-            this.loading.remove();
-            this.renderPaging();
-            this.buildMicroAlbumLink();
-            if (!json.list.length) {
-                this.errorInjector("没有分页数据，欸嘿~");
-            } else {
-                const lastpid = sessionStorage.getItem(SKEY_REMOVED_PHOTO_ID);
-                const removed = new Set(lastpid ? lastpid.split(",") : []);
-                for (const item of json.list) {
-                    if (removed.has(item.photoId)) continue;
-                    const fragment = this.constructor.importNode();
-                    const section = fragment.querySelector("section");
-                    const linker = section.querySelector(".image-linker");
-                    const create = section.querySelector(".image-update");
-                    const source = linker.querySelector("img");
-                    source.src = `${item.picHost}/thumb300/${item.picName}`;
-                    source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
-                    linker.href = `${item.picHost}/large/${item.picName}`;
-                    create.textContent = item.updated;
-                    this.fragment.append(section);
-                    this.nodemap.set(section, item);
-                }
-                this.main.append(this.fragment);
+            for (const item of json.list) {
+                const fragment = this.constructor.importNode();
+                const section = fragment.querySelector("section");
+                const linker = section.querySelector(".image-linker");
+                const create = section.querySelector(".image-update");
+                const source = linker.querySelector("img");
+                source.src = `${item.picHost}/thumb300/${item.picName}`;
+                source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
+                linker.href = `${item.picHost}/large/${item.picName}`;
+                create.textContent = item.updated;
+                this.fragment.append(section);
+                this.sections.set(section, item);
             }
+            this.main.append(this.fragment);
+            return json;
         }).catch(reason => {
-            sessionStorage.removeItem(SKEY_ALBUM_ID);
-            this.loading.remove();
-            this.renderPaging();
-            this.errorInjector("获取图片失败，欸嘿~");
+            this.checkout.albumId = 0;
+            return Promise.reject(reason);
         });
     }
 
-    /** @private */
-    qcloud_com() {}
+    /**
+     * @private
+     * @todo
+     */
+    qcloud_com() {
+        SharreM.ActionHistory.fetcher(this.cdata.ssp, {
+            qcloud_com: {
+                page: this.page,
+                count: this.count,
+                marker: this.cache.qcloud_com.nextMarker || "",
+            },
+        }).then(json => {
+            this.checkout.pages = json.isTruncated ? Infinity : this.page;
+            this.loading.remove();
+            for (const item of json.list) {
+                const fragment = this.constructor.importNode();
+                const section = fragment.querySelector("section");
+                const linker = section.querySelector(".image-linker");
+                const create = section.querySelector(".image-update");
+                const source = linker.querySelector("img");
+                source.src = `${item.picHost}/${item.picName}`;
+                linker.href = `${item.picHost}/${item.picName}`;
+                create.textContent = item.updated;
+                this.fragment.append(section);
+                this.sections.set(section, item);
+            }
+            this.main.append(this.fragment);
+        }).catch(reason => {
+            this.loading.remove();
+        });
+    }
 
-    /** @private */
+    /**
+     * @private
+     */
     qiniu_com() {}
 
-    /** @private */
+    /**
+     * @private
+     */
     aliyun_com() {}
 
-    /** @private */
+    /**
+     * @private
+     */
     upyun_com() {}
 
-    /** @private */
+    /**
+     * @private
+     */
     addGlobalListener() {
-        this.prev.addEventListener("click", () => this.prevPageHandler());
-        this.next.addEventListener("click", () => this.nextPageHandler());
-
-        document.addEventListener("keydown", e => {
-            if (e.ctrlKey && e.key === "ArrowLeft") {
-                e.preventDefault();
-                this.prevPageHandler();
-            }
-            if (e.ctrlKey && e.key === "ArrowRight") {
-                e.preventDefault();
-                this.nextPageHandler();
-            }
+        this.exception.addEventListener("click", e => {
+            this.error = false;
+            this.exception.remove();
+            this.observerCallback();
         });
-
         document.addEventListener("click", e => {
             if (e.ctrlKey) {
                 const section = e.target.closest("section");
@@ -139,13 +215,21 @@ export class Dispatcher {
                     if (this.selected.has(section)) {
                         this.selected.delete(section);
                         section.dataset.selected = false;
-                    } else {
+                    } else if (this.selected.size < this.maxselected) {
                         this.selected.add(section);
                         section.dataset.selected = true;
+                    } else {
+                        chrome.notifications.create(this.notifyId, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("notify_icon"),
+                            title: chrome.i18n.getMessage("info_title"),
+                            message: `选择失败：最多同时选中${this.maxselected}个元素`,
+                        });
                     }
                 }
             } else {
                 if (this.selected.size) {
+                    e.preventDefault();
                     this.selected.forEach(n => {
                         n.dataset.selected = false;
                     });
@@ -168,13 +252,13 @@ export class Dispatcher {
      * @public
      */
     deleteResources() {
-        const nodes = [];
-        const cache = {list: [], promise: null};
+        const cache = {list: [], selected: [], promise: null};
         this.selected.forEach(n => {
-            const d = this.nodemap.get(n);
+            const d = this.sections.get(n);
             d && cache.list.push(d);
             n.dataset.removing = true;
-            nodes.push(n);
+            n.dataset.selected = false;
+            cache.selected.push(n);
         });
         this.selected.clear();
         switch (this.cdata.ssp) {
@@ -185,9 +269,6 @@ export class Dispatcher {
                         albumId: this.checkout.albumId,
                         photoIds: photoIds,
                     },
-                }).then(json => {
-                    sessionStorage.setItem(SKEY_REMOVED_PHOTO_ID, photoIds.join(","));
-                    return json;
                 });
                 break;
             }
@@ -195,13 +276,14 @@ export class Dispatcher {
             case "qiniu_com": break;
             case "aliyun_com": break;
             case "upyun_com": break;
-            default:
-                return;
         }
-        cache.promise && cache.promise.finally(() => {
-            nodes.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
+        cache.promise.finally(() => {
+            cache.selected.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
         }).then(json => {
-            chrome.notifications.clear(this.notifyId, wasCleared => this.flipPage());
+            cache.selected.forEach(section => {
+                section.remove();
+                this.sections.delete(section);
+            });
         }).catch(reason => {
             chrome.notifications.create(this.notifyId, {
                 type: "basic",
@@ -212,58 +294,19 @@ export class Dispatcher {
         });
     }
 
-    /** @private */
-    prevPageHandler() {
-        if (this.checkout.pages && this.page > 1) {
-            this.page--;
-            this.flipPage();
+    /**
+     * @private
+     */
+    errorInjector() {
+        this.error = true;
+        if (this.checkout.page === 1) {
+            const div = document.createElement("div");
+            div.dataset.bio = "throw-message";
+            div.textContent = "获取图片失败，欸嘿~";
+            this.main.append(div);
+        } else if (!this.ended) {
+            this.main.append(this.exception);
         }
-    }
-
-    /** @private */
-    nextPageHandler() {
-        if (this.checkout.pages && this.page < this.checkout.pages) {
-            this.page++;
-            this.flipPage();
-        }
-    }
-
-    /** @private */
-    buildMicroAlbumLink() {
-        const a = document.createElement("a");
-        const footMenu = document.querySelector(".foot-menu");
-        a.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
-        a.title = "前往微相册管理相册中的图片";
-        a.target = "_blank";
-        a.textContent = "微相册";
-        footMenu.prepend(a);
-    }
-
-    /** @private */
-    flipPage() {
-        this.searchParams.set("page", this.page.toString());
-        this.searchParams.set("count", this.count.toString());
-        location.search = this.searchParams.toString();
-    }
-
-    /** @private */
-    renderPaging() {
-        if (!this.checkout.pages) {
-            this.prev.dataset.disabled = true;
-            this.next.dataset.disabled = true;
-        } else {
-            this.prev.dataset.disabled = this.page <= 1;
-            this.next.dataset.disabled = this.page >= this.checkout.pages;
-            this.pagination.textContent = `${this.page} / ${this.checkout.pages}`;
-        }
-    }
-
-    /** @private */
-    errorInjector(text) {
-        const div = document.createElement("div");
-        div.dataset.bio = "throw-message";
-        div.textContent = text;
-        this.main.append(div);
     }
 
     static importNode() {
