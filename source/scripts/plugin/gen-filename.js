@@ -20,8 +20,8 @@ export async function genFilename(file, ext) {
     const samples = [];
     if (file.size > samplesize * samplerate) {
         const n = Math.floor(file.size / samplerate);
-        for (let i = 0; i < n; i++) {
-            samples.push(file.slice(i, i + samples));
+        for (let i = 0; i < samplerate; i++) {
+            samples.push(file.slice(i * n, i * n + samplesize));
         }
         samples.push(file.name + file.lastModified + file.size);
     }

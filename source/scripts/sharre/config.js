@@ -77,6 +77,7 @@ class InternalConf {
                     skey: "",
                     host: "",
                     path: "",
+                    pics: "",
                 },
                 qiniu_com: {
                     ssp: "qiniu_com",
@@ -88,6 +89,33 @@ class InternalConf {
                     ssp: "upyun_com",
                 },
             },
+            thumbnail: {
+                weibo_com: {
+                    1: "large",
+                    2: "mw690",
+                    3: "thumbnail",
+                },
+                qcloud_com: {
+                    1: "",
+                    2: "?imageMogr2/thumbnail/720x720/quality/90",
+                    3: "?imageMogr2/thumbnail/360x360/quality/90",
+                },
+                qiniu_com: {
+                    1: "",
+                    2: "",
+                    3: "",
+                },
+                aliyun_com: {
+                    1: "",
+                    2: "",
+                    3: "",
+                },
+                upyun_com: {
+                    1: "",
+                    2: "",
+                    3: "",
+                },
+            }
         };
     }
 
@@ -177,6 +205,13 @@ export class Config {
      */
     static get restricte() {
         return InternalConf.headroom.restricte;
+    }
+
+    /**
+     * @return {Object}
+     */
+    static get thumbnail() {
+        return InternalConf.headroom.thumbnail;
     }
 
     /**

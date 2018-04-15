@@ -203,7 +203,7 @@ export class Utils {
 
     /**
      * @param {string} dirpath
-     * @return {string}
+     * @return {string} - 返回首部不带/尾部带/的字符串
      */
     static formatDirpath(dirpath = "") {
         dirpath = dirpath.trim();

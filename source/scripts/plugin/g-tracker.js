@@ -14,7 +14,7 @@ class GTracker {
 
     constructor() {
         this.ga = self.ga;
-        this.disabled = true;
+        this.disabled = true; // @todo
         this.detector();
     }
 

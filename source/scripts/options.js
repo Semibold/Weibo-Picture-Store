@@ -225,6 +225,7 @@ class OptionsTree {
         const skey = this.ddnodes.qcloud_com.querySelector(".input-skey");
         const host = this.ddnodes.qcloud_com.querySelector(".input-host");
         const path = this.ddnodes.qcloud_com.querySelector(".input-path");
+        const pics = this.ddnodes.qcloud_com.querySelector(".input-pics");
         switch (role) {
             case "render":
                 mark.value = d.mark;
@@ -232,6 +233,7 @@ class OptionsTree {
                 skey.value = d.skey;
                 host.value = d.host;
                 path.value = d.path;
+                pics.value = d.pics;
                 break;
             case "update":
                 d.mark = mark.value.trim();
@@ -239,6 +241,7 @@ class OptionsTree {
                 d.skey = skey.value.trim();
                 d.host = host.value.trim();
                 d.path = Utils.formatDirpath(path.value);
+                d.pics = pics.value.trim();
                 break;
         }
     }

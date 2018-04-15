@@ -6,6 +6,7 @@
 
 import {Utils} from "../sharre/utils.js";
 import {SharreM} from "../sharre/alphabet.js";
+import {Config} from "../sharre/config.js";
 
 export class Dispatcher {
 
@@ -21,6 +22,7 @@ export class Dispatcher {
         this.ended = false;
         this.maxselected = 100;
         this.notifyId = Utils.randomString(16);
+        this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
         this.foot = document.querySelector("#foot");
         this.progressbar = document.querySelector("#progress-bar");
@@ -96,6 +98,8 @@ export class Dispatcher {
         }
     }
 
+
+
     /**
      * @private
      * @param {IntersectionObserverEntry[]} [entries]
@@ -153,33 +157,38 @@ export class Dispatcher {
 
     /**
      * @private
-     * @todo
      */
     qcloud_com() {
-        SharreM.ActionHistory.fetcher(this.cdata.ssp, {
+        const thumbnail = Config.thumbnail[this.cdata.ssp];
+        return SharreM.ActionHistory.fetcher(this.cdata.ssp, {
             qcloud_com: {
-                page: this.page,
-                count: this.count,
-                marker: this.cache.qcloud_com.nextMarker || "",
+                page: this.checkout.page,
+                count: this.checkout.count,
+                marker: this.checkout.nextMarker,
+                cdata: this.cdata,
             },
         }).then(json => {
-            this.checkout.pages = json.isTruncated ? Infinity : this.page;
-            this.loading.remove();
+            if (json.isTruncated) {
+                this.checkout.pages = this.checkout.page + 1;
+            } else {
+                this.checkout.pages = this.checkout.page;
+            }
+            this.checkout.nextMarker = json.nextMarker;
             for (const item of json.list) {
                 const fragment = this.constructor.importNode();
                 const section = fragment.querySelector("section");
                 const linker = section.querySelector(".image-linker");
                 const create = section.querySelector(".image-update");
                 const source = linker.querySelector("img");
-                source.src = `${item.picHost}/${item.picName}`;
+                source.src = `${item.picHost}/${item.picName + thumbnail[3]}`;
+                source.srcset = `${item.picHost}/${item.picName + thumbnail[2]} 2x`;
                 linker.href = `${item.picHost}/${item.picName}`;
                 create.textContent = item.updated;
                 this.fragment.append(section);
                 this.sections.set(section, item);
             }
             this.main.append(this.fragment);
-        }).catch(reason => {
-            this.loading.remove();
+            return json;
         });
     }
 
@@ -252,19 +261,22 @@ export class Dispatcher {
      * @public
      */
     deleteResources() {
-        const cache = {list: [], selected: [], promise: null};
+        const pegmap = new WeakMap();
+        const cache = {list: [], selected: new Set(this.selected), promise: null};
         this.selected.forEach(n => {
             const d = this.sections.get(n);
-            d && cache.list.push(d);
-            n.dataset.removing = true;
+            if (d) {
+                cache.list.push(d);
+                n.dataset.removing = true;
+                pegmap.set(d, n);
+            }
             n.dataset.selected = false;
-            cache.selected.push(n);
         });
         this.selected.clear();
         switch (this.cdata.ssp) {
             case "weibo_com": {
                 const photoIds = cache.list.map(d => d.photoId);
-                cache.promise = SharreM.ActionDelete.fetcher("weibo_com", {
+                cache.promise = SharreM.ActionDelete.fetcher(this.cdata.ssp, {
                     weibo_com: {
                         albumId: this.checkout.albumId,
                         photoIds: photoIds,
@@ -272,7 +284,29 @@ export class Dispatcher {
                 });
                 break;
             }
-            case "qcloud_com": break;
+            case "qcloud_com": {
+                const kobj = {};
+                const keys = cache.list.map(d => {
+                    kobj[d.picName] = d;
+                    return d.picName;
+                });
+                cache.promise = SharreM.ActionDelete.fetcher(this.cdata.ssp, {
+                    qcloud_com: {
+                        cdata: this.cdata,
+                        keys: keys,
+                    },
+                }).then(json => {
+                    json.errorKeys.forEach(k => {
+                        const d = kobj[k];
+                        const n = pegmap.get(d);
+                        if (cache.selected.has(n)) {
+                            cache.selected.delete(n);
+                            Reflect.deleteProperty(n.dataset, "removing");
+                        }
+                    });
+                });
+                break;
+            }
             case "qiniu_com": break;
             case "aliyun_com": break;
             case "upyun_com": break;
@@ -282,7 +316,9 @@ export class Dispatcher {
         }).then(json => {
             cache.selected.forEach(section => {
                 section.remove();
-                this.sections.delete(section);
+                if (this.sections.has(section)) {
+                    this.sections.delete(section);
+                }
             });
         }).catch(reason => {
             chrome.notifications.create(this.notifyId, {

@@ -6,7 +6,6 @@
 
 import {getAllPhoto} from "../weibo/get-all-photo.js";
 import {QCloudStorageAuth} from "../auth/qcloud-storage.js";
-import {syncedSData} from "./synced-sdata.js";
 import {Utils} from "../sharre/utils.js";
 import {Config} from "../sharre/config.js";
 
@@ -29,6 +28,7 @@ export class ActionHistory {
      * @param {number} [obj.qcloud_com.page]
      * @param {number} [obj.qcloud_com.count]
      * @param {string} [obj.qcloud_com.marker]
+     * @param {string} [obj.qcloud_com.cdata]
      */
     static async fetcher(ssp, obj) {
         return await ActionHistory[ssp](obj[ssp]);
@@ -41,9 +41,7 @@ export class ActionHistory {
 
     /** @private */
     static async qcloud_com(o) {
-        const cd = syncedSData.cdata;
-        if (cd.ssp !== "qcloud_com") return;
-        const {akey, skey, host, path} = cd;
+        const {akey, skey, host, path} = o.cdata;
         const qsa = new QCloudStorageAuth(akey, skey);
         const headers = await qsa.getAuthHeaders("GET", "/", host);
         const searchParams = qsa.auths.url.searchParams;
@@ -61,20 +59,20 @@ export class ActionHistory {
         const list = [];
         contents.forEach(c => {
             const key = c.querySelector("Key");
-            if (key.textContent.endsWith("/")) return;
-            if (!Config.filenameExtensions.some(ext => key.textContent.endsWith(ext))) return;
-            const lastModified = doc.querySelector("LastModified");
-            list.push({
-                picName: key.textContent,
-                picHost: "http://" + cd.host,
-                updated: Utils.formatDate(lastModified.textContent),
-            });
+            if (Config.filenameExtensions.some(ext => key.textContent.endsWith(ext))) {
+                const lastModified = c.querySelector("LastModified");
+                list.push({
+                    picName: key.textContent,
+                    picHost: "http://" + o.cdata.pics || o.cdata.host,
+                    updated: Utils.formatDate(lastModified.textContent),
+                });
+            }
         });
         return {
             list: list,
             marker: marker.textContent,
-            nextMarker: Boolean(nextMarker) && nextMarker.textContent,
-            isTruncated: Boolean(JSON.parse(isTruncated.textContent)),
+            nextMarker: nextMarker ? nextMarker.textContent : "",
+            isTruncated: JSON.parse(isTruncated.textContent),
         };
     }
 

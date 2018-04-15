@@ -21,6 +21,7 @@ export class ActionCheck {
      * @public
      * @param {string} ssp
      * @param {Object} obj
+     * @param {Object} obj[ssp] - cdata
      */
     static async fetcher(ssp, obj) {
         const message = await this[ssp](obj[ssp]).catch(reason => {
@@ -48,8 +49,8 @@ export class ActionCheck {
         const a1 = new QCloudStorageAuth(ak, sk);
         const h1 = await a1.getAuthHeaders("HEAD", "/", host);
         const r1 = await fetch(a1.auths.url.toString(), {headers: h1, method: a1.auths.method});
-        if (r1.status === 403) return "当该 Bucket 无访问权限";
-        if (r1.status === 404) return "当该 Bucket 不存在";
+        if (r1.status === 403) return "当前该 Bucket 无访问权限";
+        if (r1.status === 404) return "当前该 Bucket 不存在";
         if (r1.status !== 200) return `未知 Bucket 错误 - Code: ${r1.status}`;
 
         // 用来获取 Bucket 的 ACL(access control list)

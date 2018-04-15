@@ -209,6 +209,71 @@
     background-color: #00b5e5;
 }
 
+#foot {
+    position: fixed;
+    bottom: 1em;
+    right: 0;
+    line-height: 1;
+    border: 1px solid #e5e9ef;
+    background-color: #f6f9fa;
+    user-select: none;
+    transform: translateX(calc(100% - 44px));
+    transition: transform 500ms ease-in-out 500ms;
+    z-index: 1000;
+}
+
+#foot:hover {
+    transform: translateX(0);
+    transition-delay: 150ms;
+}
+
+#foot:hover .foot-menu a {
+    transform: translateX(0);
+}
+
+.foot-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+}
+
+.foot-bottom > i.fa {
+    width: 42px;
+    font-size: 2em;
+    color: #888;
+    text-align: center;
+}
+
+.foot-menu a {
+    display: inline-block;
+    padding: 0 0.8em;
+    line-height: 2.5;
+    color: #888;
+    transition: color 0.15s, transform 500ms ease 450ms;
+    cursor: pointer;
+}
+
+.foot-menu a:hover {
+    color: #e8554e;
+}
+
+.foot-menu a:nth-of-type(1) {
+    transform: translateX(2em);
+}
+
+.foot-menu a:nth-of-type(2) {
+    transform: translateX(4em);
+}
+
+.foot-menu a:nth-of-type(3) {
+    transform: translateX(8em);
+}
+
+.foot-menu a:nth-of-type(4) {
+    transform: translateX(16em);
+}
+
 #transfer-to-clipboard {
     position: fixed;
     top: -2em;

@@ -120,27 +120,27 @@ export class ActionUpload {
     }
 
     /** @private */
-    static async weibo_com(d0) {
-        const d1 = await readFile(d0);
-        const d2 = await filePurity(d1);
-        if (!d2) return;
-        return await fileUpload(d2);
+    static async weibo_com(item) {
+        item = await readFile(item);
+        item = await filePurity(item);
+        if (!item) return;
+        return await fileUpload(item);
     }
 
     /** @private */
-    static async qcloud_com(d0) {
-        const d1 = await filePurity(d0);
-        if (!d1) return;
-        const {akey, skey, host, path} = d1.data;
+    static async qcloud_com(item) {
+        item = await filePurity(item);
+        if (!item) return;
+        const {akey, skey, host, path} = item.data;
         const qsa = new QCloudStorageAuth(akey, skey);
-        const filename = await genFilename(d1.blob, true);
+        const filename = await genFilename(item.blob, true);
         const filepath = `/${path + filename}`;
         const headers = await qsa.getAuthHeaders("PUT", filepath, host);
-        headers.set("Content-Type", d1.blob.type);
-        headers.set("Content-Length", d1.blob.size);
-        const res = await fetch(qsa.auths.url.toString(), {headers, method: qsa.auths.method, body: d1.blob});
-        if (res.status === 200 && d1.blob.type.startsWith("image/")) {
-            return Object.assign(d1, {fid: filepath});
+        headers.set("Content-Type", item.blob.type);
+        headers.set("Content-Length", item.blob.size);
+        const res = await fetch(qsa.auths.url.toString(), {headers, method: qsa.auths.method, body: item.blob});
+        if (res.status === 200 && item.blob.type.startsWith("image/")) {
+            return Object.assign(item, {fid: filepath});
         }
     }
 

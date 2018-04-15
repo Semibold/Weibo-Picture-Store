@@ -6,18 +6,25 @@
 
 interface WeiboItemExtra {
     photoId: string;
+}
+
+interface ItemData extends WeiboItemExtra {
     picHost: string;
     picName: string;
     updated: string;
 }
-
-interface ItemData extends WeiboItemExtra {}
 
 interface WeiboDataExtra {
     total: number;
     albumId: string;
 }
 
-interface HistoryData extends WeiboDataExtra {
+interface QCloudDataExtra {
+    marker: string;
+    nextMarker: string;
+    isTruncated: boolean;
+}
+
+interface HistoryData extends WeiboDataExtra, QCloudDataExtra {
     list: ItemData[];
 }

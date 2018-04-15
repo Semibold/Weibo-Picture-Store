@@ -31,18 +31,6 @@ export const WEIBO_ALBUM_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sj
 export const MAX_SUBMENU_LENGTH = 12;
 
 /**
- * @desc StorageKey
- * @desc 存储 album_id
- */
-export const SKEY_ALBUM_ID = "album_id";
-
-/**
- * @desc StorageKey
- * @desc 存储上一次删除的 photo_id
- */
-export const SKEY_REMOVED_PHOTO_ID = "removed_photo_id";
-
-/**
  * @desc contextmenu id
  */
 export const BATCH_DELETE_MENU_ID = "menu_batch_delete";

@@ -7,6 +7,7 @@
 import {Utils} from "../sharre/utils.js";
 import {BuildItem} from "./build-item.js";
 import {SharreM} from "../sharre/alphabet.js";
+import {Config} from "../sharre/config.js";
 
 export class Dispatcher {
 
@@ -272,17 +273,21 @@ export class Dispatcher {
             return item;
         }
         const {scheme, clipsize} = this.starter;
+        const thumbnail = Config.thumbnail[item.data.ssp];
         const chip = {
             scheme: scheme[this.config.scheme],
-            host: item.host,
+            host: item.data.pics || item.host,
             fid: item.fid,
             url: `${scheme[this.config.scheme] + item.host + item.fid}`,
+            clipsize: this.config.clipsize === 4 ? clipsize[this.config.clipsize] : thumbnail[this.config.clipsize],
         };
+        console.log(chip.clipsize, Config.thumbnail, this.config.clipsize);
         switch (item.data.ssp) {
             case "weibo_com":
-                chip.url = `${chip.scheme + chip.host}/${clipsize[this.config.clipsize]}/${chip.fid}`;
+                chip.url = `${chip.scheme + chip.host}/${chip.clipsize}/${chip.fid}`;
                 break;
             case "qcloud_com":
+                chip.url = `${scheme[this.config.scheme] + chip.host + chip.fid + chip.clipsize}`;
                 break;
             case "qiniu_com":
             case "aliyun_com":
