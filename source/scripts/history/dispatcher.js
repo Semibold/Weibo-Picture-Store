@@ -8,6 +8,9 @@ import {Utils} from "../sharre/utils.js";
 import {SharreM} from "../sharre/alphabet.js";
 import {Config} from "../sharre/config.js";
 
+/**
+ * @todo 超多元素回收和添加
+ */
 export class Dispatcher {
 
     constructor() {
@@ -94,6 +97,8 @@ export class Dispatcher {
                 }
                 this.progressbar.dataset.hidden = true;
                 this.observerCallback();
+            }).then(result => {
+                this.availableChecker();
             });
         }
     }
@@ -320,6 +325,7 @@ export class Dispatcher {
                     this.sections.delete(section);
                 }
             });
+            this.availableChecker();
         }).catch(reason => {
             chrome.notifications.create(this.notifyId, {
                 type: "basic",
@@ -342,6 +348,18 @@ export class Dispatcher {
             this.main.append(div);
         } else if (!this.ended) {
             this.main.append(this.exception);
+        }
+    }
+    
+    /**
+     * @private
+     */
+    availableChecker() {
+        if (this.ended && !this.sections.size) {
+            const div = document.createElement("div");
+            div.dataset.bio = "throw-message";
+            div.textContent = "没有分页数据，欸嘿~";
+            this.main.append(div);
         }
     }
 
