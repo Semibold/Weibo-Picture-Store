@@ -23,6 +23,7 @@ export class ActionHistory {
      * @param {number} [obj.weibo_com.page]
      * @param {number} [obj.weibo_com.count]
      * @param {string} [obj.weibo_com.albumInfo]
+     * @param {string} [obj.weibo_com.repeat]
      *
      * @param {Object} [obj.qcloud_com]
      * @param {number} [obj.qcloud_com.page]
@@ -36,7 +37,17 @@ export class ActionHistory {
 
     /** @private */
     static async weibo_com(o) {
-        return await getAllPhoto(o.albumInfo, o.page, o.count);
+        if (o.repeat) {
+            return await Promise.all([
+                getAllPhoto(o.albumInfo, o.page, o.count),
+                getAllPhoto(o.albumInfo, o.page + 1, o.count),
+            ]).then(([r1, r2]) => {
+                r2.list = r1.list.concat(r2.list);
+                return r2;
+            });
+        } else {
+            return await getAllPhoto(o.albumInfo, o.page, o.count);
+        }
     }
 
     /** @private */

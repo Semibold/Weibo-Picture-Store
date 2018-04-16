@@ -7,6 +7,7 @@
 import {Utils} from "../sharre/utils.js";
 import {SharreM} from "../sharre/alphabet.js";
 import {Config} from "../sharre/config.js";
+import {gtracker} from "../plugin/g-tracker.js";
 
 /**
  * @todo 超多元素回收和添加
@@ -19,11 +20,13 @@ export class Dispatcher {
             pages: 1,
             count: 50,
             albumId: 0,
+            prevdel: 0,
             nextMarker: "",
         };
         this.error = false;
         this.ended = false;
-        this.maxselected = 100;
+        this.maxselected = 50;
+        this.promise = Promise.resolve();
         this.notifyId = Utils.randomString(16);
         this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
@@ -76,31 +79,33 @@ export class Dispatcher {
      * @param {IntersectionObserver} [observer]
      */
     observerCallback(entries, observer) {
-        if (this.needNextPage(entries)) {
-            const promise = this[this.cdata.ssp]();
-            this.progressbar.dataset.hidden = false;
-            promise.then(result => {
-                this.checkout.page++;
-                return result;
-            }).catch(reason => {
-                this.errorInjector();
-            }).finally(() => {
-                const {page, pages} = this.checkout;
-                if (!pages || page > pages) {
-                    this.ended = true;
-                }
-                if (this.ended) {
-                    this.observer.unobserve(this.foot);
-                }
-                if (this.loading.parentElement) {
-                    this.loading.remove();
-                }
-                this.progressbar.dataset.hidden = true;
-                this.observerCallback();
-            }).then(result => {
-                this.availableChecker();
-            });
-        }
+        this.promise.finally(() => {
+            if (this.needNextPage(entries)) {
+                const promise = this[this.cdata.ssp]();
+                this.progressbar.dataset.hidden = false;
+                this.promise = promise.then(result => {
+                    this.checkout.page++;
+                    return result;
+                }).catch(reason => {
+                    this.errorInjector();
+                }).finally(() => {
+                    const {page, pages} = this.checkout;
+                    if (!pages || page > pages) {
+                        this.ended = true;
+                    }
+                    if (this.ended) {
+                        this.observer.unobserve(this.foot);
+                    }
+                    if (this.loading.parentElement) {
+                        this.loading.remove();
+                    }
+                    this.progressbar.dataset.hidden = true;
+                    this.observerCallback();
+                }).then(result => {
+                    this.availableChecker();
+                });
+            }
+        });
     }
 
 
@@ -130,16 +135,39 @@ export class Dispatcher {
      */
     weibo_com() {
         const albumInfo = this.checkout.albumId ? {albumId: this.checkout.albumId} : null;
+
+        // 修正删除数据后的分页信息
+        const {page, count, prevdel} = this.checkout;
+        const rest = prevdel % count;
+        const mpage = Math.ceil(prevdel / count);
+        const repeat = rest && page - mpage > 0;
+        if (repeat) {
+            this.checkout.page -= mpage;
+        } else if (rest) {
+            gtracker.exception({
+                exDescription: `History: page=${page}&count=${count}&prevdel=${prevdel}`,
+                exFatal: true,
+            });
+        }
+
         return SharreM.ActionHistory.fetcher(this.cdata.ssp, {
-            weibo_com: {
+            weibo_com: repeat ? {
+                page: this.checkout.page++,
+                count: this.checkout.count,
+                albumInfo: albumInfo,
+                repeat: repeat,
+            }: {
                 page: this.checkout.page,
                 count: this.checkout.count,
                 albumInfo: albumInfo,
+                repeat: repeat,
             },
         }).then(json => {
+            const list = repeat ? json.list.slice(-rest - count) : json.list;
             this.checkout.pages = Math.ceil(json.total / this.checkout.count);
             this.checkout.albumId = json.albumId;
-            for (const item of json.list) {
+            this.checkout.prevdel = 0;
+            for (const item of list) {
                 const fragment = this.constructor.importNode();
                 const section = fragment.querySelector("section");
                 const linker = section.querySelector(".image-linker");
@@ -286,6 +314,8 @@ export class Dispatcher {
                         albumId: this.checkout.albumId,
                         photoIds: photoIds,
                     },
+                }).then(json => {
+                    this.checkout.prevdel = photoIds.length;
                 });
                 break;
             }

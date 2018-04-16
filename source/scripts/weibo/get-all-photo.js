@@ -28,6 +28,7 @@ export async function getAllPhoto(albumInfo, page, count, replay) {
             page: page || 1,
             count: count || 20,
             album_id: albumInfo.albumId,
+            ts: Date.now(),
         }));
     }).then(response => {
         return response.ok ? response.json() : Promise.reject(response.status);
