@@ -96,7 +96,7 @@ class InternalConf {
                     3: "thumbnail",
                 },
                 qcloud_com: {
-                    1: "",
+                    1: "?imageMogr2/quality/95",
                     2: "?imageMogr2/thumbnail/720x720/quality/90",
                     3: "?imageMogr2/thumbnail/360x360/quality/90",
                 },

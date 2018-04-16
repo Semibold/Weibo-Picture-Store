@@ -24,4 +24,7 @@ function beforeSendHeaders(details) {
     return {requestHeaders: details.requestHeaders};
 }
 
-chrome.webRequest.onBeforeSendHeaders.addListener(beforeSendHeaders, {urls}, ["requestHeaders", "blocking"]);
+chrome.webRequest.onBeforeSendHeaders.addListener(beforeSendHeaders, {
+    urls,
+    types: ["xmlhttprequest"],
+}, ["requestHeaders", "blocking"]);

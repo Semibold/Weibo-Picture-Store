@@ -215,7 +215,7 @@ export class Dispatcher {
                 const source = linker.querySelector("img");
                 source.src = `${item.picHost}/${item.picName + thumbnail[3]}`;
                 source.srcset = `${item.picHost}/${item.picName + thumbnail[2]} 2x`;
-                linker.href = `${item.picHost}/${item.picName}`;
+                linker.href = `${item.picHost}/${item.picName + thumbnail[1]}`;
                 create.textContent = item.updated;
                 this.fragment.append(section);
                 this.sections.set(section, item);
