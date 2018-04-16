@@ -156,7 +156,7 @@ export class Dispatcher {
                 count: this.checkout.count,
                 albumInfo: albumInfo,
                 repeat: repeat,
-            }: {
+            } : {
                 page: this.checkout.page,
                 count: this.checkout.count,
                 albumInfo: albumInfo,
@@ -315,7 +315,7 @@ export class Dispatcher {
                         photoIds: photoIds,
                     },
                 }).then(json => {
-                    this.checkout.prevdel = photoIds.length;
+                    this.checkout.prevdel += photoIds.length;
                 });
                 break;
             }

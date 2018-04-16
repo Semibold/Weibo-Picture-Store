@@ -23,6 +23,9 @@ export class ActionDelete {
      * @param {Object} [obj.weibo_com]
      * @param {string} [obj.weibo_com.albumId]
      * @param {string[]} [obj.weibo_com.photoIds]
+     *
+     * @param {Object} [obj.qcloud_com.cdata]
+     * @param {string[]} [obj.qcloud_com.keys]
      */
     static async fetcher(ssp, obj) {
         return await this[ssp](obj[ssp]);
