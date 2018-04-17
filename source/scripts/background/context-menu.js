@@ -5,6 +5,7 @@
  */
 
 import {
+    VIDEO_FRAME_MENU_ID,
     BATCH_DELETE_MENU_ID,
     UPLOAD_IMAGE_MENU_ID,
     HISTORY_UPLOADED_MENU_ID,
@@ -12,6 +13,7 @@ import {
 import {gtracker} from "../plugin/g-tracker.js";
 import {fetchBlob} from "./fetch-blob.js";
 import {ActionUpload} from "./action-upload.js";
+import {Base64} from "../plugin/base64.js";
 
 /**
  * @desc 上传记录的批量删除菜单
@@ -53,6 +55,23 @@ chrome.contextMenus.create({
 
 
 /**
+ * @desc 上传当前视频帧
+ */
+chrome.contextMenus.create({
+    title: "把当前的视频帧上传到存储桶",
+    contexts: ["video"],
+    id: VIDEO_FRAME_MENU_ID,
+}, () => {
+    if (chrome.runtime.lastError) {
+        gtracker.exception({
+            exDescription: chrome.runtime.lastError.message,
+            exFatal: true,
+        });
+    }
+});
+
+
+/**
  * @desc 上传图片
  */
 chrome.contextMenus.create({
@@ -82,6 +101,26 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 const actionUpload = new ActionUpload().init();
                 actionUpload.addQueues([blob]);
                 actionUpload.startAutoIteration();
+            });
+            break;
+        case VIDEO_FRAME_MENU_ID:
+            chrome.tabs.sendMessage(tab.id, {
+                type: VIDEO_FRAME_MENU_ID,
+                srcUrl: info.srcUrl,
+            }, {frameId: info.frameId}, response => {
+                if (response) {
+                    const [t, b64] = response.dataurl.split(",");
+                    if (b64) {
+                        const buf = Base64.toBuffer(b64);
+                        const file = new File([buf], `frame${response.ext}`, {
+                            type: response.contentType || "",
+                            lastModified: Date.now(),
+                        });
+                        const actionUpload = new ActionUpload().init();
+                        actionUpload.addQueues([file]);
+                        actionUpload.startAutoIteration();
+                    }
+                }
             });
             break;
     }

@@ -36,3 +36,10 @@ export const MAX_SUBMENU_LENGTH = 12;
 export const BATCH_DELETE_MENU_ID = "menu_batch_delete";
 export const HISTORY_UPLOADED_MENU_ID = "menu_history_uploaded";
 export const UPLOAD_IMAGE_MENU_ID = "menu_upload_image";
+export const VIDEO_FRAME_MENU_ID = "menu_video_frame";
+
+/**
+ * @desc signal
+ */
+export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
+export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";

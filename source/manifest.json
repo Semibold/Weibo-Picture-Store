@@ -16,19 +16,32 @@
     "page": "background.html",
     "persistent": true
   },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": ["scripts/inject.js"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start"
+    }
+  ],
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
         "default": "Shift+Alt+W"
       }
+    },
+    "transform-pointer-events": {
+      "suggested_key": {
+        "default": "Shift+Alt+T"
+      },
+      "description": "Transform pointer-events"
     }
   },
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
   "minimum_chrome_version": "65",
-  "optional_permissions": [
-    "downloads"
-  ],
+  "optional_permissions": ["downloads"],
   "options_ui": {
     "page": "options.html",
     "chrome_style": true
