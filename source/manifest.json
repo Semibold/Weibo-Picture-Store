@@ -40,7 +40,7 @@
   },
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "homepage_url": "https://github.com/Aqours/Weibo-Picture-Store",
-  "minimum_chrome_version": "65",
+  "minimum_chrome_version": "66",
   "optional_permissions": ["downloads"],
   "options_ui": {
     "page": "options.html",
