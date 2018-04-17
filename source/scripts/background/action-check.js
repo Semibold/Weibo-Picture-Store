@@ -68,7 +68,7 @@ export class ActionCheck {
         for (const rule of dr3) {
             const id = rule.querySelector("ID");
             const origins = rule.querySelectorAll("AllowedOrigin");
-            if (id.textContent === WEIBO_ALBUM_ID) {
+            if (id && id.textContent === WEIBO_ALBUM_ID) {
                 for (const n of origins) {
                     if (n.textContent === location.origin) {
                         return "验证通过[1]";
