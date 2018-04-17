@@ -3,6 +3,6 @@
 
 node_modules
 deploy
-test
 
+tests/key.js
 npm-debug.log*

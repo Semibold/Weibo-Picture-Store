@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2018 The Weibo-Picture-Store Authors. All rights reserved.
+  ~ Use of this source code is governed by a MIT-style license that can be
+  ~ found in the LICENSE file.
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>__MSG_options_title__</title>
+    <link rel="stylesheet" href="sheets/sharre/scrollbar.css">
+    <link rel="stylesheet" href="sheets/options.css">
+</head>
+<body>
+<div id="app" data-selected-ssp>
+    <div class="options-header">
+        <h2 class="options-title">存储选项</h2>
+        <div class="options-syncdata">
+            <label title="在已登录相同账号的 Chrome 浏览器之间，共享配置数据">
+                <input class="input-syncdata" type="checkbox" disabled>
+                <span>同步数据</span>
+            </label>
+        </div>
+    </div>
+    <div class="options-content">
+        <div class="options-ssptab"><!-- @see template#options-ssptab-template --></div>
+        <div class="options-config">
+            <!-- weibo -->
+            <div class="options-userdata hidden" data-ssp="weibo_com">
+                <span>相册标识符</span>
+                <label><input class="input-microalbum-id" spellcheck="false" type="text" disabled readonly></label>
+            </div>
+            <!-- /weibo -->
+
+            <!-- tencent -->
+            <div class="options-userdata hidden" data-ssp="qcloud_com">
+                <span>备注</span>
+                <label><input class="input-mark" spellcheck="false" type="text"
+                              placeholder="Optional: remark (e.g: animate-pics)"></label>
+                <span>Access Key</span>
+                <label><input class="input-akey" spellcheck="false" type="text"
+                              placeholder="AccessKey (SecretId)"></label>
+                <span>Secret Key</span>
+                <label><input class="input-skey" spellcheck="false" type="password" placeholder="SecretKey"></label>
+                <span>Bucket Host</span>
+                <label><input class="input-host" spellcheck="false" type="text"
+                              placeholder="Host (e.g: pic-1.example.com)"></label>
+                <span>Path</span>
+                <label><input class="input-path" spellcheck="false" type="text"
+                              placeholder="Optional: path prefix (e.g: figure/)"></label>
+                <span>Picture Host</span>
+                <label><input class="input-pics" spellcheck="false" type="text"
+                              placeholder="Optional: host (e.g: pic-1.example.com)"></label>
+            </div>
+            <!-- /tencent -->
+
+            <!-- qiniu -->
+            <div class="options-userdata hidden" data-ssp="qiniu_com"></div>
+            <!-- /qiniu -->
+
+            <!-- aliyun-->
+            <div class="options-userdata hidden" data-ssp="aliyun_com"></div>
+            <!-- /aliyun-->
+
+            <!-- upyun -->
+            <div class="options-userdata hidden" data-ssp="upyun_com"></div>
+            <!-- /upyun -->
+        </div>
+
+        <div class="options-btns">
+            <button class="options-btn-update" title="保存并验证配置">更新</button>
+            <button class="options-btn-saveas" title="另存为并验证配置">另存为</button>
+            <button class="options-btn-delete" title="删除当前的配置项">删除</button>
+        </div>
+    </div>
+</div>
+<template id="options-ssptab-template">
+    <nav data-ssp="weibo_com">
+        <span class="options-ssplogo"></span>
+        <span data-i18n="weibo_com"></span>
+    </nav>
+    <nav data-ssp="qcloud_com">
+        <span class="options-ssplogo"></span>
+        <span data-i18n="qcloud_com"></span>
+    </nav>
+    <nav data-ssp="qiniu_com">
+        <span class="options-ssplogo"></span>
+        <span data-i18n="qiniu_com"></span>
+    </nav>
+    <nav data-ssp="aliyun_com">
+        <span class="options-ssplogo"></span>
+        <span data-i18n="aliyun_com"></span>
+    </nav>
+    <nav data-ssp="upyun_com">
+        <span class="options-ssplogo"></span>
+        <span data-i18n="upyun_com"></span>
+    </nav>
+</template>
+<script type="module" src="scripts/options.js"></script>
+</body>
+</html>

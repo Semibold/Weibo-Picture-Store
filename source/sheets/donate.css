@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018 The Weibo-Picture-Store Authors. All rights reserved.
+ * Use of this source code is governed by a MIT-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+    margin: 0;
+    background-color: rgb(242, 242, 242);
+}
+
+article {
+    margin: auto;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    max-width: 720px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    font-size: 1.875rem;
+    font-weight: 400;
+    font-family: "Helvetica Neue", "Segoe UI", Arial, "SimHei", "Microsoft JhengHei", sans-serif;
+}
+
+h1 > span:first-of-type {
+    color: #222;
+}
+
+h1 > span:last-of-type {
+    font-weight: 300;
+    color: #999;
+}
+
+p {
+    margin-left: 1em;
+    margin-right: 1em;
+    font-size: 1.125rem;
+    font-weight: 300;
+    line-height: 1.8;
+}
+
+figure {
+    display: inline-block;
+    margin: 2em 1em;
+    max-width: 300px;
+    text-align: center;
+    background-color: #f6f9fa;
+}
+
+figure > img {
+    max-width: 100%;
+    width: 100%;
+    vertical-align: middle;
+}
+
+figure > figcaption {
+    padding: 0 5px;
+    font-size: 0.875rem;
+    line-height: 2.4;
+    color: #999;
+}

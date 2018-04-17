@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2017 The Weibo-Picture-Store Authors. All rights reserved.
+ * Use of this source code is governed by a MIT-style license that can be
+ * found in the LICENSE file.
+ */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #bcbcbc;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #888;
+}
