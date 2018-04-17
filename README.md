@@ -50,7 +50,7 @@
 
 ![](screenshot/right-upload.jpg)
 
-如果可以获取到页面中的图片，则会在右键菜单中显示把这张图片上传到存储桶的选项，点击后会自动上传，上传结束后会出现提示。如果上传成功。
+如果可以获取到页面中的图片，则会在右键菜单中显示把这张图片上传到存储桶的选项，点击后会自动上传，上传结束后会出现提示。
 
 ![](screenshot/video-frame.jpg)
 
@@ -69,13 +69,13 @@
 
 1. 从存储桶中移除这张图片
 2. 在图片上右击可以复制图片地址
-3. 批量删除选中的文件
+3. 批量删除选中的文件（按住 Ctrl 键可以多选）
 4. 图片最近的修改时间
 
 ![](screenshot/options.png)
 
 1. 选择存储桶的 Tab
-2. 当前的存储桶配置数据
+2. 当前的存储桶配置数据（[查看详细的设置教程](http://blog.hub.moe/posts/cos-setting-tutorial/)）
     - 备注：就是备注的意思
     - AccessKey：就是腾讯云存储后台显示的 SecretId
     - SecretKey：腾讯云存储后台显示的 SecretKey
@@ -159,4 +159,8 @@
 
 ## Thanks
 
+- [JetBrains IDEs](https://www.jetbrains.com/)
+- [Font Awesome](https://fontawesome.com/)
+- [Base64 encode/decode](https://github.com/beatgammit/base64-js)
+- [MD5 Algorithm](http://pajhome.org.uk/crypt/md5/index.html)
 - [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
