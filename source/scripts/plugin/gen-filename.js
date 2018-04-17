@@ -9,15 +9,19 @@ import {gtracker} from "./g-tracker.js";
 
 /**
  * @async
- * @param {File} file
+ * @param {Blob} blob
  * @param {boolean} [ext] - 是否包含文件后缀
  * @return {Promise<string>}
  */
-export async function genFilename(file, ext) {
+export async function genFilename(blob, ext) {
     const start = Date.now();
     const samplesize = 512 * 1024; // 512KB
     const samplerate = 128;
     const samples = [];
+    const file = new File([blob], blob.name || "", {
+        type: blob.type || "",
+        lastModified: blob.lastModified || Date.now(),
+    });
     if (file.size > samplesize * samplerate) {
         const n = Math.floor(file.size / samplerate);
         for (let i = 0; i < samplerate; i++) {
