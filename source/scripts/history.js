@@ -24,6 +24,10 @@ document.addEventListener("contextmenu", e => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === BATCH_DELETE_MENU_ID) {
-        dispatcher.deleteResources();
+        chrome.tabs.getCurrent(ctab => {
+            if (tab.id === ctab.id) {
+                dispatcher.deleteResources();
+            }
+        });
     }
 });
