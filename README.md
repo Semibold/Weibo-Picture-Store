@@ -77,15 +77,15 @@
 1. 选择存储桶的 Tab
 2. 当前的存储桶配置数据
     - 备注：就是备注的意思
-    - AccessKey: 就是腾讯云存储后台显示的 SecretId
-    - SecretKey: 腾讯云存储后台显示的 SecretKey
-    - BucketHost: 腾讯云存储的 Host
-    - Path: 可选设置文件存储的路径
-    - PictureHost: 可选设置万象优图的 Host
+    - AccessKey：就是腾讯云存储后台显示的 SecretId
+    - SecretKey：腾讯云存储后台显示的 SecretKey
+    - BucketHost：腾讯云存储的 Host
+    - Path：可选设置文件存储的路径
+    - PictureHost：可选设置万象优图的 Host
 
 ![](screenshot/select-menu.png)
 
-- 更换当前存储桶的快捷菜单
+- 更换当前存储桶的快捷菜单（这个选中和选项页中的 Tab 是同步的）
 
 
 ## Concept
