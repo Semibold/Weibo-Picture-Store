@@ -11,17 +11,37 @@ const failedId = Utils.randomString(16);
 
 /**
  * @async
- * @param {string} url
+ * @param {string} srcUrl
+ * @param {string} [pageUrl]
  * @return {Promise<Response>}
  */
-export async function fetchBlob(url) {
+export async function fetchBlob(srcUrl, pageUrl) {
     const delayInfo = {interval: 500, requestId: null};
     const progress = new FileProgress(FileProgress.ACTION_DOWNLOAD);
 
     progress.padding(1);
     delayInfo.requestId = setTimeout(() => progress.trigger(), delayInfo.interval);
 
-    return Utils.fetch(url, {
+    function beforeSendHeaders(details) {
+        const name = "referer";
+        const value = pageUrl;
+        for (let i = 0; i < details.requestHeaders.length; i++) {
+            if (details.requestHeaders[i].name.toLowerCase() === name) {
+                details.requestHeaders.splice(i, 1);
+                break;
+            }
+        }
+        details.requestHeaders.push({name, value});
+        return {requestHeaders: details.requestHeaders};
+    }
+
+    if (Utils.isValidURL(srcUrl) && Utils.isValidURL(pageUrl)) {
+        chrome.webRequest.onBeforeSendHeaders.addListener(beforeSendHeaders, {
+            urls: [srcUrl],
+        }, ["requestHeaders", "blocking"]);
+    }
+
+    return Utils.fetch(srcUrl, {
         credentials: "omit",
     }).then(response => {
         return response.ok ? response.blob() : Promise.reject(response.status);
@@ -39,5 +59,9 @@ export async function fetchBlob(url) {
             message: "无法读取远程文件",
         });
         return Promise.reject(reason);
+    }).finally(() => {
+        if (chrome.webRequest.onBeforeSendHeaders.hasListener(beforeSendHeaders)) {
+            chrome.webRequest.onBeforeSendHeaders.removeListener(beforeSendHeaders);
+        }
     });
 }

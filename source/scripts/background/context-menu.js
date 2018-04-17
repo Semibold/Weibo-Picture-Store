@@ -7,10 +7,11 @@
 import {
     BATCH_DELETE_MENU_ID,
     UPLOAD_IMAGE_MENU_ID,
-    VIDEO_FRAME_MENU_ID,
     HISTORY_UPLOADED_MENU_ID,
 } from "../plugin/constant.js";
 import {gtracker} from "../plugin/g-tracker.js";
+import {fetchBlob} from "./fetch-blob.js";
+import {ActionUpload} from "./action-upload.js";
 
 /**
  * @desc 上传记录的批量删除菜单
@@ -52,23 +53,6 @@ chrome.contextMenus.create({
 
 
 /**
- * @desc 上传当前视频帧
- */
-chrome.contextMenus.create({
-    title: "把当前的视频帧上传到存储桶",
-    contexts: ["video"],
-    id: VIDEO_FRAME_MENU_ID,
-}, () => {
-    if (chrome.runtime.lastError) {
-        gtracker.exception({
-            exDescription: chrome.runtime.lastError.message,
-            exFatal: true,
-        });
-    }
-});
-
-
-/**
  * @desc 上传图片
  */
 chrome.contextMenus.create({
@@ -93,7 +77,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         case HISTORY_UPLOADED_MENU_ID:
             chrome.tabs.create({url: "history.html"});
             break;
-        case VIDEO_FRAME_MENU_ID: break;
-        case UPLOAD_IMAGE_MENU_ID: break;
+        case UPLOAD_IMAGE_MENU_ID:
+            fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
+                const actionUpload = new ActionUpload().init();
+                actionUpload.addQueues([blob]);
+                actionUpload.startAutoIteration();
+            });
+            break;
     }
 });

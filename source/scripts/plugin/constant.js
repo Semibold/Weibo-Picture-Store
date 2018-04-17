@@ -35,5 +35,4 @@ export const MAX_SUBMENU_LENGTH = 12;
  */
 export const BATCH_DELETE_MENU_ID = "menu_batch_delete";
 export const HISTORY_UPLOADED_MENU_ID = "menu_history_uploaded";
-export const VIDEO_FRAME_MENU_ID = "menu_video_frame";
 export const UPLOAD_IMAGE_MENU_ID = "menu_upload_image";
