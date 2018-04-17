@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_ext_name__",
   "version": "4.0.0",
+  "version_name": "Beta-4.0.0",
   "default_locale": "zh_CN",
   "description": "__MSG_ext_desc__",
   "icons": {
