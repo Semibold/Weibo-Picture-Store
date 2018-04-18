@@ -2,6 +2,8 @@
 
 > [更新日志](changelog.md)
 
+> [安装测试版](https://chrome.google.com/webstore/detail/fgojeheijgbiibpekigaajhpendcghpi)
+
 
 ## Introduction
 
