@@ -166,7 +166,14 @@ export class Dispatcher {
             const list = repeat ? json.list.slice(-rest - count) : json.list;
             this.checkout.pages = Math.ceil(json.total / this.checkout.count);
             this.checkout.albumId = json.albumId;
-            this.checkout.prevdel = 0;
+            this.checkout.prevdel -= prevdel;
+            if (this.checkout.prevdel < 0) {
+                this.checkout.prevdel = 0;
+                gtracker.exception({
+                    exDescription: "History: prevdel less than zero",
+                    exFatal: true,
+                });
+            }
             for (const item of list) {
                 const fragment = this.constructor.importNode();
                 const section = fragment.querySelector("section");
