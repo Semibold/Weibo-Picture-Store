@@ -68,7 +68,7 @@ chrome.browserAction.onClicked.addListener(tab => {
                 popupState.set("locked", false);
             });
         } else {
-            chrome.windows.update(popupState.get("id"), {drawAttention: true});
+            chrome.windows.update(popupState.get("id"), {focused: true});
         }
     }
 });

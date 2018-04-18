@@ -11,7 +11,7 @@ export class Dispatcher {
 
     constructor() {
         this.page = 1;
-        this.count = 30;
+        this.count = 40;
         this.notifyId = Utils.randomString(16);
         this.main = document.querySelector("#main");
         this.prev = document.querySelector(".foot-navigator > .prev");
@@ -76,32 +76,35 @@ export class Dispatcher {
 
     /** @private */
     addGlobalListener() {
-        const prevHandler = () => {
-            if (this.checkout.pages && this.page > 1) {
-                this.page--;
-                this.flipPage();
-            }
-        };
-        const nextHandler = () => {
-            if (this.checkout.pages && this.page < this.checkout.pages) {
-                this.page++;
-                this.flipPage();
-            }
-        };
-
-        this.prev.addEventListener("click", prevHandler);
-        this.next.addEventListener("click", nextHandler);
+        this.prev.addEventListener("click", () => this.prevPageHandler());
+        this.next.addEventListener("click", () => this.nextPageHandler());
 
         document.addEventListener("keydown", e => {
             if (e.ctrlKey && e.key === "ArrowLeft") {
                 e.preventDefault();
-                prevHandler();
+                this.prevPageHandler();
             }
             if (e.ctrlKey && e.key === "ArrowRight") {
                 e.preventDefault();
-                nextHandler();
+                this.nextPageHandler();
             }
         });
+    }
+
+    /** @private */
+    prevPageHandler() {
+        if (this.checkout.pages && this.page > 1) {
+            this.page--;
+            this.flipPage();
+        }
+    }
+
+    /** @private */
+    nextPageHandler() {
+        if (this.checkout.pages && this.page < this.checkout.pages) {
+            this.page++;
+            this.flipPage();
+        }
     }
 
     /** @private */

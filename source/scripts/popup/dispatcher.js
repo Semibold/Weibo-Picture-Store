@@ -13,6 +13,7 @@ import {
 import {Utils} from "../base/utils.js";
 import {backWindow} from "./sharre.js";
 import {BuildItem} from "./build-item.js";
+import {readFile} from "../sharre/read-file.js";
 
 export class Dispatcher {
 
@@ -130,6 +131,12 @@ export class Dispatcher {
             }
         }
 
+        this.copyEventHandler();
+        this.pasteEventHandler();
+    }
+
+    /** @private */
+    copyEventHandler() {
         document.addEventListener("click", e => {
             const buttonCopy = e.target.closest(".button-copy");
 
@@ -163,6 +170,46 @@ export class Dispatcher {
 
                 this.copier.blur();
                 prev.focus();
+            }
+        });
+    }
+
+    /** @private */
+    pasteEventHandler() {
+        document.addEventListener("paste", e => {
+            if (document.activeElement == null || document.activeElement === document.body) {
+                const items = e.clipboardData.items;
+                const queues = [];
+                const buffer = [];
+
+                for (const item of items) {
+                    if (item.kind === "file" && typeof item.getAsFile === "function") {
+                        const file = item.getAsFile();
+                        file && buffer.push(file);
+                    }
+                    if (item.kind === "string" && typeof item.getAsString === "function") {
+                        queues.push(new Promise((resolve, reject) => {
+                            item.getAsString(str => {
+                                const multiple = str.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+                                const multipleBuffer = [];
+
+                                while (multiple.length) {
+                                    const url = multiple.shift();
+                                    if (Utils.isValidURL(url)) {
+                                        multipleBuffer.push(backWindow.Weibo.fetchBlob(url).then(blob => buffer.push(blob)).catch(Utils.noop));
+                                    }
+                                }
+
+                                Promise.all(multipleBuffer).then(resolve);
+                            });
+                        }).catch(Utils.noop));
+                    }
+                }
+
+                Promise.all(queues)
+                    .then(result => readFile(buffer, "arrayBuffer", true))
+                    .then(result => backWindow.Weibo.filePurity(result))
+                    .then(result => this.requestUpload(result));
             }
         });
     }
