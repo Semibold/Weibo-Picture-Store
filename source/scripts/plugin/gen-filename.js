@@ -28,6 +28,13 @@ export async function genFilename(blob, ext) {
             samples.push(file.slice(i * n, i * n + samplesize));
         }
         samples.push(file.name + file.lastModified + file.size);
+        gtracker.event({
+            eventCategory: "Generate Filename",
+            eventAction: "Sampling",
+            eventLabel: "Record filesize",
+            eventValue: file.size,
+            nonInteraction: true,
+        });
     }
     const tfile = samples.length ? new File(samples, file.name || "", {
         type: file.type || "",
