@@ -25,8 +25,8 @@ export class Dispatcher {
         };
         this.error = false;
         this.ended = false;
+        this.locked = false;
         this.maxselected = 50;
-        this.promise = Promise.resolve();
         this.notifyId = Utils.randomString(16);
         this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
@@ -79,33 +79,34 @@ export class Dispatcher {
      * @param {IntersectionObserver} [observer]
      */
     observerCallback(entries, observer) {
-        this.promise.finally(() => {
-            if (this.needNextPage(entries)) {
-                const promise = this[this.cdata.ssp]();
-                this.progressbar.dataset.hidden = false;
-                this.promise = promise.then(result => {
-                    this.checkout.page++;
-                    return result;
-                }).catch(reason => {
-                    this.errorInjector();
-                }).finally(() => {
-                    const {page, pages} = this.checkout;
-                    if (!pages || page > pages) {
-                        this.ended = true;
-                    }
-                    if (this.ended) {
-                        this.observer.unobserve(this.foot);
-                    }
-                    if (this.loading.parentElement) {
-                        this.loading.remove();
-                    }
-                    this.progressbar.dataset.hidden = true;
-                    this.observerCallback();
-                }).then(result => {
-                    this.availableChecker();
-                });
-            }
-        });
+        if (!this.locked && this.needNextPage(entries)) {
+            const promise = this[this.cdata.ssp]();
+            this.locked = true;
+            this.progressbar.dataset.hidden = false;
+            promise.then(result => {
+                this.checkout.page++;
+                return result;
+            }).catch(reason => {
+                this.errorInjector();
+            }).finally(() => {
+                const {page, pages} = this.checkout;
+                if (!pages || page > pages) {
+                    this.ended = true;
+                }
+                if (this.ended) {
+                    this.observer.unobserve(this.foot);
+                }
+                if (this.loading.parentElement) {
+                    this.loading.remove();
+                }
+                this.progressbar.dataset.hidden = true;
+            }).then(result => {
+                this.availableChecker();
+            }).finally(() => {
+                this.locked = false;
+                this.observerCallback();
+            });
+        }
     }
 
 
