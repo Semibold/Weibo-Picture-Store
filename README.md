@@ -2,7 +2,7 @@
 
 > [更新日志](changelog.md)
 
-> [安装测试版](https://chrome.google.com/webstore/detail/fgojeheijgbiibpekigaajhpendcghpi)
+> [公测版本](https://chrome.google.com/webstore/detail/fgojeheijgbiibpekigaajhpendcghpi)
 
 
 ## Introduction
@@ -77,13 +77,13 @@
 ![](screenshot/options.png)
 
 1. 选择存储桶的 Tab
-2. 当前的存储桶配置数据（[查看详细的设置教程](http://blog.hub.moe/posts/cos-setting-tutorial/)）
+2. 当前的存储桶配置数据（[查看详细的设置教程](docs/cos-setting-tutorial.md)）
     - 备注：就是备注的意思
-    - AccessKey：就是腾讯云存储后台显示的 SecretId
-    - SecretKey：腾讯云存储后台显示的 SecretKey
-    - BucketHost：腾讯云存储的 Host
+    - Access Key：就是腾讯云存储后台显示的 SecretId
+    - Secret Key：腾讯云存储后台显示的 SecretKey
+    - Bucket Host：腾讯云存储的 Host
     - Path：可选设置文件存储的路径
-    - PictureHost：可选设置万象优图的 Host
+    - Picture Host：可选设置万象优图的 Host
 
 ![](screenshot/select-menu.png)
 
