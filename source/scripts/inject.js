@@ -62,12 +62,12 @@ async function bootloader() {
     });
 
     self.addEventListener("contextmenu", e => {
-        if (!overrideStyle.disabled) {
+        if (overrideStyle.parentElement && !overrideStyle.disabled) {
             e.stopImmediatePropagation();
         }
     }, true);
 
-    self.addEventListener("DOMContentLoaded", e => {
+    function contentInjectionHandler() {
         const highlight = document.createElement("inject-highlight");
         const styleContent = `
             html {
@@ -113,7 +113,13 @@ async function bootloader() {
         } else {
             console.warn(`Injection failed.(Chrome Extension ID: ${chrome.runtime.id})`);
         }
-    }, true);
+    }
+
+    if (document.readyState === "loading") {
+        self.addEventListener("DOMContentLoaded", contentInjectionHandler, true);
+    } else {
+        contentInjectionHandler();
+    }
 
 }
 
