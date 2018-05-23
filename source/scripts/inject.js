@@ -15,7 +15,7 @@ async function bootloader() {
         M_VIDEO_FRAME,
         S_WITHOUT_CORS_MODE,
         S_COMMAND_POINTER_EVENTS,
-    } = await import(chrome.runtime.getURL("scripts/plugin/constant.js"));
+    } = await import(chrome.runtime.getURL("scripts/sharre/constant.js"));
     const overrideStyle = document.createElement("link");
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
