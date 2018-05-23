@@ -5,7 +5,7 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS} from "../plugin/constant.js";
+import {S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS} from "../sharre/constant.js";
 
 const failedId = Utils.randomString(16);
 

@@ -202,6 +202,14 @@ export class Utils {
     }
 
     /**
+     * @param {string} tagName
+     * @return {HTMLElement}
+     */
+    static createXMLElement(tagName) {
+        return document.createElementNS("http://www.w3.org/1999/xhtml", tagName);
+    }
+
+    /**
      * @param {string} dirpath
      * @return {string} - 返回首部不带/尾部带/的字符串
      */

@@ -8,7 +8,7 @@ import {Utils} from "../sharre/utils.js";
 import {md5} from "../plugin/md5.js";
 import {Base64} from "../plugin/base64.js";
 import {QCloudStorageAuth} from "../auth/qcloud-storage.js";
-import {WEIBO_ALBUM_ID} from "../plugin/constant.js";
+import {FEATURE_ID} from "../sharre/constant.js";
 
 const notifyId = Utils.randomString(16);
 
@@ -63,12 +63,12 @@ export class ActionCheck {
         const h3 = await a3.getAuthHeaders("GET", "/?cors", host);
         const r3 = await fetch(a3.auths.url.toString(), {headers: h3, method: a3.auths.method});
         const dd3 = Utils.parseXML(await r3.text());
-        const dc3 = dd3.querySelector("CORSConfiguration") || document.createElementNS("http://www.w3.org/1999/xhtml", "CORSConfiguration");
+        const dc3 = dd3.querySelector("CORSConfiguration") || Utils.createXMLElement("CORSConfiguration");
         const dr3 = dd3.querySelectorAll("CORSConfiguration > CORSRule");
         for (const rule of dr3) {
             const id = rule.querySelector("ID");
             const origins = rule.querySelectorAll("AllowedOrigin");
-            if (id && id.textContent === WEIBO_ALBUM_ID) {
+            if (id && id.textContent === FEATURE_ID) {
                 for (const n of origins) {
                     if (n.textContent === location.origin) {
                         return "验证通过[1]";
@@ -84,7 +84,7 @@ export class ActionCheck {
 
         dc3.append(...Utils.parseXML(`
             <CORSRule>
-                <ID>${WEIBO_ALBUM_ID}</ID>
+                <ID>${FEATURE_ID}</ID>
                 <AllowedOrigin>${location.origin}</AllowedOrigin>
                 <AllowedMethod>GET</AllowedMethod>
                 <AllowedMethod>PUT</AllowedMethod>

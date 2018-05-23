@@ -12,7 +12,7 @@ async function bootloader() {
 
     const {
         MAXIMUM_EDGE,
-        VIDEO_FRAME_MENU_ID,
+        M_VIDEO_FRAME,
         S_WITHOUT_CORS_MODE,
         S_COMMAND_POINTER_EVENTS,
     } = await import(chrome.runtime.getURL("scripts/plugin/constant.js"));
@@ -22,7 +22,7 @@ async function bootloader() {
         if (message.type === S_COMMAND_POINTER_EVENTS) {
             overrideStyle.disabled = !overrideStyle.disabled;
         }
-        if (message.type === VIDEO_FRAME_MENU_ID) {
+        if (message.type === M_VIDEO_FRAME) {
             const videoRefs = document.querySelectorAll('video');
             for (const videoRef of videoRefs) {
                 /**

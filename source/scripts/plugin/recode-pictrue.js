@@ -7,13 +7,13 @@
 /**
  * WARNING: `createImageBitmap` which cannot decode SVG(Scalable Vector Graphics)
  */
-import {MAXIMUM_EDGE} from "./constant.js";
+import {MAXIMUM_EDGE} from "../sharre/constant.js";
 
 /**
  * @param blob
  * @return {Promise<Blob>}
  */
-export async function transformSource(blob) {
+export async function recodePictrue(blob) {
     return createImageBitmap(blob)
         .then(bitmap => {
             const width = bitmap.width;

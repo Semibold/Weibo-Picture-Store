@@ -4,10 +4,10 @@
  * found in the LICENSE file.
  */
 
-import {i18nLocale} from "./plugin/i18n-locale.js";
+import {i18nLocale} from "./sharre/i18n-locale.js";
 import {Config} from "./sharre/config.js";
 import {SharreM} from "./sharre/alphabet.js";
-import {T_DATA_CHANGED, WEIBO_ALBUM_ID, MAX_SUBMENU_LENGTH} from "./plugin/constant.js";
+import {T_DATA_CHANGED, FEATURE_ID, MAX_SUBMENU_LENGTH} from "./sharre/constant.js";
 import {Utils} from "./sharre/utils.js";
 
 import {gtracker} from "./plugin/g-tracker.js";
@@ -212,7 +212,7 @@ class OptionsTree {
      */
     weibo_com(d, role) {
         const input = this.ddnodes.weibo_com.querySelector(".input-microalbum-id");
-        input.value = WEIBO_ALBUM_ID;
+        input.value = FEATURE_ID;
     }
 
     /**

@@ -6,7 +6,7 @@
 
 import {Channel} from "./channel.js";
 import {Config} from "../sharre/config.js";
-import {transformSource} from "../plugin/transform-source.js";
+import {recodePictrue} from "../plugin/recode-pictrue.js";
 
 async function reader(blob, readType = "arrayBuffer") {
     return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ export async function readFile(item, readType = "arrayBuffer") {
     const mime = oneline.mimeType(r);
     const csts = new Set(Config.chromeSupportedTypes);
     if (csts.has(mime) && !Config.weiboAcceptType[mime]) {
-        const b = await transformSource(item.blob);
+        const b = await recodePictrue(item.blob);
         item.result = await reader(b, readType);
     } else {
         item.result = r;

@@ -41,10 +41,10 @@ export class ActionDelete {
         const {akey, skey, host, path} = o.cdata;
         const qsa = new QCloudStorageAuth(akey, skey);
         const headers = await qsa.getAuthHeaders("POST", "/?delete", host);
-        const ndel = document.createElementNS("http://www.w3.org/1999/xhtml", "Delete");
+        const ndel = Utils.createXMLElement("Delete");
         o.keys.forEach(k => {
-            const nobj = document.createElementNS("http://www.w3.org/1999/xhtml", "Object");
-            const nkey = document.createElementNS("http://www.w3.org/1999/xhtml", "Key");
+            const nobj = Utils.createXMLElement("Object");
+            const nkey = Utils.createXMLElement("Key");
             nkey.textContent = k;
             nobj.append(nkey);
             ndel.append(nobj);

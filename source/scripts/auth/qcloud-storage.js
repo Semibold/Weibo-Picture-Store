@@ -6,7 +6,7 @@
 
 import {Utils} from "../sharre/utils.js";
 import {hash_hmac} from "../plugin/hash-hmac.js";
-import {TRACKER_ID} from "../plugin/constant.js";
+import {TRACKER_ID} from "../sharre/constant.js";
 
 /**
  * @desc 按顺序调用

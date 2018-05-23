@@ -9,7 +9,7 @@
  */
 import {Utils} from "../sharre/utils.js";
 import {checkAlbumId} from "./check-album-id.js";
-import {WEIBO_ALBUM_ID} from "../plugin/constant.js";
+import {FEATURE_ID} from "../sharre/constant.js";
 import {USER_INFO_CACHE, weiboSingleton} from "./channel.js";
 
 const url = "http://photo.weibo.com/albums/create";
@@ -19,7 +19,7 @@ async function createNewAlbumRequest() {
     const body = Utils.createSearchParams({
         property: "2",
         caption: "Weibo_Chrome",
-        description: WEIBO_ALBUM_ID,
+        description: FEATURE_ID,
         answer: "",
         question: "",
         album_id: "",

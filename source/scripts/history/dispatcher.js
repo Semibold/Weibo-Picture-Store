@@ -9,9 +9,6 @@ import {SharreM} from "../sharre/alphabet.js";
 import {Config} from "../sharre/config.js";
 import {gtracker} from "../plugin/g-tracker.js";
 
-/**
- * @todo 超多元素回收和添加
- */
 export class Dispatcher {
 
     constructor() {

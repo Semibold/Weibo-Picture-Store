@@ -9,7 +9,7 @@ import {gtracker} from "./g-tracker.js";
 
 /**
  * @async
- * @param {Blob} blob
+ * @param {Blob|File} blob
  * @param {boolean} [ext] - 是否包含文件后缀
  * @return {Promise<string>}
  */

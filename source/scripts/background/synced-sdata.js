@@ -6,7 +6,7 @@
 
 import {Config} from "../sharre/config.js";
 import {gtracker} from "../plugin/g-tracker.js";
-import {T_DATA_CHANGED} from "../plugin/constant.js";
+import {T_DATA_CHANGED} from "../sharre/constant.js";
 import {Utils} from "../sharre/utils.js";
 
 class SyncedSData extends EventTarget {
@@ -182,7 +182,7 @@ class SyncedSData extends EventTarget {
     constructor() {
         super();
         this._sdata = null;
-        /** @preserve 这里 getUserData 方法使用 false 参数表示不读取同步数据 */
+        /** @desc 这里 getUserData 方法使用 false 参数表示不读取同步数据 */
         this._promise = this.constructor.getUserData(false).then(d => this._sdata = d);
         this.notifyId = Utils.randomString(16);
     }

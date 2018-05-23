@@ -6,7 +6,7 @@
 
 import {syncedSData} from "./synced-sdata.js";
 import {gtracker} from "../plugin/g-tracker.js";
-import {T_DATA_CHANGED, MAX_SUBMENU_LENGTH} from "../plugin/constant.js";
+import {T_DATA_CHANGED, MAX_SUBMENU_LENGTH} from "../sharre/constant.js";
 
 class MenuSelector {
 

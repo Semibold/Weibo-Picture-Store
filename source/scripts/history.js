@@ -6,7 +6,7 @@
 
 import "./history/fragment.js";
 import {Dispatcher} from "./history/dispatcher.js";
-import {BATCH_DELETE_MENU_ID} from "./plugin/constant.js";
+import {M_BATCH_DELETE} from "./sharre/constant.js";
 
 import {gtracker} from "./plugin/g-tracker.js";
 
@@ -18,12 +18,12 @@ const dispatcher = new Dispatcher().init();
 document.addEventListener("contextmenu", e => {
     const section = e.target.closest("section");
     if (section) {
-        chrome.contextMenus.update(BATCH_DELETE_MENU_ID, {visible: dispatcher.selected.has(section)});
+        chrome.contextMenus.update(M_BATCH_DELETE, {visible: dispatcher.selected.has(section)});
     }
 }, true);
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === BATCH_DELETE_MENU_ID) {
+    if (info.menuItemId === M_BATCH_DELETE) {
         chrome.tabs.getCurrent(ctab => {
             if (tab.id === ctab.id) {
                 dispatcher.deleteResources();

@@ -5,7 +5,7 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {WEIBO_ALBUM_ID} from "../plugin/constant.js";
+import {FEATURE_ID} from "../sharre/constant.js";
 import {weiboSingleton} from "./channel.js";
 
 const overflow = 100;
@@ -20,7 +20,7 @@ async function checkAlbumIdRequest() {
 
             for (const item of json.data.album_list) {
                 albumInfo.counter++;
-                if (item.description === WEIBO_ALBUM_ID) {
+                if (item.description === FEATURE_ID) {
                     albumInfo.albumId = item.album_id.toString();
                     break;
                 }

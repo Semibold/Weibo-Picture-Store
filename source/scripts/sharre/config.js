@@ -7,124 +7,6 @@
 /**
  * @static
  */
-class InternalConf {
-
-    static get headroom() {
-        return {
-            selectindex: 0,
-            preothers: {
-                updatebtn: {disabled: false},
-                saveasbtn: {disabled: false},
-                deletebtn: {disabled: false},
-            },
-            predefine: {
-                weibo_com: {
-                    updatebtn: {disabled: true},
-                    saveasbtn: {disabled: true},
-                    deletebtn: {disabled: true},
-                },
-                qcloud_com: {
-                    updatebtn: {disabled: false},
-                    saveasbtn: {disabled: false},
-                    deletebtn: {disabled: true},
-                },
-                qiniu_com: {
-                    updatebtn: {disabled: false},
-                    saveasbtn: {disabled: false},
-                    deletebtn: {disabled: true},
-                },
-                aliyun_com: {
-                    updatebtn: {disabled: false},
-                    saveasbtn: {disabled: false},
-                    deletebtn: {disabled: true},
-                },
-                upyun_com: {
-                    updatebtn: {disabled: false},
-                    saveasbtn: {disabled: false},
-                    deletebtn: {disabled: true},
-                },
-            },
-            restricte: {
-                weibo_com: {
-                    filesize: 20 * 1024 ** 2 - 1,
-                    sizename: "20MB",
-                },
-                qcloud_com: {
-                    filesize: 5 * 1024 ** 3 - 1,
-                    sizename: "5GB",
-                },
-                qiniu_com: {
-                    filesize: 0,
-                    sizename: "0B",
-                },
-                aliyun_com: {
-                    filesize: 0,
-                    sizename: "0B",
-                },
-                upyun_com: {
-                    filesize: 0,
-                    sizename: "0B",
-                },
-            },
-            structure: {
-                weibo_com: {
-                    ssp: "weibo_com",
-                },
-                qcloud_com: {
-                    ssp: "qcloud_com",
-                    mark: "",
-                    akey: "",
-                    skey: "",
-                    host: "",
-                    path: "",
-                    pics: "",
-                },
-                qiniu_com: {
-                    ssp: "qiniu_com",
-                },
-                aliyun_com: {
-                    ssp: "aliyun_com",
-                },
-                upyun_com: {
-                    ssp: "upyun_com",
-                },
-            },
-            thumbnail: {
-                weibo_com: {
-                    1: "large",
-                    2: "mw690",
-                    3: "thumbnail",
-                },
-                qcloud_com: {
-                    1: "?imageMogr2/quality/95",
-                    2: "?imageMogr2/thumbnail/720x720/quality/90",
-                    3: "?imageMogr2/thumbnail/360x360/quality/90",
-                },
-                qiniu_com: {
-                    1: "",
-                    2: "",
-                    3: "",
-                },
-                aliyun_com: {
-                    1: "",
-                    2: "",
-                    3: "",
-                },
-                upyun_com: {
-                    1: "",
-                    2: "",
-                    3: "",
-                },
-            }
-        };
-    }
-
-}
-
-
-/**
- * @static
- */
 export class Config {
 
     /**
@@ -176,42 +58,141 @@ export class Config {
      * @return {number}
      */
     static get selectindex() {
-        return InternalConf.headroom.selectindex;
+        return 0;
     }
 
     /**
      * @return {Object}
      */
     static get sspsdata() {
-        return InternalConf.headroom.structure;
+        return {
+            weibo_com: {
+                ssp: "weibo_com",
+            },
+            qcloud_com: {
+                ssp: "qcloud_com",
+                mark: "",
+                akey: "",
+                skey: "",
+                host: "",
+                path: "",
+                pics: "",
+            },
+            qiniu_com: {
+                ssp: "qiniu_com",
+            },
+            aliyun_com: {
+                ssp: "aliyun_com",
+            },
+            upyun_com: {
+                ssp: "upyun_com",
+            },
+        };
     }
 
     /**
      * @return {Object}
      */
     static get preothers() {
-        return InternalConf.headroom.preothers;
+        return {
+            updatebtn: {disabled: false},
+            saveasbtn: {disabled: false},
+            deletebtn: {disabled: false},
+        };
     }
 
     /**
      * @return {Object}
      */
     static get predefine() {
-        return InternalConf.headroom.predefine;
+        return {
+            weibo_com: {
+                updatebtn: {disabled: true},
+                saveasbtn: {disabled: true},
+                deletebtn: {disabled: true},
+            },
+            qcloud_com: {
+                updatebtn: {disabled: false},
+                saveasbtn: {disabled: false},
+                deletebtn: {disabled: true},
+            },
+            qiniu_com: {
+                updatebtn: {disabled: false},
+                saveasbtn: {disabled: false},
+                deletebtn: {disabled: true},
+            },
+            aliyun_com: {
+                updatebtn: {disabled: false},
+                saveasbtn: {disabled: false},
+                deletebtn: {disabled: true},
+            },
+            upyun_com: {
+                updatebtn: {disabled: false},
+                saveasbtn: {disabled: false},
+                deletebtn: {disabled: true},
+            },
+        };
     }
 
     /**
      * @return {Object}
      */
     static get restricte() {
-        return InternalConf.headroom.restricte;
+        return {
+            weibo_com: {
+                filesize: 20 * 1024 ** 2 - 1,
+                sizename: "20MB",
+            },
+            qcloud_com: {
+                filesize: 5 * 1024 ** 3 - 1,
+                sizename: "5GB",
+            },
+            qiniu_com: {
+                filesize: 0,
+                sizename: "0B",
+            },
+            aliyun_com: {
+                filesize: 0,
+                sizename: "0B",
+            },
+            upyun_com: {
+                filesize: 0,
+                sizename: "0B",
+            },
+        };
     }
 
     /**
      * @return {Object}
      */
     static get thumbnail() {
-        return InternalConf.headroom.thumbnail;
+        return {
+            weibo_com: {
+                1: "large",
+                2: "mw690",
+                3: "thumbnail",
+            },
+            qcloud_com: {
+                1: "?imageMogr2/quality/95",
+                2: "?imageMogr2/thumbnail/720x720/quality/90",
+                3: "?imageMogr2/thumbnail/360x360/quality/90",
+            },
+            qiniu_com: {
+                1: "",
+                2: "",
+                3: "",
+            },
+            aliyun_com: {
+                1: "",
+                2: "",
+                3: "",
+            },
+            upyun_com: {
+                1: "",
+                2: "",
+                3: "",
+            },
+        };
     }
 
     /**

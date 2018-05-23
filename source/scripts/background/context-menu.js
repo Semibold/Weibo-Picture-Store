@@ -5,11 +5,11 @@
  */
 
 import {
-    VIDEO_FRAME_MENU_ID,
-    BATCH_DELETE_MENU_ID,
-    UPLOAD_IMAGE_MENU_ID,
-    HISTORY_UPLOADED_MENU_ID,
-} from "../plugin/constant.js";
+    M_VIDEO_FRAME,
+    M_BATCH_DELETE,
+    M_UPLOAD_IMAGE,
+    M_HISTORY_UPLOADED,
+} from "../sharre/constant.js";
 import {gtracker} from "../plugin/g-tracker.js";
 import {fetchBlob} from "./fetch-blob.js";
 import {ActionUpload} from "./action-upload.js";
@@ -20,7 +20,7 @@ import {Base64} from "../plugin/base64.js";
  */
 chrome.contextMenus.create({
     title: "移除选中的文件",
-    id: BATCH_DELETE_MENU_ID,
+    id: M_BATCH_DELETE,
     contexts: ["link"],
     visible: false,
     documentUrlPatterns: [
@@ -43,7 +43,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     title: "上传记录",
     contexts: ["browser_action"],
-    id: HISTORY_UPLOADED_MENU_ID,
+    id: M_HISTORY_UPLOADED,
 }, () => {
     if (chrome.runtime.lastError) {
         gtracker.exception({
@@ -60,7 +60,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     title: "把当前的视频帧上传到存储桶",
     contexts: ["video"],
-    id: VIDEO_FRAME_MENU_ID,
+    id: M_VIDEO_FRAME,
 }, () => {
     if (chrome.runtime.lastError) {
         gtracker.exception({
@@ -77,7 +77,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     title: "把这张图片上传到存储桶",
     contexts: ["image"],
-    id: UPLOAD_IMAGE_MENU_ID,
+    id: M_UPLOAD_IMAGE,
 }, () => {
     if (chrome.runtime.lastError) {
         gtracker.exception({
@@ -93,19 +93,19 @@ chrome.contextMenus.create({
  */
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
-        case HISTORY_UPLOADED_MENU_ID:
+        case M_HISTORY_UPLOADED:
             chrome.tabs.create({url: "history.html"});
             break;
-        case UPLOAD_IMAGE_MENU_ID:
+        case M_UPLOAD_IMAGE:
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
                 const actionUpload = new ActionUpload().init();
                 actionUpload.addQueues([blob]);
                 actionUpload.startAutoIteration();
             });
             break;
-        case VIDEO_FRAME_MENU_ID:
+        case M_VIDEO_FRAME:
             chrome.tabs.sendMessage(tab.id, {
-                type: VIDEO_FRAME_MENU_ID,
+                type: M_VIDEO_FRAME,
                 srcUrl: info.srcUrl,
             }, {frameId: info.frameId}, response => {
                 if (response) {

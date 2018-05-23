@@ -10,7 +10,7 @@ import {QCloudStorageAuth} from "../../source/scripts/auth/qcloud-storage.js";
  * @async
  * @desc 需要手动运行测试
  * @desc 需要测试者自己提供 key 文件
- * @example ../key.js
+ * @example ../key.template.js
  */
 export async function qcloudStorageAuthTester() {
     const {qcloudAuthInfo} = await import("../key.js");

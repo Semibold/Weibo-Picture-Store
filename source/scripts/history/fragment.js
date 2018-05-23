@@ -16,7 +16,7 @@ const footHTML = `
     <div class="foot-bottom">
         <div class="foot-line"></div>
         <div class="foot-menu">
-            <a href="https://github.com/Aqours/Weibo-Picture-Store/issues" target="_blank" title="GitHub Issues">GitHub</a>
+            <a href="https://github.com/Semibold/Weibo-Picture-Store/issues" target="_blank" title="GitHub Issues">GitHub</a>
             <a href="mailto:abc@hub.moe" title="通过电子邮件反馈问题">反馈</a>
             <a href="donate.html" target="_blank" title="扩展很棒，捐赠以表支持 +1s">捐赠</a>
             <a href="recorder.html#changelog" target="_blank" title="简要指南及更新日志">更新日志</a>
