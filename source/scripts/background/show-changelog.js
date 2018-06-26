@@ -5,10 +5,5 @@
  */
 
 chrome.runtime.onInstalled.addListener(details => {
-    if (details.previousVersion) {
-        const [major, minor, patch] = details.previousVersion.split(".");
-        if (details.reason === "update" || details.reason === "install") {
-            major < 4 && chrome.tabs.create({url: "recorder.html#changelog"});
-        }
-    }
+    chrome.tabs.create({url: "recorder.html#changelog"});
 });
