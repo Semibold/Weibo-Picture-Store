@@ -2,23 +2,21 @@
 
 > [更新日志](changelog.md)
 
-> [公测版本](https://chrome.google.com/webstore/detail/fgojeheijgbiibpekigaajhpendcghpi)
+> [V4 版本 (@deprecated)](https://github.com/Semibold/Weibo-Picture-Store/tree/deprecated-v4)
 
 
 ## Introduction
 
-> 存储桶泛指微博相册、腾讯云存储(COS)等扩展支持的存储空间
-
-上传图片到存储桶并生成外链的 Chrome 浏览器扩展
+上传图片到微博并生成外链的 Chrome 浏览器扩展
 
 
 ## Feature
 
 > 已下列出的是功能的简介，详情可以继续往下阅读
 
-- 支持点选、拖拽、粘贴以及页面右键菜单上传图片到微博并同步到存储桶
-- 支持 JPEG、PNG、GIF 三种图片格式（仅限微博）
-- 支持 BMP、WebP、ico 有损转换为 PNG（仅限微博）
+- 支持点选、拖拽、粘贴以及页面右键菜单上传图片到微博并同步到微相册
+- 支持 JPEG、PNG、GIF 三种图片格式
+- 支持 BMP、WebP、ico 有损转换为 PNG
 - 支持把 HTML5 视频的当前帧上传为 JPG 图像
 - 支持查看上传记录，简单的浏览及删除操作
 - 支持生成 URL、HTML、UBB、Markdown 四种格式
@@ -48,20 +46,20 @@
 9. 在 GitHub 上提交建议或者 BUG
 10. 通过电子邮件反馈问题（如果不方便使用 GitHub）
 11. [捐赠](http://www.hub.moe/blackboard/donate.html)支持一下
-12. 查看简要的更新日志
+12. 查看更新日志
 
 ![](screenshot/right-upload.jpg)
 
-如果可以获取到页面中的图片，则会在右键菜单中显示把这张图片上传到存储桶的选项，点击后会自动上传，上传结束后会出现提示。
+如果可以获取到页面中的图片，则会在右键菜单中显示把这张图片上传到微相册的选项，点击后会自动上传，上传结束后会出现提示。
 
 ![](screenshot/video-frame.jpg)
 
-如果可以获取到页面中 HTML5 的视频并且原生的右键菜单可用，则会在右键菜单中显示把当前的视频帧上传到存储桶的选项，上传流程和上述图片一样。
+如果可以获取到页面中 HTML5 的视频并且原生的右键菜单可用，则会在右键菜单中显示把当前的视频帧上传到微相册的选项，上传流程和上述图片一样。
 
 ![](screenshot/video-frame-enhancement.png)
 ![](screenshot/set-shortcut.png)
 
-如果页面中 HTML5 视频在其他容器的下层，或者原生的右键菜单被屏蔽了。可以使用默认快捷键 Shift+Alt+T（如果没有效果，则需要在 chrome://extensions 键盘快捷键中手动添加快捷键）来修改页面元素，让 HTML5 视频可以被右键菜单捕获并且原生右键菜单这时候处于可用状态。需要注意，在页面元素处于修改状态中，页面上的其他元素不可以被鼠标选中，并且页面周围会显示红白相间的条纹表示页面元素处于修改状态。再次按下快捷键 Shift+Alt+T 即可退出这种状态，恢复正常。
+如果页面中 HTML5 视频在其他容器的下层，或者原生的右键菜单被屏蔽了。可以使用默认快捷键 Shift+Alt+T（可在 chrome://extensions/shortcuts 键盘快捷键中修改按键）来修改页面元素，让 HTML5 视频可以被右键菜单捕获并且原生右键菜单这时候处于可用状态。需要注意，在页面元素处于修改状态中，页面上的其他元素不可以被鼠标选中，并且页面周围会显示红白相间的条纹表示页面元素处于修改状态。再次按下快捷键 Shift+Alt+T 即可退出这种状态，恢复正常。
 
 1. 红白相间的条纹提示线
 2. 原生的右键菜单
@@ -69,30 +67,15 @@
 
 ![](screenshot/history.png)
 
-1. 从存储桶中移除这张图片
+1. 从微相册中移除这张图片
 2. 在图片上右击可以复制图片地址
 3. 批量删除选中的文件（按住 Ctrl 键可以多选）
 4. 图片最近的修改时间
 
-![](screenshot/options.png)
-
-1. 选择存储桶的 Tab
-2. 当前的存储桶配置数据（[查看详细的设置教程](docs/cos-setting-tutorial.md)）
-    - 备注：就是备注的意思
-    - Access Key：就是腾讯云存储后台显示的 SecretId
-    - Secret Key：腾讯云存储后台显示的 SecretKey
-    - Bucket Host：腾讯云存储的 Host
-    - Path：可选设置文件存储的路径
-    - Picture Host：可选设置万象优图的 Host
-
-![](screenshot/select-menu.png)
-
-- 更换当前存储桶的快捷菜单（这个选中和选项页中的 Tab 是同步的）
-
 
 ## Concept
 
-> 如果你想使用好这个插件，那么理解这些词语很重要（仅限微博）
+> 如果你想使用好这个插件，那么理解这些词语很重要
 
 以下是针对弹窗模式的说明：
 
@@ -143,14 +126,18 @@
 
 ## FAQ
 
+- 图片上传到哪儿了？
+    + 上传到微博上了
 - 可以上传的最大图片大小是多少？
-    + 目前是 20MB（仅限微博）
+    + 目前是 20MB
+- 如何管理已上传的图片？
+	+ 上传记录或者微相册均可以管理
 - 如何删除已上传的图片？
-    + 目前无法删除，微相册中的删除是针对相册的操作，对图片本身没有影响（仅限微博）
+    + 目前无法删除，微相册中的删除是针对相册的操作，对图片本身没有影响
 - 粘贴上传没有效果？
     + 粘贴上传只支持复制图片文件，在资源文件管理器中的复制文件并粘贴是没有效果的
 - 上传的是 PNG 图片，返回的却是 JPG 后缀的地址？
-    + 微博不支持 PNG 后缀，后缀对于浏览器判断图片的格式是没有影响的（仅限微博）
+    + 微博不支持 PNG 后缀，后缀对于浏览器判断图片的格式是没有影响的
 - 如何使用自定义裁剪？
 	+ 自定义裁剪的格式需要微博支持，否则生成的地址是不能正常问的
 - 裁剪操作对图片的影响？
@@ -164,5 +151,4 @@
 - [JetBrains IDEs](https://www.jetbrains.com/)
 - [Font Awesome](https://fontawesome.com/)
 - [Base64 encode/decode](https://github.com/beatgammit/base64-js)
-- [MD5 Algorithm](http://pajhome.org.uk/crypt/md5/index.html)
 - [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
