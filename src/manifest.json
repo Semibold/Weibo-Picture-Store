@@ -1,0 +1,56 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_ext_name__",
+  "version": "1.0.0",
+  "default_locale": "zh_CN",
+  "description": "__MSG_ext_desc__",
+  "icons": {
+    "32": "icons/32.png",
+    "64": "icons/64.png",
+    "128": "icons/128.png"
+  },
+  "browser_action": {
+    "default_title": "__MSG_ext_name__"
+  },
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": ["scripts/inject.js"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start"
+    }
+  ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Shift+Alt+W"
+      }
+    },
+    "transform-pointer-events": {
+      "suggested_key": {
+        "default": "Shift+Alt+T"
+      },
+      "description": "Transform pointer-events"
+    }
+  },
+  "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
+  "minimum_chrome_version": "66",
+  "permissions": [
+    "clipboardWrite",
+    "clipboardRead",
+    "contextMenus",
+    "notifications",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    "scripts/*"
+  ]
+}
