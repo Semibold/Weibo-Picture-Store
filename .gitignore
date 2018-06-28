@@ -2,7 +2,6 @@
 .vscode
 
 node_modules
-deploy
+dist
 
-tests/key.js
 npm-debug.log*
