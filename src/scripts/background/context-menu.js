@@ -13,6 +13,29 @@ import {
 import {fetchBlob} from "./fetch-blob.js";
 import {ActionUpload} from "./action-upload.js";
 import {Base64} from "../sharre/base64.js";
+import {Utils} from "../sharre/utils.js";
+import {Config} from "../sharre/constant.js";
+
+const notifyId = Utils.randomString(16);
+
+/**
+ * @param {Object} item
+ * @param {boolean} [notify=true]
+ */
+function writeToClipboard(item, notify = true) {
+    const suffix = Config.weiboSupportedTypes[item.mimeType].typo;
+    const url = `https://${Config.randomImageHost}/large/${item.pid + suffix}`;
+    const result = Utils.writeToClipboard(url);
+    if (notify && result) {
+        chrome.notifications.create(notifyId, {
+            type: "basic",
+            iconUrl: chrome.i18n.getMessage("notify_icon"),
+            title: chrome.i18n.getMessage("info_title"),
+            message: "复制成功：链接已经复制到剪切板了呦~",
+        });
+    }
+}
+
 
 /**
  * @desc 上传记录的批量删除菜单
@@ -71,7 +94,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
                 const actionUpload = new ActionUpload().init();
                 actionUpload.addQueues([blob]);
-                actionUpload.startAutoIteration();
+                actionUpload.startAutoIteration(it => {
+                    if (!it.done && it.value) {
+                        writeToClipboard(it.value);
+                    }
+                });
             });
             break;
         case M_VIDEO_FRAME:
@@ -89,7 +116,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                         });
                         const actionUpload = new ActionUpload().init();
                         actionUpload.addQueues([file]);
-                        actionUpload.startAutoIteration();
+                        actionUpload.startAutoIteration(it => {
+                            if (!it.done && it.value) {
+                                writeToClipboard(it.value);
+                            }
+                        });
                     }
                 }
             });
