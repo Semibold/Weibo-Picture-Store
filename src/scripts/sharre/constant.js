@@ -47,7 +47,7 @@ export const SINGLETON_CACHE = new Map();
 /**
  * @static
  */
-export class Config {
+export default class {
 
     /**
      * @see https://support.google.com/webmasters/answer/2598805

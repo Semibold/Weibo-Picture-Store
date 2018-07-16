@@ -8,6 +8,7 @@ import {SINGLETON_CACHE} from "./constant.js";
 
 /**
  * @static
+ * @typedef {Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Uint8ClampedArray|Float32Array|Float64Array} TypedArray
  */
 export class Utils {
 
@@ -114,7 +115,7 @@ export class Utils {
 
     /**
      * @desc Be Careful: It's not equal to TextDecoder.decode();
-     * @param {ArrayBufferLike|ArrayLike<number>} buffer
+     * @param {ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
      * @return {string}
      */
     static textFromBuffer(buffer) {
@@ -124,20 +125,6 @@ export class Utils {
             r.push(String.fromCodePoint(bufferView[i]));
         }
         return r.join("");
-    }
-
-    /**
-     * @param {ArrayBufferLike[]|ArrayLike<number>[]} list
-     * @return {Uint8Array}
-     */
-    static bufferConcat(list) {
-        const totalLength = list.reduce((pv, cv) => pv + cv.byteLength, 0);
-        const bufferView = new Uint8Array(totalLength);
-        list.reduce((pv, cv) => {
-            bufferView.set(new Uint8Array(cv), pv);
-            return pv + cv.byteLength;
-        }, 0);
-        return bufferView;
     }
 
     /**

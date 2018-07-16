@@ -66,7 +66,7 @@ export class Base64 {
 
     /**
      * @private
-     * @param {ArrayBufferLike|ArrayLike<number>} buffer
+     * @param {ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
      * @param {number} start
      * @param {number} end
      * @return {string}
@@ -105,7 +105,7 @@ export class Base64 {
 
     /**
      * @public
-     * @param {ArrayBufferLike|ArrayLike<number>} buffer
+     * @param {ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
      * @return {string}
      */
     static fromBuffer(buffer) {
