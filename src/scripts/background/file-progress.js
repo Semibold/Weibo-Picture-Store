@@ -19,11 +19,13 @@ const nextFrame = callback => setTimeout(callback, 1000 / fps);
  */
 class TypeEntry {
 
-    constructor() {
+    constructor(tid) {
+        this.timerId = null;
         this.notifyId = Utils.randomString(16);
-        this.requestId = null;
+        this.cycle = 0;
         this.total = 0;
         this.settle = 0;
+        storeMap.set(tid, this);
     }
 
     reformat() {
@@ -35,6 +37,7 @@ class TypeEntry {
         if (Number.isInteger(n) && n > 0) {
             if (this.settle + n <= this.total) {
                 this.settle += n;
+                this.cycle = 0;
             }
         }
     }
@@ -47,18 +50,15 @@ class TypeEntry {
 
 }
 
+new TypeEntry(FP_TYPE_UPLOAD);
+new TypeEntry(FP_TYPE_DOWNLOAD);
+
 /**
  * @desc 核心实现
+ * @return {boolean}
  */
 function coreInternalHander(tid) {
     let dtd = storeMap.get(tid);
-    let avr = 3;
-    let max = 0.9;
-    let sec = avr * dtd.total;
-    let bio = sec * fps;
-    let gap = 100 / dtd.total;
-    let step = gap * max / sec / fps;
-    let time = 0;
     let message;
     let contextMessage;
 
@@ -80,24 +80,22 @@ function coreInternalHander(tid) {
     }
 
     function loop() {
-        let next = Math.floor(dtd.settle * gap + (dtd.total - dtd.settle) * time * step);
-
-        if (next < 10) next = 10;
-        if (next > 100) next = 100;
-
-        time >= bio ? time = bio : time++;
-
+        const avr = 3;    // 3s
+        const hat = 5;    // 5-90-5
+        const gap = (100 - hat * 2) / dtd.total;
+        const step = gap / avr / fps;
+        const next = Math.floor(hat + dtd.settle * gap + Math.min(++dtd.cycle, avr * fps) * step);
         chrome.notifications.create(dtd.notifyId, {
             type: "progress",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
             title: chrome.i18n.getMessage("info_title"),
             message: message,
             contextMessage: contextMessage,
-            progress: next,
+            progress: Math.max(0, Math.min(100, next)),
             requireInteraction: true,
         }, notificationId => {
             if (dtd.settle === dtd.total) {
-                dtd.requestId && clearTimeout(dtd.requestId);
+                dtd.timerId && clearTimeout(dtd.timerId);
                 dtd.reformat();
                 chrome.notifications.clear(notificationId, wasCleared => {
                     if (wasCleared && tid === FP_TYPE_UPLOAD) {
@@ -112,18 +110,16 @@ function coreInternalHander(tid) {
             }
         });
 
-        dtd.requestId = nextFrame(loop);
+        dtd.timerId = nextFrame(loop);
     }
 
-    dtd.requestId && clearTimeout(dtd.requestId);
-    dtd.requestId = nextFrame(loop);
+    dtd.timerId && clearTimeout(dtd.timerId);
+    dtd.timerId = nextFrame(loop);
     return true;
 }
 
-storeMap.set(FP_TYPE_UPLOAD, new TypeEntry());
-storeMap.set(FP_TYPE_DOWNLOAD, new TypeEntry());
-
 /**
+ * @package
  * @desc Progress 的内部实现是用单例模式（上传、下载各一种）
  * @desc 这个只能在 Background 中运行
  */
@@ -134,17 +130,24 @@ export class FileProgress {
         this.dtd = storeMap.get(this.tid);
     }
 
-    /** @public */
+    /**
+     * @public
+     */
     consume(n = 1) {
         return this.dtd.consume(n);
     }
 
-    /** @public */
+    /**
+     * @public
+     */
     padding(n = 1) {
         return this.dtd.padding(n);
     }
 
-    /** @public */
+    /**
+     * @public
+     * @return {boolean}
+     */
     trigger() {
         return coreInternalHander(this.tid);
     }
