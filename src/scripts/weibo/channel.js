@@ -8,9 +8,10 @@ import {Base64} from "../sharre/base64.js";
 import {bitmapMime} from "../sharre/bitmap-mime.js";
 
 /**
+ * @package
  * @desc 微博图片的两种上传方式
  */
-export const Channel = new Proxy({
+export const channel = new Proxy({
     arrayBuffer: {
         readType: "readAsArrayBuffer",
         body(arrayBuffer) {
@@ -50,7 +51,7 @@ export const Channel = new Proxy({
             }, option);
         },
         mimeType(dataURL) {
-            return bitmapMime(Base64.toBuffer(dataURL.split(",")[1]).buffer);
+            return bitmapMime(Base64.toBuffer(dataURL.split(",")[1]));
         },
     },
 }, {
@@ -59,8 +60,9 @@ export const Channel = new Proxy({
             case "arrayBuffer":
                 return Reflect.get(target, "arrayBuffer", receiver);
             case "dataURL":
-            default:
                 return Reflect.get(target, "dataURL", receiver);
+            default:
+                throw new Error("Invalid key. Key must be `arrayBuffer` or `dataURL`");
         }
     },
 });
