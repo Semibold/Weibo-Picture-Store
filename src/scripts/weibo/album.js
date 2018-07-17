@@ -13,7 +13,7 @@ import {requestUserId} from "./author.js";
  * @desc Singleton
  * @return {Promise<{albumId: string}, {canCreateNewAlbum: boolean}|Error>}
  */
-async function tryCheckoutAlbumId() {
+async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
     return Utils
         .fetch(Utils.buildURL("http://photo.weibo.com/albums/get_all", {page: 1, count: overflow}))
@@ -87,7 +87,7 @@ export async function requestSpecialAlbumId(uid) {
         }
     }
 
-    return Utils.singleton(tryCheckoutAlbumId)
+    return Utils.singleton(tryCheckoutSpecialAlbumId)
         .catch(reason => {
             if (reason && reason.canCreateNewAlbum != null) {
                 if (reason.canCreateNewAlbum) {
