@@ -26,15 +26,16 @@ async function bootloader() {
             const videoRefs = document.querySelectorAll('video');
             for (const videoRef of videoRefs) {
                 /**
-                 * 为什么不用 video.src 的写法？
-                 * <video><source src="..."></video> 这种写法不存在 video.src
-                 * 但是 chrome 可以捕获 source 中的 src 值
+                 * @desc 为什么不用 video.src 的写法？
+                 *          <video><source src="..."></video> 这种写法不存在 video.src
+                 *          但是 chrome 可以捕获 source 中的 src 值
+                 * @todo 如果视频的URL经过了重定向，这里的判断是否正确呢？
                  */
                 if (videoRef.currentSrc !== message.srcUrl) {
                     continue;
                 }
-                const width = Math.ceil(videoRef.videoWidth);
-                const height = Math.ceil(videoRef.videoHeight);
+                const width = videoRef.videoWidth;
+                const height = videoRef.videoHeight;
                 if (width === 0 || height === 0) {
                     return;
                 }
@@ -48,11 +49,7 @@ async function bootloader() {
                 context.drawImage(videoRef, 0, 0, width, height);
                 try {
                     const dataurl = canvas.toDataURL("image/jpeg", 0.95);
-                    sendResponse({
-                        ext: ".jpg",
-                        contentType: "image/jpeg",
-                        dataurl: dataurl,
-                    });
+                    sendResponse({dataurl: dataurl});
                 } catch (e) {
                     chrome.runtime.sendMessage({type: S_WITHOUT_CORS_MODE});
                 }
@@ -68,7 +65,7 @@ async function bootloader() {
     }, true);
 
     function contentInjectionHandler() {
-        const highlight = document.createElement("inject-highlight");
+        const highlight = document.createElement("x-highlight");
         const styleContent = `
             html {
                 pointer-events: none !important;
@@ -76,7 +73,7 @@ async function bootloader() {
             iframe, embed, object, param, video, source {
                 pointer-events: auto !important;
             }
-            inject-highlight[data-injector-id="${chrome.runtime.id}"] {
+            x-highlight[data-injector-id="${chrome.runtime.id}"] {
                 display: block;
                 position: fixed;
                 left: 0;

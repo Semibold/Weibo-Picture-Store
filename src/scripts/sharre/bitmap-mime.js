@@ -65,7 +65,7 @@ const BITMAP_PATTERN_TABLE = [
 ];
 
 /**
- * image type pattern matching algorithm
+ * @desc image type pattern matching algorithm
  */
 function isPatternMatch(buffer, item) {
     const input = new Uint8Array(buffer);
@@ -99,7 +99,7 @@ function isPatternMatch(buffer, item) {
 }
 
 /**
- * @param {ArrayBufferLike|ArrayLike<number>} buffer
+ * @param {ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
  * @return {string}
  */
 export const bitmapMime = buffer => {

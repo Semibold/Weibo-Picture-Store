@@ -24,7 +24,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === M_BATCH_DELETE) {
         chrome.tabs.getCurrent(ctab => {
             if (tab.id === ctab.id) {
-                dispatcher.deleteResources();
+                dispatcher.detachSelectedPhoto();
             }
         });
     }

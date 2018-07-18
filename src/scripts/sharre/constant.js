@@ -38,6 +38,7 @@ export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
  * @desc 多用户的 Cache
  */
 export const USER_INFO_CACHE = new Map();
+export const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
 
 /**
  * @desc APIs 的单例模式
@@ -47,7 +48,7 @@ export const SINGLETON_CACHE = new Map();
 /**
  * @static
  */
-export class Config {
+export class PConfig {
 
     /**
      * @see https://support.google.com/webmasters/answer/2598805

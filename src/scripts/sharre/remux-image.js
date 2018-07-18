@@ -11,7 +11,7 @@ import {MAXIMUM_EDGE} from "./constant.js";
 
 /**
  * @param blob
- * @return {Promise<Blob>}
+ * @return {Promise<Blob, Error>}
  */
 export async function remuxImage(blob) {
     return createImageBitmap(blob)
@@ -20,7 +20,7 @@ export async function remuxImage(blob) {
             const height = bitmap.height;
 
             if (width > MAXIMUM_EDGE || height > MAXIMUM_EDGE) {
-                return Promise.reject("Beyond the border");
+                return Promise.reject(new Error("Beyond the border"));
             }
 
             const canvas = document.createElement("canvas");
@@ -32,8 +32,8 @@ export async function remuxImage(blob) {
             bitmap.close();
 
             return new Promise((resolve, reject) => canvas.toBlob(blob => resolve(blob), "image/png"));
-        }).catch(reason => {
-            console.warn("Transform Source:", reason);
+        })
+        .catch(reason => {
             return Promise.reject(reason);
         });
 }

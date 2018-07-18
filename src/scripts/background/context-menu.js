@@ -10,24 +10,23 @@ import {
     M_UPLOAD_IMAGE,
     M_UPLOAD_HISTORY,
 } from "../sharre/constant.js";
-import {fetchBlob} from "./fetch-blob.js";
-import {ActionUpload} from "./action-upload.js";
-import {Base64} from "../sharre/base64.js";
 import {Utils} from "../sharre/utils.js";
-import {Config} from "../sharre/constant.js";
+import {Base64} from "../sharre/base64.js";
+import {PConfig} from "../sharre/constant.js";
+import {WeiboUpload} from "./weibo-action.js";
+import {fetchBlob} from "./fetch-blob.js";
 
-const notifyId = Utils.randomString(16);
+const copyToClipboardId = Utils.randomString(16);
 
 /**
- * @param {Object} item
- * @param {boolean} [notify=true]
+ * @param {PackedItem} item
  */
-function writeToClipboard(item, notify = true) {
-    const suffix = Config.weiboSupportedTypes[item.mimeType].typo;
-    const url = `https://${Config.randomImageHost}/large/${item.pid + suffix}`;
+function writeToClipboard(item) {
+    const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
+    const url = `https://${PConfig.randomImageHost}/large/${item.pid + suffix}`;
     const result = Utils.writeToClipboard(url);
-    if (notify && result) {
-        chrome.notifications.create(notifyId, {
+    if (result) {
+        chrome.notifications.create(copyToClipboardId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
             title: chrome.i18n.getMessage("info_title"),
@@ -92,9 +91,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             break;
         case M_UPLOAD_IMAGE:
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
-                const actionUpload = new ActionUpload().init();
-                actionUpload.addQueues([blob]);
-                actionUpload.startAutoIteration(it => {
+                const weiboUpload = new WeiboUpload();
+                weiboUpload.addQueues([blob]);
+                weiboUpload.triggerIteration(it => {
                     if (!it.done && it.value) {
                         writeToClipboard(it.value);
                     }
@@ -106,17 +105,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 type: M_VIDEO_FRAME,
                 srcUrl: info.srcUrl,
             }, {frameId: info.frameId}, response => {
+                /**
+                 * @desc `response` 的数据结构: {dataurl: string}
+                 */
                 if (response) {
                     const [t, b64] = response.dataurl.split(",");
                     if (b64) {
-                        const buf = Base64.toBuffer(b64);
-                        const file = new File([buf], `frame${response.ext}`, {
-                            type: response.contentType || "",
-                            lastModified: Date.now(),
-                        });
-                        const actionUpload = new ActionUpload().init();
-                        actionUpload.addQueues([file]);
-                        actionUpload.startAutoIteration(it => {
+                        const blob = new Blob([Base64.toBuffer(b64)]);
+                        const weiboUpload = new WeiboUpload();
+                        weiboUpload.addQueues([blob]);
+                        weiboUpload.triggerIteration(it => {
                             if (!it.done && it.value) {
                                 writeToClipboard(it.value);
                             }
