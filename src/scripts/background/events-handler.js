@@ -7,7 +7,7 @@
 import {Utils} from "../sharre/utils.js";
 import {S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS} from "../sharre/constant.js";
 
-const failedId = Utils.randomString(16);
+const mismatchSpecId = Utils.randomString(16);
 
 chrome.commands.onCommand.addListener(command => {
     switch (command) {
@@ -28,7 +28,7 @@ chrome.commands.onCommand.addListener(command => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === S_WITHOUT_CORS_MODE) {
-        chrome.notifications.create(failedId, {
+        chrome.notifications.create(mismatchSpecId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
             title: chrome.i18n.getMessage("warn_title"),
