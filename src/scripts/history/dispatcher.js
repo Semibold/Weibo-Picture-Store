@@ -121,7 +121,20 @@ export class Dispatcher {
      * @private
      */
     getPageList() {
+        // 修正删除数据后的分页信息
+        const {page, count, prevdel} = this.checkout;
+        const forward = Math.ceil(prevdel / count);
+        const start = forward ? forward * count - prevdel : 0;
+        this.checkout.page -= forward;
+
         return SharreM.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count)
+            .then(json => {
+                this.checkout.prevdel -= prevdel;
+                if (this.checkout.prevdel < 0) {
+                    this.checkout.prevdel = 0;
+                }
+                return json;
+            })
             .then(json => {
                 this.checkout.pages = Math.ceil(json.total / this.checkout.count);
                 for (const item of json.photos.slice(start)) {
