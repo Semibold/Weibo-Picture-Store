@@ -33,15 +33,17 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
         })
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
         .then(json => {
-            if (json && json["code"] === 0 && json["result"]) {
-                promise
-                    .then(albumInfo => uid && USER_INFO_CACHE.set(uid, albumInfo))
-                    .catch(reason => uid && USER_INFO_CACHE.delete(uid));
-            } else if (!_replay && json && json["code"] === overflowCode) {
+            if (!_replay && json && json["code"] === overflowCode) {
                 requestPhotosFromSpecialAlbum(20, 50)
                     .then(json => detachPhotoFromSpecialAlbum(json.photos.map(item => item.photoId)))
                     .then(json => attachPhotoToSpecialAlbum(pid, uid, true));
             }
+        })
+        .catch(reason => {
+            if (_replay) {
+                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
+            }
+            return Promise.reject(reason);
         });
 }
 
@@ -52,7 +54,8 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
  * @return {Promise<*, Error>}
  */
 export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
-    return requestSpecialAlbumId()
+    const promise = requestSpecialAlbumId();
+    return promise
         .then(albumInfo => {
             return Utils.fetch("http://photo.weibo.com/albums/delete_batch", {
                 method: "POST",
@@ -72,6 +75,7 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
         })
         .catch(reason => {
             if (_replay) {
+                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
@@ -102,14 +106,15 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
  * }>, Error}
  */
 export async function requestPhotosFromSpecialAlbum(page, count, _replay = false) {
-    return requestSpecialAlbumId()
+    const promise = requestSpecialAlbumId();
+    return promise
         .then(albumInfo => {
-            return Utils.fetch("http://photo.weibo.com/photos/get_all", {
+            return Utils.fetch(Utils.buildURL("http://photo.weibo.com/photos/get_all", {
                 page: page,
                 count: count,
                 album_id: albumInfo.albumId,
                 __rnd: Date.now(),
-            });
+            }));
         })
         .then(response => {
             return response.ok ? response.json() : Promise.reject(new Error(response.statusText));
@@ -134,6 +139,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
         })
         .catch(reason => {
             if (_replay) {
+                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {

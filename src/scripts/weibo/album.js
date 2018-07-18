@@ -6,12 +6,12 @@
 
 import {Utils} from "../sharre/utils.js";
 import {FEATURE_ID} from "../sharre/constant.js";
-import {USER_INFO_CACHE} from "../sharre/constant.js";
+import {USER_INFO_CACHE, USER_INFO_EXPIRED} from "../sharre/constant.js";
 import {requestUserId} from "./author.js";
 
 /**
  * @desc Singleton
- * @return {Promise<{albumId: string}, {canCreateNewAlbum: boolean}|Error>}
+ * @return {Promise<{uid: string, albumId: string}, {canCreateNewAlbum: boolean}|Error>}
  */
 async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
@@ -20,18 +20,22 @@ async function tryCheckoutSpecialAlbumId() {
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
         .then(json => {
             if (json && json["result"]) {
-                const albumInfo = {counter: 0, albumId: null};
+                const albumInfo = {counter: 0, uid: null, albumId: null};
 
                 for (const item of json["data"]["album_list"]) {
                     albumInfo.counter++;
                     if (item["description"] === FEATURE_ID) {
+                        albumInfo.uid = item['uid'].toString();
                         albumInfo.albumId = item["album_id"].toString();
                         break;
                     }
                 }
 
                 if (albumInfo.albumId) {
-                    return Promise.resolve({albumId: albumInfo.albumId});
+                    return Promise.resolve({
+                        uid: albumInfo.uid,
+                        albumId: albumInfo.albumId,
+                    });
                 } else {
                     return Promise.reject({
                         canCreateNewAlbum: albumInfo.counter < overflow,
@@ -46,7 +50,7 @@ async function tryCheckoutSpecialAlbumId() {
 /**
  * @desc Singleton
  * @desc Referer wanted: "${protocol}//photo.weibo.com/${uid}/client"
- * @return {Promise<{albumId: string}, Error>}
+ * @return {Promise<{uid: string, albumId: string}, Error>}
  */
 async function tryCreateNewAlbum() {
     const method = "POST";
@@ -64,6 +68,7 @@ async function tryCreateNewAlbum() {
         .then(json => {
             if (json && json["result"]) {
                 return {
+                    uid: json["data"]["uid"].toString(),
                     albumId: json["data"]["album_id"].toString(),
                 };
             } else {
@@ -75,15 +80,18 @@ async function tryCreateNewAlbum() {
 /**
  * @package
  * @param {string} [uid]
- * @return {Promise<{albumId: string}, Error>}
+ * @return {Promise<{uid: string, albumId: string}, Error>}
  */
 export async function requestSpecialAlbumId(uid) {
-    const cacheId = uid || await requestUserId().catch(Utils.noop);
+    const cacheId = uid || await requestUserId().then(info => info.uid).catch(Utils.noop);
 
     if (cacheId && USER_INFO_CACHE.has(cacheId)) {
         const albumInfo = USER_INFO_CACHE.get(cacheId);
-        if (albumInfo && albumInfo.albumId) {
+        if (albumInfo && albumInfo.albumId && albumInfo.uid === cacheId &&
+            Date.now() - albumInfo.timestamp < USER_INFO_EXPIRED) {
             return Promise.resolve(albumInfo);
+        } else {
+            USER_INFO_CACHE.delete(cacheId);
         }
     }
 
@@ -98,5 +106,13 @@ export async function requestSpecialAlbumId(uid) {
             } else {
                 return Promise.reject(reason);
             }
+        })
+        .then(albumInfo => {
+            if (albumInfo && albumInfo.albumId && albumInfo.uid) {
+                USER_INFO_CACHE.set(albumInfo.uid, Object.assign({
+                    timestamp: Date.now(),
+                }, albumInfo));
+            }
+            return albumInfo;
         });
 }
