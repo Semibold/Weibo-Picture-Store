@@ -53,7 +53,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
  * @param {boolean} [_replay=false]
  * @return {Promise<*, Error>}
  */
-async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = false) {
+export async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = false) {
     return Utils
         .fetch("http://photo.weibo.com/albums/delete_batch", {
             method: "POST",
@@ -103,7 +103,7 @@ async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = false) {
  *   }[]
  * }>, Error}
  */
-async function requestPhotosFromSpecialAlbum(albumInfo, page, count, _replay = false) {
+export async function requestPhotosFromSpecialAlbum(albumInfo, page, count, _replay = false) {
     return new Promise((resolve, reject) => {
         if (albumInfo && albumInfo.albumId) {
             resolve(albumInfo);
