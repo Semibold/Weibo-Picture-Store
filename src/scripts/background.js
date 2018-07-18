@@ -10,22 +10,20 @@
 import "./background/start-popup.js";
 import "./background/weibo-referer.js";
 import "./background/context-menu.js";
-import "./background/events-handler.js"
+import "./background/file-progress.js";
+import "./background/events-handler.js";
 
 /**
  * @desc 不需要初始化，但是需要导出到外部
  */
 import {fetchBlob} from "./background/fetch-blob.js";
-import {ActionUpload} from "./background/action-upload.js";
-import {ActionHistory} from "./background/action-history.js";
-import {ActionDelete} from "./background/action-delete.js";
+import {WeiboStatic, WeiboUpload} from "./background/weibo-action.js";
 
 /**
  * @desc Core Share Module (APIs)
  */
 self.coreAPIs = {
     fetchBlob,
-    ActionUpload,
-    ActionHistory,
-    ActionDelete,
+    WeiboStatic,
+    WeiboUpload,
 };
