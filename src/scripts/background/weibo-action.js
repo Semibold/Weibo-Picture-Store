@@ -17,24 +17,21 @@ export class WeiboStatic {
 
     /**
      * @public
-     * @param {string} albumId
      * @param {string[]} photoIds
      * @return {Promise<*, Error>}
      */
-    static detachPhoto(albumId, photoIds) {
-        return detachPhotoFromSpecialAlbum(albumId, photoIds);
+    static detachPhoto(photoIds) {
+        return detachPhotoFromSpecialAlbum(photoIds);
     }
 
     /**
      * @public
-     * @param {Object} albumInfo
-     * @param {string} [albumInfo.albumId]
      * @param {number} page
      * @param {number} count
      * @return {Promise<{
      *   total: number,
-     *   albumId: string,
      *   photos: {
+     *     albumId: string,
      *     photoId: string,
      *     picHost: string,
      *     picName: string,
@@ -42,8 +39,8 @@ export class WeiboStatic {
      *   }[]
      * }>, Error}
      */
-    static requestPhotos(albumInfo, page, count) {
-        return requestPhotosFromSpecialAlbum(albumInfo, page, count);
+    static requestPhotos(page, count) {
+        return requestPhotosFromSpecialAlbum(page, count);
     }
 
 }

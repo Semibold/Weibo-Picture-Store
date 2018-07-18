@@ -38,9 +38,8 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
                     .then(albumInfo => uid && USER_INFO_CACHE.set(uid, albumInfo))
                     .catch(reason => uid && USER_INFO_CACHE.delete(uid));
             } else if (!_replay && json && json["code"] === overflowCode) {
-                promise
-                    .then(albumInfo => requestPhotosFromSpecialAlbum(albumInfo, 20, 50))
-                    .then(json => detachPhotoFromSpecialAlbum(json.albumId, json.photos.map(item => item.photoId)))
+                requestPhotosFromSpecialAlbum(20, 50)
+                    .then(json => detachPhotoFromSpecialAlbum(json.photos.map(item => item.photoId)))
                     .then(json => attachPhotoToSpecialAlbum(pid, uid, true));
             }
         });
@@ -48,19 +47,20 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
 
 /**
  * @public
- * @param {string} albumId
  * @param {string[]} photoIds
  * @param {boolean} [_replay=false]
  * @return {Promise<*, Error>}
  */
-export async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = false) {
-    return Utils
-        .fetch("http://photo.weibo.com/albums/delete_batch", {
-            method: "POST",
-            body: Utils.createSearchParams({
-                album_id: albumId,
-                photo_id: photoIds.join(","),
-            }),
+export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
+    return requestSpecialAlbumId()
+        .then(albumInfo => {
+            return Utils.fetch("http://photo.weibo.com/albums/delete_batch", {
+                method: "POST",
+                body: Utils.createSearchParams({
+                    album_id: albumInfo.albumId,
+                    photo_id: photoIds.join(","),
+                }),
+            })
         })
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
         .then(json => {
@@ -76,7 +76,7 @@ export async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = f
             } else {
                 return requestSignIn(true).then(json => {
                     if (json.login) {
-                        return detachPhotoFromSpecialAlbum(albumId, photoIds, true);
+                        return detachPhotoFromSpecialAlbum(photoIds, true);
                     } else {
                         return Promise.reject(reason);
                     }
@@ -87,15 +87,13 @@ export async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = f
 
 /**
  * @public
- * @param {Object} albumInfo
- * @param {string} [albumInfo.albumId]
  * @param {number} page
  * @param {number} count
  * @param {boolean} [_replay=false]
  * @return {Promise<{
  *   total: number,
- *   albumId: string,
  *   photos: {
+ *     albumId: string,
  *     photoId: string,
  *     picHost: string,
  *     picName: string,
@@ -103,52 +101,48 @@ export async function detachPhotoFromSpecialAlbum(albumId, photoIds, _replay = f
  *   }[]
  * }>, Error}
  */
-export async function requestPhotosFromSpecialAlbum(albumInfo, page, count, _replay = false) {
-    return new Promise((resolve, reject) => {
-        if (albumInfo && albumInfo.albumId) {
-            resolve(albumInfo);
-        } else {
-            reject(new Error("Invalid Data"));
-        }
-    }).catch(reason => {
-        return requestSpecialAlbumId();
-    }).then(albumInfo => {
-        return Utils.fetch("http://photo.weibo.com/photos/get_all", {
-            page: page,
-            count: count,
-            album_id: albumInfo.albumId,
-            __rnd: Date.now(),
-        });
-    }).then(response => {
-        return response.ok ? response.json() : Promise.reject(new Error(response.statusText));
-    }).then(json => {
-        if (json && json["code"] === 0 && json["result"]) {
-            const total = json["data"]["total"];
-            const albumId = json["data"]["album_id"];
-            const photos = [];
-            for (const item of json["data"]["photo_list"]) {
-                photos.push({
-                    photoId: item["photo_id"],
-                    picHost: item["pic_host"],
-                    picName: item["pic_name"],
-                    updated: item["updated_at"],
+export async function requestPhotosFromSpecialAlbum(page, count, _replay = false) {
+    return requestSpecialAlbumId()
+        .then(albumInfo => {
+            return Utils.fetch("http://photo.weibo.com/photos/get_all", {
+                page: page,
+                count: count,
+                album_id: albumInfo.albumId,
+                __rnd: Date.now(),
+            });
+        })
+        .then(response => {
+            return response.ok ? response.json() : Promise.reject(new Error(response.statusText));
+        })
+        .then(json => {
+            if (json && json["code"] === 0 && json["result"]) {
+                const total = json["data"]["total"];
+                const photos = [];
+                for (const item of json["data"]["photo_list"]) {
+                    photos.push({
+                        albumId: item["album_id"],
+                        photoId: item["photo_id"],
+                        picHost: item["pic_host"],
+                        picName: item["pic_name"],
+                        updated: item["updated_at"],
+                    });
+                }
+                return {total, photos};
+            } else {
+                return Promise.reject(new Error("Invalid Data"));
+            }
+        })
+        .catch(reason => {
+            if (_replay) {
+                return Promise.reject(reason);
+            } else {
+                return requestSignIn(true).then(json => {
+                    if (json.login) {
+                        return requestPhotosFromSpecialAlbum(page, count, true);
+                    } else {
+                        return Promise.reject(reason);
+                    }
                 });
             }
-            return {total, albumId, photos};
-        } else {
-            return Promise.reject(new Error("Invalid Data"));
-        }
-    }).catch(reason => {
-        if (_replay) {
-            return Promise.reject(reason);
-        } else {
-            return requestSignIn(true).then(json => {
-                if (json.login) {
-                    return requestPhotosFromSpecialAlbum(albumInfo, page, count, true);
-                } else {
-                    return Promise.reject(reason);
-                }
-            });
-        }
-    });
+        });
 }
