@@ -14,7 +14,6 @@ export class Dispatcher {
             page: 1,
             pages: 1,
             count: 50,
-            albumId: 0,
             prevdel: 0,
         };
         this.error = false;
@@ -40,21 +39,18 @@ export class Dispatcher {
      * @public
      */
     init() {
-        this.primaryStructure();
+        this.createStructure();
         this.registerObserver();
-        this.addGlobalListener();
+        this.registerListener();
         return this;
     }
 
     /**
      * @private
      */
-    primaryStructure() {
-        const div = document.createElement("button");
-        div.textContent = "载入数据错误，点击再次加载";
+    createStructure() {
         this.exception.dataset.bio = "throw-button";
-        this.exception.append(div);
-
+        this.exception.append(Utils.parseHTML(`<button>载入数据错误，点击再次加载</button>`));
         this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
     }
@@ -102,8 +98,6 @@ export class Dispatcher {
         }
     }
 
-
-
     /**
      * @private
      * @param {IntersectionObserverEntry[]} [entries]
@@ -119,8 +113,7 @@ export class Dispatcher {
             });
         } else {
             const foot = this.foot.getBoundingClientRect();
-            const scrollingElementHeight = document.scrollingElement.clientHeight;
-            return scrollingElementHeight >= foot.top;
+            return document.scrollingElement.clientHeight >= foot.top;
         }
     }
 
@@ -128,62 +121,31 @@ export class Dispatcher {
      * @private
      */
     getPageList() {
-        const albumInfo = this.checkout.albumId ? {albumId: this.checkout.albumId} : null;
-
-        // 修正删除数据后的分页信息
-        const {page, count, prevdel} = this.checkout;
-        const rest = prevdel % count;
-        const mpage = Math.ceil(prevdel / count);
-        const repeat = rest && page - mpage > 0;
-        if (repeat) {
-            this.checkout.page -= mpage;
-        } else if (rest) {
-            console.warn(`History: page=${page}&count=${count}&prevdel=${prevdel}`);
-        }
-
-        return SharreM.ActionHistory.fetcher(repeat ? {
-            page: this.checkout.page++,
-            count: this.checkout.count,
-            albumInfo: albumInfo,
-            repeat: repeat,
-        } : {
-            page: this.checkout.page,
-            count: this.checkout.count,
-            albumInfo: albumInfo,
-            repeat: repeat,
-        }).then(json => {
-            const list = repeat ? json.list.slice(-rest - count) : json.list;
-            this.checkout.pages = Math.ceil(json.total / this.checkout.count);
-            this.checkout.albumId = json.albumId;
-            this.checkout.prevdel -= prevdel;
-            if (this.checkout.prevdel < 0) {
-                this.checkout.prevdel = 0;
-            }
-            for (const item of list) {
-                const fragment = this.constructor.importNode();
-                const section = fragment.querySelector("section");
-                const linker = section.querySelector(".image-linker");
-                const create = section.querySelector(".image-update");
-                const source = linker.querySelector("img");
-                source.src = `${item.picHost}/thumb300/${item.picName}`;
-                source.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
-                linker.href = `${item.picHost}/large/${item.picName}`;
-                create.textContent = item.updated;
-                this.fragment.append(section);
-                this.sections.set(section, item);
-            }
-            this.main.append(this.fragment);
-            return json;
-        }).catch(reason => {
-            this.checkout.albumId = 0;
-            return Promise.reject(reason);
-        });
+        return SharreM.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count)
+            .then(json => {
+                this.checkout.pages = Math.ceil(json.total / this.checkout.count);
+                for (const item of json.photos.slice(start)) {
+                    const fragment = this.constructor.importNode();
+                    const section = fragment.querySelector("section");
+                    const imgLinker = section.querySelector(".image-linker");
+                    const imgUpdate = section.querySelector(".image-update");
+                    const imgSource = imgLinker.querySelector("img");
+                    imgSource.src = `${item.picHost}/thumb300/${item.picName}`;
+                    imgSource.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
+                    imgLinker.href = `${item.picHost}/large/${item.picName}`;
+                    imgUpdate.textContent = item.updated;
+                    this.fragment.append(section);
+                    this.sections.set(section, item);
+                }
+                this.main.append(this.fragment);
+                return json;
+            });
     }
 
     /**
      * @private
      */
-    addGlobalListener() {
+    registerListener() {
         this.exception.addEventListener("click", e => {
             this.error = false;
             this.exception.remove();
@@ -222,7 +184,7 @@ export class Dispatcher {
                         const section = e.target.closest("section");
                         if (section) {
                             this.selected.add(section);
-                            this.deleteResources();
+                            this.detachSelectedPhoto();
                         }
                     }
                 }
@@ -233,44 +195,44 @@ export class Dispatcher {
     /**
      * @public
      */
-    deleteResources() {
-        const pegmap = new WeakMap();
-        const cache = {list: [], selected: new Set(this.selected), promise: null};
-        this.selected.forEach(n => {
+    detachSelectedPhoto() {
+        const photoIds = [];
+        const selected = new Set(this.selected);
+
+        this.selected.clear();
+        selected.forEach(n => {
             const d = this.sections.get(n);
             if (d) {
-                cache.list.push(d);
+                photoIds.push(d.photoId);
                 n.dataset.removing = true;
-                pegmap.set(d, n);
             }
             n.dataset.selected = false;
         });
-        this.selected.clear();
-        const photoIds = cache.list.map(d => d.photoId);
-        cache.promise = SharreM.ActionDelete.fetcher({
-            albumId: this.checkout.albumId,
-            photoIds: photoIds,
-        }).then(json => {
-            this.checkout.prevdel += photoIds.length;
-        });
-        cache.promise.finally(() => {
-            cache.selected.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
-        }).then(json => {
-            cache.selected.forEach(section => {
-                section.remove();
-                if (this.sections.has(section)) {
-                    this.sections.delete(section);
-                }
+
+        SharreM.WeiboStatic.detachPhoto(photoIds)
+            .then(json => {
+                this.checkout.prevdel += photoIds.length;
+            })
+            .finally(() => {
+                selected.forEach(n => Reflect.deleteProperty(n.dataset, "removing"));
+            })
+            .then(json => {
+                selected.forEach(section => {
+                    section.remove();
+                    if (this.sections.has(section)) {
+                        this.sections.delete(section);
+                    }
+                });
+                this.availableChecker();
+            })
+            .catch(reason => {
+                chrome.notifications.create(this.notifyId, {
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("notify_icon"),
+                    title: chrome.i18n.getMessage("info_title"),
+                    message: "操作失败：移除文件没有成功哈~",
+                });
             });
-            this.availableChecker();
-        }).catch(reason => {
-            chrome.notifications.create(this.notifyId, {
-                type: "basic",
-                iconUrl: chrome.i18n.getMessage("notify_icon"),
-                title: chrome.i18n.getMessage("info_title"),
-                message: "操作失败：移除文件没有成功哈~",
-            });
-        });
     }
 
     /**
@@ -279,10 +241,7 @@ export class Dispatcher {
     errorInjector() {
         this.error = true;
         if (this.checkout.page === 1) {
-            const div = document.createElement("div");
-            div.dataset.bio = "throw-message";
-            div.textContent = "获取图片失败，欸嘿~";
-            this.main.append(div);
+            this.main.append(Utils.parseHTML(`<div data-bio="throw-message">获取图片失败，欸嘿~</div>`));
         } else if (!this.ended) {
             this.main.append(this.exception);
         }
@@ -293,10 +252,7 @@ export class Dispatcher {
      */
     availableChecker() {
         if (this.ended && !this.sections.size) {
-            const div = document.createElement("div");
-            div.dataset.bio = "throw-message";
-            div.textContent = "没有分页数据，欸嘿~";
-            this.main.append(div);
+            this.main.append(Utils.parseHTML(`<div data-bio="throw-message">没有分页数据，欸嘿~</div>`));
         }
     }
 

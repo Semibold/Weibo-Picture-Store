@@ -19,5 +19,17 @@
   },
   "fail_title": {
     "message": "错误提示"
+  },
+  "author_email": {
+    "message": "abc@hub.moe"
+  },
+  "project_issue": {
+    "message": "https://github.com/Semibold/Weibo-Picture-Store/issues"
+  },
+  "project_donate": {
+    "message": "donate.html"
+  },
+  "project_readme": {
+    "message": "https://github.com/Semibold/Weibo-Picture-Store/blob/master/README.md"
   }
 }
