@@ -5,26 +5,29 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {BuildEvent} from "./build-event.js";
+import {SectionEvent} from "./section-event.js";
 
-export class BuildItem {
+export class SectionTable {
 
-    constructor(data) {
-        this.data = data;
-        this.itemEvent = null;
-        this.objectURL = null;
+    /**
+     * @param {AssignedPackedItem} item
+     */
+    constructor(item) {
+        this.item = item;
         this.domNodes = {};
+        this.objectURL = null;
+        this.sectionEvent = null;
     }
 
     /** @public */
     init() {
-        this.createItem();
-        this.addListener();
+        this.generateTable();
+        this.registerEvents();
         return this;
     }
 
     /** @private */
-    createItem() {
+    generateTable() {
         const image = new Image();
         const fragment = this.constructor.importNode();
 
@@ -35,26 +38,30 @@ export class BuildItem {
         this.domNodes.inputUBB = this.domNodes.section.querySelector(".type-3 input");
         this.domNodes.inputMarkdown = this.domNodes.section.querySelector(".type-4 input");
 
-        if (this.repaint(this.data)) {
-            if (this.data.blob) {
-                this.objectURL = image.src = URL.createObjectURL(this.data.blob);
+        if (this.repaint(this.item)) {
+            if (this.item.blob) {
+                this.objectURL = image.src = URL.createObjectURL(this.item.blob);
                 this.domNodes.imageHolder.append(image);
             }
         }
     }
 
     /** @private */
-    addListener() {
-        this.itemEvent = new BuildEvent(this).init();
+    registerEvents() {
+        this.sectionEvent = new SectionEvent(this).init();
     }
 
-    /** @public */
-    repaint(data) {
-        if (data && data.URL) {
-            this.domNodes.inputURL.value = data.URL;
-            this.domNodes.inputHTML.value = data.HTML;
-            this.domNodes.inputUBB.value = data.UBB;
-            this.domNodes.inputMarkdown.value = data.Markdown;
+    /** 
+     * @public 
+     * @param {AssignedPackedItem} item
+     * @return {boolean}
+     */
+    repaint(item) {
+        if (item && item.URL) {
+            this.domNodes.inputURL.value = item.URL;
+            this.domNodes.inputHTML.value = item.HTML;
+            this.domNodes.inputUBB.value = item.UBB;
+            this.domNodes.inputMarkdown.value = item.Markdown;
             return true;
         } else {
             return false;
@@ -63,7 +70,7 @@ export class BuildItem {
 
     /** @public */
     destroy() {
-        this.itemEvent.destroy();
+        this.sectionEvent.destroy();
         this.domNodes.section.remove();
         this.objectURL && URL.revokeObjectURL(this.objectURL);
     }

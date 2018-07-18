@@ -4,23 +4,26 @@
  * found in the LICENSE file.
  */
 
-export class BuildEvent {
+export class SectionEvent {
 
-    constructor(item) {
-        this.section = item.domNodes.section;
-        this.listenerSet = new Set();
+    /**
+     * @param {SectionTable} sectionTable 
+     */
+    constructor(sectionTable) {
+        this.section = sectionTable.domNodes.section;
+        this.eventHandlers = new Set();
     }
 
     /** @public */
     init() {
-        this.clickImagePlaceholderListener();
+        this.clickImagePlaceholder();
         this.registerEventListener();
         return this;
     }
 
     /** @private */
-    clickImagePlaceholderListener() {
-        this.listenerSet.add({
+    clickImagePlaceholder() {
+        this.eventHandlers.add({
             type: "click",
             nodeList: this.section.querySelectorAll(".image-holder"),
             listener: e => document.querySelector("#file-input").click(),
@@ -29,7 +32,7 @@ export class BuildEvent {
 
     /** @private */
     registerEventListener() {
-        for (const item of this.listenerSet) {
+        for (const item of this.eventHandlers) {
             for (const target of item.nodeList) {
                 target.addEventListener(item.type, item.listener);
             }
@@ -38,12 +41,12 @@ export class BuildEvent {
 
     /** @public */
     destroy() {
-        for (const item of this.listenerSet) {
+        for (const item of this.eventHandlers) {
             for (const target of item.nodeList) {
                 target.removeEventListener(item.type, item.listener);
             }
         }
-        this.listenerSet.clear();
+        this.eventHandlers.clear();
     }
 
 }
