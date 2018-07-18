@@ -5,7 +5,7 @@
  */
 
 import "./popup/fragment.js";
-import {Config} from "./sharre/constant.js";
+import {PConfig} from "./sharre/constant.js";
 import {Dispatcher} from "./popup/dispatcher.js";
 import {backWindow} from "./sharre/alphabet.js";
 
@@ -15,7 +15,7 @@ const dispatcher = new Dispatcher().init();
 const fileInput = document.querySelector("#file-input");
 const browsingHistory = document.querySelector(".head-browsing-history");
 
-fileInput.accept = Config.chromeSupportedTypes.join(",");
+fileInput.accept = PConfig.chromeSupportedTypes.join(",");
 fileInput.addEventListener("change", e => {
     dispatcher.requester(e.target.files);
 });
