@@ -8,20 +8,20 @@ import {Utils} from "../sharre/utils.js";
 import {FileProgress} from "./file-progress.js";
 import {FP_TYPE_DOWNLOAD} from "../sharre/constant.js";
 
-const failedId = Utils.randomString(16);
+const fetchFailedId = Utils.randomString(16);
 
 /**
  * @async
  * @param {string} srcUrl
  * @param {string} [pageUrl]
- * @return {Promise<Response>}
+ * @return {Promise<Blob, Error>}
  */
 export async function fetchBlob(srcUrl, pageUrl) {
-    const delayInfo = {interval: 500, requestId: null};
+    const delayInfo = {interval: 500, timerId: null};
     const progress = new FileProgress(FP_TYPE_DOWNLOAD);
 
     progress.padding(1);
-    delayInfo.requestId = setTimeout(() => progress.trigger(), delayInfo.interval);
+    delayInfo.timerId = setTimeout(() => progress.trigger(), delayInfo.interval);
 
     function beforeSendHeaders(details) {
         const name = "referer";
@@ -42,27 +42,28 @@ export async function fetchBlob(srcUrl, pageUrl) {
         }, ["requestHeaders", "blocking"]);
     }
 
-    return Utils.fetch(srcUrl, {
-        credentials: "omit",
-    }).then(response => {
-        return response.ok ? response.blob() : Promise.reject(response.status);
-    }).then(result => {
-        clearTimeout(delayInfo.requestId);
-        progress.consume();
-        return Promise.resolve(result);
-    }).catch(reason => {
-        clearTimeout(delayInfo.requestId);
-        progress.consume();
-        chrome.notifications.create(failedId, {
-            type: "basic",
-            iconUrl: chrome.i18n.getMessage("notify_icon"),
-            title: chrome.i18n.getMessage("warn_title"),
-            message: "无法读取远程文件",
+    return Utils
+        .fetch(srcUrl, {credentials: "omit"})
+        .then(response => response.ok ? response.blob() : Promise.reject(new Error(response.statusText)))
+        .then(result => {
+            clearTimeout(delayInfo.timerId);
+            progress.consume();
+            return Promise.resolve(result);
+        })
+        .catch(reason => {
+            clearTimeout(delayInfo.timerId);
+            progress.consume();
+            chrome.notifications.create(fetchFailedId, {
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("warn_title"),
+                message: "无法读取远程文件",
+            });
+            return Promise.reject(reason);
+        })
+        .finally(() => {
+            if (chrome.webRequest.onBeforeSendHeaders.hasListener(beforeSendHeaders)) {
+                chrome.webRequest.onBeforeSendHeaders.removeListener(beforeSendHeaders);
+            }
         });
-        return Promise.reject(reason);
-    }).finally(() => {
-        if (chrome.webRequest.onBeforeSendHeaders.hasListener(beforeSendHeaders)) {
-            chrome.webRequest.onBeforeSendHeaders.removeListener(beforeSendHeaders);
-        }
-    });
 }
