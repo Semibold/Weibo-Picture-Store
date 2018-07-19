@@ -35,6 +35,11 @@ export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
 export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 
 /**
+ * @desc StorageKey
+ */
+export const K_PERIOD_REQUEST_LOGIN = "period_request_login";
+
+/**
  * @desc 多用户的 Cache
  */
 export const USER_INFO_CACHE = new Map();

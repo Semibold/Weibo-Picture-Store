@@ -8,6 +8,7 @@
  * @desc 仅需要引入让其执行
  */
 import "./background/start-popup.js";
+import "./background/run-schedule.js";
 import "./background/weibo-referer.js";
 import "./background/context-menu.js";
 import "./background/file-progress.js";

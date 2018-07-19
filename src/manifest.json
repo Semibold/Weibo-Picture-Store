@@ -40,11 +40,19 @@
   },
   "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
   "minimum_chrome_version": "66",
+  "optional_permissions": [
+    "alarms"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
+  },
   "permissions": [
     "clipboardWrite",
     "clipboardRead",
     "contextMenus",
     "notifications",
+    "storage",
     "tabs",
     "webRequest",
     "webRequestBlocking",
