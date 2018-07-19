@@ -29,7 +29,7 @@ export function startUserStatusSchedule() {
     }
     chrome.alarms.onAlarm.addListener(alarmCallback);
     chrome.alarms.create(authorAlarmName, {periodInMinutes});
-    console.log("Started: scheduler");
+    console.log("Scheduler: started");
 }
 
 /**
@@ -43,7 +43,7 @@ export function closeUserStatusSchedule() {
         if (!wasCleared) {
             console.warn("The alarm has not been cleared");
         } else {
-            console.log("Closed: scheduler");
+            console.log("Scheduler: closed");
         }
     });
 }
