@@ -9,6 +9,7 @@ import {FP_TYPE_UPLOAD} from "../sharre/constant.js";
 
 import {requestUpload} from "../weibo/upload.js";
 import {detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum} from "../weibo/photo.js";
+import {startUserStatusSchedule, closeUserStatusSchedule} from "../weibo/scheduler.js";
 
 /**
  * @static
@@ -41,6 +42,20 @@ export class WeiboStatic {
      */
     static requestPhotos(page, count) {
         return requestPhotosFromSpecialAlbum(page, count);
+    }
+
+    /**
+     * @public
+     */
+    static startSchedule() {
+        startUserStatusSchedule();
+    }
+
+    /**
+     * @public
+     */
+    static closeSchedule() {
+        closeUserStatusSchedule();
     }
 
 }
