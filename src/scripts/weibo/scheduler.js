@@ -24,38 +24,26 @@ function alarmCallback(alarm) {
  * @public
  */
 export function startUserStatusSchedule() {
-    chrome.permissions.request({
-        permissions: ["alarms"],
-    }, granted => {
-        if (granted) {
-            if (chrome.alarms.onAlarm.hasListener(alarmCallback)) {
-                chrome.alarms.onAlarm.removeListener(alarmCallback);
-            }
-            chrome.alarms.onAlarm.addListener(alarmCallback);
-            chrome.alarms.create(authorAlarmName, {periodInMinutes});
-            console.log("Started: scheduler");
-        }
-    });
+    if (chrome.alarms.onAlarm.hasListener(alarmCallback)) {
+        chrome.alarms.onAlarm.removeListener(alarmCallback);
+    }
+    chrome.alarms.onAlarm.addListener(alarmCallback);
+    chrome.alarms.create(authorAlarmName, {periodInMinutes});
+    console.log("Started: scheduler");
 }
 
 /**
  * @public
  */
 export function closeUserStatusSchedule() {
-    chrome.permissions.request({
-        permissions: ["alarms"],
-    }, granted => {
-        if (granted) {
-            if (chrome.alarms.onAlarm.hasListener(alarmCallback)) {
-                chrome.alarms.onAlarm.removeListener(alarmCallback);
-            }
-            chrome.alarms.clear(authorAlarmName, wasCleared => {
-                if (!wasCleared) {
-                    console.warn("The alarm has not been cleared");
-                } else {
-                    console.log("Closed: scheduler");
-                }
-            });
+    if (chrome.alarms.onAlarm.hasListener(alarmCallback)) {
+        chrome.alarms.onAlarm.removeListener(alarmCallback);
+    }
+    chrome.alarms.clear(authorAlarmName, wasCleared => {
+        if (!wasCleared) {
+            console.warn("The alarm has not been cleared");
+        } else {
+            console.log("Closed: scheduler");
         }
     });
 }
