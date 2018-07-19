@@ -21,6 +21,19 @@ import {fetchBlob} from "./background/fetch-blob.js";
 import {WeiboStatic, WeiboUpload} from "./background/weibo-action.js";
 
 /**
+ * @desc changelog
+ */
+chrome.runtime.onInstalled.addListener(details => {
+    const url = chrome.i18n.getMessage("project_changelog");
+    if (details.reason === "install") {
+        chrome.tabs.create({url});
+    }
+    if (details.reason === "update") {
+        chrome.tabs.create({url});
+    }
+});
+
+/**
  * @desc Core Share Module (APIs)
  */
 self.coreAPIs = {

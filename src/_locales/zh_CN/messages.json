@@ -31,5 +31,8 @@
   },
   "project_readme": {
     "message": "https://github.com/Semibold/Weibo-Picture-Store/blob/master/README.md"
+  },
+  "project_changelog": {
+    "message": "https://github.com/Semibold/Weibo-Picture-Store/blob/master/changelog.md"
   }
 }
