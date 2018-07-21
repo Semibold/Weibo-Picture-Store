@@ -46,6 +46,12 @@ export const USER_INFO_CACHE = new Map();
 export const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
 
 /**
+ * @desc User Card Cache
+ */
+export const USER_CARD_CACHE = new Map();
+export const USER_CARD_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
+
+/**
  * @desc APIs 的单例模式
  */
 export const SINGLETON_CACHE = new Map();
