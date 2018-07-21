@@ -38,6 +38,7 @@
       "description": "Transform pointer-events"
     }
   },
+  "content_security_policy": "script-src 'self' https://weibo.com; object-src 'self'",
   "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
   "minimum_chrome_version": "66",
   "options_ui": {

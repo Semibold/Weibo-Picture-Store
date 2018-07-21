@@ -30,7 +30,7 @@ export async function requestUserCard(uid) {
         }
     }
 
-    const url = `http://weibo.com/aj/v6/user/newcard?id=${uid}`;
+    const url = `https://weibo.com/aj/v6/user/newcard?id=${uid}`;
     const pid = `CARD_${Utils.randomString(6)}_${Date.now()}`;
     const script = document.createElement("script");
 
