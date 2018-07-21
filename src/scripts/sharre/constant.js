@@ -38,6 +38,7 @@ export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 /**
  * @desc StorageKey
  */
+export const K_DISPLAY_USER_CARD = "display_user_card";
 export const K_PERIOD_REQUEST_LOGIN = "period_request_login";
 
 /**
