@@ -32,6 +32,7 @@ export const M_VIDEO_FRAME = "menu_video_frame";
  * @desc signal
  */
 export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
+export const S_REQUEST_USER_CARD = "signal_request_user_card";
 export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 
 /**

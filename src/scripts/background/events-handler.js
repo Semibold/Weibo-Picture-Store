@@ -5,7 +5,12 @@
  */
 
 import {Utils} from "../sharre/utils.js";
-import {S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS} from "../sharre/constant.js";
+import {
+    S_WITHOUT_CORS_MODE,
+    S_REQUEST_USER_CARD,
+    S_COMMAND_POINTER_EVENTS,
+} from "../sharre/constant.js";
+import {WeiboStatic} from "./weibo-action.js";
 
 const mismatchSpecId = Utils.randomString(16);
 
@@ -34,5 +39,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             title: chrome.i18n.getMessage("warn_title"),
             message: "当前资源的网络请求不符合 CORS 规范，无法读取资源的数据",
         });
+    }
+    if (message.type === S_REQUEST_USER_CARD) {
+        WeiboStatic
+            .getUserCard(message.url)
+            .then(json => sendResponse(json))
+            .catch(reason => sendResponse(null));
+        return true;
     }
 });
