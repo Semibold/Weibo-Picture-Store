@@ -24,7 +24,7 @@ async function bootloader(startup) {
     const weiboCardId = "x-weibo-card";
     const pointerEventsIndication = document.createElement("link");
     const mouseEventMetadata = {clientX: 0, clientY: 0, lastOverTarget: null, lastImgTarget: null, animation: null};
-    const timers = {mouseover: null, mouseout: null, mousemove: null};
+    const timers = {mouseover: null, mouseout: null};
     const predfinedQueues = [];
     const predfinedStyles = [
         `https://img.t.sinajs.cn/t6/style/css/module/base/frame.css?__rnd=${startup}`,
@@ -201,13 +201,14 @@ async function bootloader(startup) {
         }
     });
 
-    self.addEventListener("contextmenu", e => {
+    document.addEventListener("contextmenu", e => {
         if (pointerEventsIndication.parentElement && !pointerEventsIndication.disabled) {
             e.stopImmediatePropagation();
         }
     }, true);
 
     function onMouseOver(e) {
+        if (e.altKey) return;
         if (e.target === weiboCard && e.relatedTarget === mouseEventMetadata.lastImgTarget) return;
         if (e.target === mouseEventMetadata.lastImgTarget && e.relatedTarget === weiboCard) return;
 
@@ -231,7 +232,6 @@ async function bootloader(startup) {
                             mouseEventMetadata.lastOverTarget === img &&
                             mouseEventMetadata.lastOverTarget.parentElement) {
                             clearTimeout(timers.mouseout);
-                            clearTimeout(timers.mousemove);
                             createWeiboCard(response);
                         }
                     });
@@ -241,6 +241,7 @@ async function bootloader(startup) {
     }
 
     function onMouseOut(e) {
+        if (e.altKey) return;
         if (e.target === mouseEventMetadata.lastImgTarget && e.relatedTarget === weiboCard) return;
         if (e.target === weiboCard && e.relatedTarget === mouseEventMetadata.lastImgTarget) return;
 
@@ -254,7 +255,6 @@ async function bootloader(startup) {
             clearTimeout(timers.mouseout);
             timers.mouseout = setTimeout(() => {
                 if (mouseEventMetadata.animation) {
-                    clearTimeout(timers.mousemove);
                     mouseEventMetadata.animation.playbackRate = -1;
                 }
             }, 250);
@@ -262,15 +262,12 @@ async function bootloader(startup) {
     }
 
     function onMouseMove(e) {
+        if (e.altKey) return;
         mouseEventMetadata.clientX = e.clientX;
         mouseEventMetadata.clientY = e.clientY;
-
-        clearTimeout(timers.mousemove);
-        timers.mousemove = setTimeout(() => {
-            if (e.target === mouseEventMetadata.lastImgTarget) {
-                changeWeiboCardPosition();
-            }
-        }, 150);
+        if (e.target === mouseEventMetadata.lastImgTarget) {
+            changeWeiboCardPosition();
+        }
     }
 
     function onDOMContentLoaded() {
@@ -364,7 +361,7 @@ async function bootloader(startup) {
     }
 
     if (document.readyState === "loading") {
-        self.addEventListener("DOMContentLoaded", onDOMContentLoaded, true);
+        document.addEventListener("DOMContentLoaded", onDOMContentLoaded, true);
     } else {
         onDOMContentLoaded();
     }
@@ -373,15 +370,6 @@ async function bootloader(startup) {
         if (e.key === "Escape" && weiboCard.parentElement && !weiboCard.hidden) {
             if (mouseEventMetadata.lastImgTarget) {
                 e.preventDefault();
-                e.stopPropagation();
-                mouseEventMetadata.lastImgTarget.dispatchEvent(new MouseEvent("mouseout"));
-            }
-        }
-    }, true);
-
-    document.addEventListener("click", e => {
-        if (weiboCard.parentElement && !weiboCard.hidden) {
-            if (mouseEventMetadata.lastImgTarget) {
                 e.stopPropagation();
                 mouseEventMetadata.lastImgTarget.dispatchEvent(new MouseEvent("mouseout"));
             }

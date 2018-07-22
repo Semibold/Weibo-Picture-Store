@@ -6,6 +6,13 @@
 
 import {Utils} from "../sharre/utils.js";
 import {USER_CARD_CACHE, USER_CARD_EXPIRED} from "../sharre/constant.js";
+import {requestSignIn} from "./author.js";
+
+const mono = {
+    login: false,
+    expired: 30 * 60 * 1000, // 单位：ms，有效期半小时
+    lastModified: 0,
+};
 
 /**
  * @public
@@ -28,6 +35,18 @@ export async function requestUserCard(uid) {
                 break;
             }
         }
+    }
+
+    if (Date.now() - mono.lastModified > mono.expired) {
+        const json = await requestSignIn(true).catch(resson => resson).finally(() => {
+            mono.lastModified = Date.now();
+        });
+        if (json && json.login != null) {
+            mono.login = json.login;
+        }
+    }
+    if (!mono.login) {
+        throw new Error("User is not login");
     }
 
     const pid = `CARD_${Utils.randomString(6)}_${Date.now()}`;
