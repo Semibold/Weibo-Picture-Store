@@ -73,44 +73,45 @@ async function bootloader(startup) {
 
     function changeWeiboCardPosition() {
         const layer = weiboCard.shadowRoot.getElementById(weiboCardId);
-        if (!layer) {
-            return;
-        }
-        const padding = 10;
+        if (!layer) return;
+
         const layerRect = layer.getBoundingClientRect();
+        const margin = 8;
+        const padding = {
+            top: layerRect.height + margin * 2,     // 包含鼠标指针的距离
+            left: layerRect.width / 2 + margin,
+            bottom: margin,
+            right: layerRect.width / 2 + margin,
+        };
         const viewRect = {
-            x: 0,
-            y: 0,
-            top: 0,
-            left: 0,
-            right: document.scrollingElement.clientWidth,
-            bottom: document.scrollingElement.clientHeight,
-            width: document.scrollingElement.clientWidth,
-            height: document.scrollingElement.clientHeight,
+            x: padding.left,
+            y: padding.top,
+            top: padding.top,
+            left: padding.left,
+            right: document.scrollingElement.clientWidth - padding.right,
+            bottom: document.scrollingElement.clientHeight - padding.bottom,
+            width: document.scrollingElement.clientWidth - layerRect.width - margin * 2,
+            height: document.scrollingElement.clientHeight - layerRect.height - margin * 2,
         };
         const result = {
             clientX: mouseEventMetadata.clientX,
             clientY: mouseEventMetadata.clientY,
         };
 
-        if (viewRect.width > layerRect.width + padding * 2) {
-            if (layerRect.left < viewRect.left) {
-                result.clientX += viewRect.left - layerRect.left + padding;
-            }
-            if (layerRect.right > viewRect.right) {
-                result.clientX += viewRect.right - layerRect.right - padding;
-            }
+        if (viewRect.width > 0) {
+            result.clientX = Math.max(result.clientX, viewRect.left);
+            result.clientX = Math.min(result.clientX, viewRect.right);
         }
 
-        if (viewRect.height > layerRect.height + padding * 2) {
-            if (layerRect.top < viewRect.top) {
-                result.clientY += viewRect.top - layerRect.top + padding;
-            }
-            if (layerRect.bottom > viewRect.bottom) {
-                result.clientY += viewRect.bottom - layerRect.bottom - padding;
-            }
+        if (viewRect.height > 0) {
+            result.clientY = Math.max(result.clientY, viewRect.top);
+            result.clientY = Math.min(result.clientY, viewRect.bottom);
         }
 
+        /**
+         * @see https://blog.chromium.org/2018/03/chrome-66-beta-css-typed-object-model.html
+         * @since Chrome 66
+         */
         weiboCard.attributeStyleMap.set("top", CSS.px(result.clientY));
         weiboCard.attributeStyleMap.set("left", CSS.px(result.clientX));
     }
@@ -140,7 +141,7 @@ async function bootloader(startup) {
             } else {
                 mouseEventMetadata.animation = weiboCard.animate([{
                     opacity: 0,
-                    transform: "translateY(8px)",
+                    transform: "translateY(8px)",   // 鼠标指针的偏移量：1 * margin
                 }, {
                     opacity: 0.65,
                 }, {
@@ -301,10 +302,10 @@ async function bootloader(startup) {
                 display: none !important;
             }
             x-weibo-card[data-injector="${chrome.runtime.id}"] {
-                position: absolute;
+                position: fixed;
                 top: 0;
                 left: 0;
-                transition: top ease-out 300ms, left ease-out 300ms;
+                transition: top ease-out 250ms, left ease-out 250ms;
                 will-change: top, left, transition, opacity, transform;
                 z-index: ${2 ** 24};
             }
@@ -367,6 +368,9 @@ async function bootloader(startup) {
     }
 
     document.addEventListener("keydown", e => {
+        /**
+         * @desc 按下ESC键关闭微博信息卡，但是保留 `lastImgTarget`，避免循环触发 mouseout 和 mouseover
+         */
         if (e.key === "Escape" && weiboCard.parentElement && !weiboCard.hidden) {
             if (mouseEventMetadata.lastImgTarget) {
                 e.preventDefault();
