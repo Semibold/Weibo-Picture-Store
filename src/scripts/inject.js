@@ -134,6 +134,11 @@ async function bootloader(startup) {
         if (!weiboCard.parentElement) {
             document.body.appendChild(weiboCard);
         }
+        /**
+         * @desc 在动画触发之前更新到近似位置，避免大幅度运动的动画效果
+         */
+        changeWeiboCardPosition();
+
         weiboCard.hidden = false;
         Promise.all(predfinedQueues).then(() => {
             if (mouseEventMetadata.animation) {

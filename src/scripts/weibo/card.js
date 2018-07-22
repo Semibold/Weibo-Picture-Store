@@ -15,6 +15,9 @@ const mono = {
 };
 
 /**
+ * @desc JSONP，这里采用预检验用户登录信息的方式来判断是否发送请求
+ * @desc 同时依赖CSP，详情请查看文件 manifest.json
+ *
  * @public
  * @param {string} uid
  * @return {Promise<Object, Error>}
