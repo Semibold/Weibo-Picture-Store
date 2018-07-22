@@ -73,7 +73,7 @@
 3. 批量删除选中的文件（按住 Ctrl 键可以多选）
 4. 图片最近的修改时间
 
-![](https://wx3.sinaimg.cn/large/006G4xsfgy1ftiqa0plzug30e10id7wk.gif)
+![](screenshot/weibo-card.gif)
 
 微博图片的用户信息卡功能，可以查看微博图片PO主的相关信息。此功能默认关闭，可在扩展选项中开启。快捷键：`Esc` 键关闭当前窗口中的微博信息卡，按住 `Alt` 键可以禁止微博信息卡更新位置。
 
