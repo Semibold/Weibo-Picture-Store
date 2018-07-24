@@ -16,7 +16,7 @@ const mismatchSpecId = Utils.randomString(16);
 
 chrome.commands.onCommand.addListener(command => {
     switch (command) {
-        case "transform-pointer-events":
+        case "pointer-events-of-current-tab":
             chrome.tabs.query({
                 active: true,
                 currentWindow: true,
@@ -28,6 +28,8 @@ chrome.commands.onCommand.addListener(command => {
                     });
                 }
             });
+            break;
+        case "weibo-card-of-current-tab":
             break;
     }
 });

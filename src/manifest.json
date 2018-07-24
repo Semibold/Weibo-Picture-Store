@@ -31,11 +31,17 @@
         "default": "Shift+Alt+W"
       }
     },
-    "transform-pointer-events": {
+    "pointer-events-of-current-tab": {
       "suggested_key": {
         "default": "Shift+Alt+T"
       },
-      "description": "Transform pointer-events"
+      "description": "开关置顶标签页中的视频"
+    },
+    "weibo-card-of-current-tab": {
+      "suggested_key": {
+        "default": "Shift+Alt+C"
+      },
+      "description": "开关标签页的微博信息卡"
     }
   },
   "content_security_policy": "script-src 'self' https://weibo.com; object-src 'self'",
