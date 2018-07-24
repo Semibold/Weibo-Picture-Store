@@ -17,9 +17,11 @@ async function bootloader(startup) {
         S_REQUEST_USER_CARD,
         S_COMMAND_POINTER_EVENTS,
         K_DISPLAY_USER_CARD,
+        K_REQUESR_BAN_ORIGIN,
     } = await import(chrome.runtime.getURL("scripts/sharre/constant.js"));
     const {Utils} = await import(chrome.runtime.getURL("scripts/sharre/utils.js"));
 
+    const tabOrigin = Utils.getOriginFromUrl(top.location.href);
     const weiboCard = document.createElement("x-weibo-card");
     const weiboCardId = "x-weibo-card";
     const pointerEventsIndication = document.createElement("link");
@@ -366,17 +368,39 @@ async function bootloader(startup) {
         chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
             if (!chrome.runtime.lastError) {
                 if (items[K_DISPLAY_USER_CARD]) {
-                    addWeiboCardMouseListener();
+                    chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                        if (items[K_REQUESR_BAN_ORIGIN] &&
+                            items[K_REQUESR_BAN_ORIGIN][tabOrigin]) {
+                            // Blank
+                        } else {
+                            addWeiboCardMouseListener();
+                        }
+                    });
                 }
             }
         });
         chrome.storage.onChanged.addListener((changes, areaName) => {
-            const targetChanges = changes[K_DISPLAY_USER_CARD];
-            if (targetChanges && targetChanges.newValue != null) {
-                if (targetChanges.newValue) {
-                    addWeiboCardMouseListener();
+            const cardChanges = changes[K_DISPLAY_USER_CARD];
+            const originChanges = changes[K_REQUESR_BAN_ORIGIN];
+            if (cardChanges && cardChanges.newValue != null) {
+                if (cardChanges.newValue) {
+                    chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                        if (items[K_REQUESR_BAN_ORIGIN] &&
+                            items[K_REQUESR_BAN_ORIGIN][tabOrigin]) {
+                            removeWeiboCardMouseListener();
+                        } else {
+                            addWeiboCardMouseListener();
+                        }
+                    });
                 } else {
                     removeWeiboCardMouseListener();
+                }
+            }
+            if (originChanges && originChanges.newValue != null) {
+                if (originChanges.newValue[tabOrigin]) {
+                    removeWeiboCardMouseListener();
+                } else {
+                    addWeiboCardMouseListener();
                 }
             }
         });

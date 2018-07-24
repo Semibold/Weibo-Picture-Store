@@ -48,6 +48,19 @@ export class Utils {
     }
 
     /**
+     * @param {string} href
+     * @return {string|null}
+     */
+    static getOriginFromUrl(href) {
+        try {
+            const url = new URL(href);
+            return url.origin;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
      * @param {string} url
      * @param {Object} [param]
      * @return {string}
