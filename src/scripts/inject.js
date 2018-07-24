@@ -366,25 +366,26 @@ async function bootloader(startup) {
         }
 
         chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
-            if (!chrome.runtime.lastError) {
-                if (items[K_DISPLAY_USER_CARD]) {
-                    chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
-                        if (items[K_REQUESR_BAN_ORIGIN] &&
-                            items[K_REQUESR_BAN_ORIGIN][tabOrigin]) {
-                            // Blank
-                        } else {
-                            addWeiboCardMouseListener();
-                        }
-                    });
-                }
+            if (chrome.runtime.lastError) return;
+            if (items[K_DISPLAY_USER_CARD]) {
+                chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                    if (chrome.runtime.lastError) return;
+                    if (items[K_REQUESR_BAN_ORIGIN] &&
+                        items[K_REQUESR_BAN_ORIGIN][tabOrigin]) {
+                        // Blank
+                    } else {
+                        addWeiboCardMouseListener();
+                    }
+                });
             }
         });
         chrome.storage.onChanged.addListener((changes, areaName) => {
-            const cardChanges = changes[K_DISPLAY_USER_CARD];
-            const originChanges = changes[K_REQUESR_BAN_ORIGIN];
-            if (cardChanges && cardChanges.newValue != null) {
-                if (cardChanges.newValue) {
+            if (areaName !== "sync") return;
+            const targetChanges = changes[K_DISPLAY_USER_CARD];
+            if (targetChanges && targetChanges.newValue != null) {
+                if (targetChanges.newValue) {
                     chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                        if (chrome.runtime.lastError) return;
                         if (items[K_REQUESR_BAN_ORIGIN] &&
                             items[K_REQUESR_BAN_ORIGIN][tabOrigin]) {
                             removeWeiboCardMouseListener();
@@ -396,8 +397,12 @@ async function bootloader(startup) {
                     removeWeiboCardMouseListener();
                 }
             }
-            if (originChanges && originChanges.newValue != null) {
-                if (originChanges.newValue[tabOrigin]) {
+        });
+        chrome.storage.onChanged.addListener((changes, areaName) => {
+            if (areaName !== "local") return;
+            const targetChanges = changes[K_REQUESR_BAN_ORIGIN];
+            if (targetChanges && targetChanges.newValue != null) {
+                if (targetChanges.newValue[tabOrigin]) {
                     removeWeiboCardMouseListener();
                 } else {
                     addWeiboCardMouseListener();

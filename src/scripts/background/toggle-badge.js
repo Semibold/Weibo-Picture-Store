@@ -15,8 +15,10 @@ function setBrowserActionBadge(tabId, banned) {
     if (banned) {
         chrome.browserAction.setBadgeText({tabId, text: "D"});
         chrome.browserAction.setBadgeBackgroundColor({tabId, color: [100, 100, 100, 1]});
+        chrome.browserAction.setTitle({tabId, title: `${chrome.runtime.getManifest().name}\n当前域名下的微博信息卡：禁用`});
     } else {
         chrome.browserAction.setBadgeText({tabId, text: ""});
+        chrome.browserAction.setTitle({tabId, title: chrome.runtime.getManifest().name});
     }
 }
 
@@ -35,51 +37,67 @@ function midBadgeOfActiveTabs(bannedOrigins) {
 }
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-    const cardChanges = changes[K_DISPLAY_USER_CARD];
-    const originChanges = changes[K_REQUESR_BAN_ORIGIN];
-    if (cardChanges && cardChanges.newValue != null) {
-        if (cardChanges.newValue) {
+    if (areaName !== "sync") return;
+    const targetChanges = changes[K_DISPLAY_USER_CARD];
+    if (targetChanges && targetChanges.newValue != null) {
+        if (targetChanges.newValue) {
             chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                if (chrome.runtime.lastError) return;
                 midBadgeOfActiveTabs(items[K_REQUESR_BAN_ORIGIN] || {});
             });
         } else {
-            chrome.tabs.query({
-                active: true,
-            }, tabs => {
+            chrome.tabs.query({}, tabs => {
                 for (const tab of tabs) {
-                    setBrowserActionBadge(tab.id, false);
+                    if (tab.id > chrome.tabs.TAB_ID_NONE) {
+                        setBrowserActionBadge(tab.id, false);
+                    }
                 }
             });
         }
     }
-    if (originChanges && originChanges.newValue != null) {
-        midBadgeOfActiveTabs(originChanges.newValue);
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== "local") return;
+    const targetChanges = changes[K_REQUESR_BAN_ORIGIN];
+    if (targetChanges && targetChanges.newValue != null) {
+        midBadgeOfActiveTabs(targetChanges.newValue);
     }
 });
 
-chrome.tabs.onCreated.addListener(tab => {
-    chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
-        if (!items[K_DISPLAY_USER_CARD]) return;
-        chrome.tabs.query({
-            active: true,
-        }, tabs => {
-            for (const tabInfo of tabs) {
-                if (tabInfo.id === tab.id) {
-                    setBrowserActionBadge(tabInfo.id, false);
-                }
-            }
-        });
-    });
-});
+/**
+ * @desc 新建标签页
+ * @desc 暂时用不到
+ */
+// chrome.tabs.onCreated.addListener(tab => {
+//     chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
+//         if (chrome.runtime.lastError) return;
+//         if (!items[K_DISPLAY_USER_CARD]) return;
+//         chrome.tabs.query({
+//             active: true,
+//         }, tabs => {
+//             for (const tabInfo of tabs) {
+//                 if (tabInfo.id === tab.id) {
+//                     setBrowserActionBadge(tabInfo.id, false);
+//                 }
+//             }
+//         });
+//     });
+// });
 
+/**
+ * @desc 标签页刷新和载入
+ */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== "loading") return;
     chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
+        if (chrome.runtime.lastError) return;
         if (!items[K_DISPLAY_USER_CARD]) return;
         chrome.tabs.query({
             active: true,
         }, tabs => {
             chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                if (chrome.runtime.lastError) return;
                 for (const tabInfo of tabs) {
                     if (tabInfo.id === tabId) {
                         if (items[K_REQUESR_BAN_ORIGIN] &&
@@ -95,13 +113,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
 });
 
+/**
+ * @desc 跨标签状态同步
+ */
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
+        if (chrome.runtime.lastError) return;
         if (!items[K_DISPLAY_USER_CARD]) return;
         chrome.tabs.query({
             active: true,
         }, tabs => {
             chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                if (chrome.runtime.lastError) return;
                 for (const tab of tabs) {
                     if (tab.id === activeInfo.tabId) {
                         if (items[K_REQUESR_BAN_ORIGIN] &&

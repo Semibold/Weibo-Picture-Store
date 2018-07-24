@@ -8,14 +8,14 @@ import {WeiboStatic} from "./weibo-action.js";
 import {K_PERIOD_REQUEST_LOGIN} from "../sharre/constant.js";
 
 chrome.storage.sync.get(K_PERIOD_REQUEST_LOGIN, items => {
-    if (!chrome.runtime.lastError) {
-        if (items[K_PERIOD_REQUEST_LOGIN]) {
-            WeiboStatic.startSchedule();
-        }
+    if (chrome.runtime.lastError) return;
+    if (items[K_PERIOD_REQUEST_LOGIN]) {
+        WeiboStatic.startSchedule();
     }
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName !== "sync") return;
     const targetChanges = changes[K_PERIOD_REQUEST_LOGIN];
     if (targetChanges && targetChanges.newValue != null) {
         if (targetChanges.newValue) {

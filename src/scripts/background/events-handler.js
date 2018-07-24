@@ -37,8 +37,10 @@ chrome.commands.onCommand.addListener(command => {
                 currentWindow: true,
             }, tabs => {
                 chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
+                    if (chrome.runtime.lastError) return;
                     if (!items[K_DISPLAY_USER_CARD]) return;
                     chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                        if (chrome.runtime.lastError) return;
                         const bannedOrigins = {};
                         for (const tab of tabs) {
                             const origin = Utils.getOriginFromUrl(tab.url);

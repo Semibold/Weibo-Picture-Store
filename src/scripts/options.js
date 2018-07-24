@@ -10,10 +10,9 @@ const displayUserCard = document.querySelector(`input[value="display_user_card"]
 const periodRequestLogin = document.querySelector(`input[value="period_request_login"]`);
 
 chrome.storage.sync.get([K_PERIOD_REQUEST_LOGIN, K_DISPLAY_USER_CARD], items => {
-    if (!chrome.runtime.lastError) {
-        displayUserCard.checked = Boolean(items[K_DISPLAY_USER_CARD]);
-        periodRequestLogin.checked = Boolean(items[K_PERIOD_REQUEST_LOGIN]);
-    }
+    if (chrome.runtime.lastError) return;
+    displayUserCard.checked = Boolean(items[K_DISPLAY_USER_CARD]);
+    periodRequestLogin.checked = Boolean(items[K_PERIOD_REQUEST_LOGIN]);
 });
 
 displayUserCard.addEventListener("click", e => {
