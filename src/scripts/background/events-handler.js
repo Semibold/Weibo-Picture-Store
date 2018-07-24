@@ -9,6 +9,8 @@ import {
     S_WITHOUT_CORS_MODE,
     S_REQUEST_USER_CARD,
     S_COMMAND_POINTER_EVENTS,
+    K_DISPLAY_USER_CARD,
+    K_REQUESR_BAN_ORIGIN,
 } from "../sharre/constant.js";
 import {WeiboStatic} from "./weibo-action.js";
 
@@ -30,6 +32,25 @@ chrome.commands.onCommand.addListener(command => {
             });
             break;
         case "weibo-card-of-current-tab":
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true,
+            }, tabs => {
+                chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
+                    if (!items[K_DISPLAY_USER_CARD]) return;
+                    chrome.storage.local.get(K_REQUESR_BAN_ORIGIN, items => {
+                        const bannedOrigins = {};
+                        for (const tab of tabs) {
+                            const origin = Utils.getOriginFromUrl(tab.url);
+                            if (!origin) break;
+                            const banned = items[K_REQUESR_BAN_ORIGIN] ?
+                                !items[K_REQUESR_BAN_ORIGIN][origin] : true;
+                            Object.assign(bannedOrigins, items[K_REQUESR_BAN_ORIGIN], {[origin]: banned});
+                        }
+                        chrome.storage.local.set({[K_REQUESR_BAN_ORIGIN]: bannedOrigins});
+                    });
+                });
+            });
             break;
     }
 });
