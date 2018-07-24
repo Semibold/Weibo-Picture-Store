@@ -139,8 +139,11 @@ async function bootloader(startup) {
          */
         changeWeiboCardPosition();
 
-        weiboCard.hidden = false;
         Promise.all(predfinedQueues).then(() => {
+            if (mouseEventMetadata.lastImgTarget == null) {
+                return;
+            }
+            weiboCard.hidden = false;
             if (mouseEventMetadata.animation) {
                 mouseEventMetadata.animation.playbackRate = 1;
             } else {
@@ -276,6 +279,25 @@ async function bootloader(startup) {
         }
     }
 
+    function addWeiboCardMouseListener() {
+        document.addEventListener("mouseover", onMouseOver, true);
+        document.addEventListener("mouseout", onMouseOut, true);
+        document.addEventListener("mousemove", onMouseMove, true);
+    }
+
+    function removeWeiboCardMouseListener() {
+        clearTimeout(timers.mouseout);
+        clearTimeout(timers.mouseover);
+        document.removeEventListener("mouseover", onMouseOver, true);
+        document.removeEventListener("mouseout", onMouseOut, true);
+        document.removeEventListener("mousemove", onMouseMove, true);
+        mouseEventMetadata.lastImgTarget = null;
+        mouseEventMetadata.lastOverTarget = null;
+        if (mouseEventMetadata.animation) {
+            mouseEventMetadata.animation.playbackRate = -1;
+        }
+    }
+
     function onDOMContentLoaded() {
         const highlight = document.createElement("x-highlight");
         const weiboCardStyle = document.createElement("link");
@@ -344,9 +366,7 @@ async function bootloader(startup) {
         chrome.storage.sync.get(K_DISPLAY_USER_CARD, items => {
             if (!chrome.runtime.lastError) {
                 if (items[K_DISPLAY_USER_CARD]) {
-                    document.addEventListener("mouseover", onMouseOver, true);
-                    document.addEventListener("mouseout", onMouseOut, true);
-                    document.addEventListener("mousemove", onMouseMove, true);
+                    addWeiboCardMouseListener();
                 }
             }
         });
@@ -354,13 +374,9 @@ async function bootloader(startup) {
             const targetChanges = changes[K_DISPLAY_USER_CARD];
             if (targetChanges && targetChanges.newValue != null) {
                 if (targetChanges.newValue) {
-                    document.addEventListener("mouseover", onMouseOver, true);
-                    document.addEventListener("mouseout", onMouseOut, true);
-                    document.addEventListener("mousemove", onMouseMove, true);
+                    addWeiboCardMouseListener();
                 } else {
-                    document.removeEventListener("mouseover", onMouseOver, true);
-                    document.removeEventListener("mouseout", onMouseOut, true);
-                    document.removeEventListener("mousemove", onMouseMove, true);
+                    removeWeiboCardMouseListener();
                 }
             }
         });
@@ -387,4 +403,4 @@ async function bootloader(startup) {
 
 }
 
-bootloader(Date.now());
+bootloader(chrome.runtime.getManifest().version);
