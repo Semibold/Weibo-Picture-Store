@@ -19,6 +19,7 @@ chrome.commands.onCommand.addListener(command => {
         case "transform-pointer-events":
             chrome.tabs.query({
                 active: true,
+                currentWindow: true,
             }, tabs => {
                 for (const tab of tabs) {
                     chrome.tabs.sendMessage(tab.id, {
