@@ -2,7 +2,7 @@
 
 > [更新日志](changelog.md)
 
-> [V4 版本 (@deprecated)](https://github.com/Semibold/Weibo-Picture-Store/tree/deprecated-v4)
+> [V4 版本 (@deprecated)](https://github.com/Semibold/Weibo-Picture-Store/tree/4.0.5)
 
 
 ## Introduction
