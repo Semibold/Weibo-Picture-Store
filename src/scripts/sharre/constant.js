@@ -106,4 +106,13 @@ export class PConfig {
         return prefix + rootZone;
     }
 
+    /**
+     * @desc 默认的选项配置
+     */
+    static get defaultOptions() {
+        return {
+            autoDisplayChangelog: true,
+        };
+    }
+
 }

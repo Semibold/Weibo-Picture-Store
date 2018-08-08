@@ -8,6 +8,7 @@
  * @desc 仅需要引入让其执行
  */
 import "./background/start-popup.js";
+import "./background/start-changelog.js";
 import "./background/weibo-referer.js";
 import "./background/context-menu.js";
 import "./background/file-progress.js";
@@ -18,19 +19,6 @@ import "./background/events-handler.js";
  */
 import {fetchBlob} from "./background/fetch-blob.js";
 import {WeiboStatic, WeiboUpload} from "./background/weibo-action.js";
-
-/**
- * @desc changelog
- */
-chrome.runtime.onInstalled.addListener(details => {
-    const url = chrome.i18n.getMessage("project_changelog");
-    if (details.reason === "install") {
-        chrome.tabs.create({url});
-    }
-    if (details.reason === "update") {
-        chrome.tabs.create({url});
-    }
-});
 
 /**
  * @desc Core Share Module (APIs)
