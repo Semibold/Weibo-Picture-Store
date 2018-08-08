@@ -32,27 +32,18 @@ export const M_VIDEO_FRAME = "menu_video_frame";
  * @desc signal
  */
 export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
-export const S_REQUEST_USER_CARD = "signal_request_user_card";
 export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 
 /**
  * @desc StorageKey
  */
-export const K_DISPLAY_USER_CARD = "display_user_card";
-export const K_REQUESR_BAN_ORIGIN = "request_ban_origin";
-export const K_PERIOD_REQUEST_LOGIN = "period_request_login";
+export const K_FORBID_DISPLAY_CHANGELOG = 'forbid_display_changelog';
 
 /**
  * @desc 多用户的 Cache
  */
 export const USER_INFO_CACHE = new Map();
 export const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
-
-/**
- * @desc User Card Cache
- */
-export const USER_CARD_CACHE = new Map();
-export const USER_CARD_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
 
 /**
  * @desc APIs 的单例模式

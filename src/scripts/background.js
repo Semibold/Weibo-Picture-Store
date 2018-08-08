@@ -8,12 +8,10 @@
  * @desc 仅需要引入让其执行
  */
 import "./background/start-popup.js";
-import "./background/run-schedule.js";
 import "./background/weibo-referer.js";
 import "./background/context-menu.js";
 import "./background/file-progress.js";
 import "./background/events-handler.js";
-import "./background/toggle-badge.js";
 
 /**
  * @desc 不需要初始化，但是需要导出到外部

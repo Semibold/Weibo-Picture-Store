@@ -4,69 +4,11 @@
  * found in the LICENSE file.
  */
 
-import {Base62} from "../sharre/base62.js";
 import {FileProgress} from "./file-progress.js";
 import {FP_TYPE_UPLOAD} from "../sharre/constant.js";
 
 import {requestUpload} from "../weibo/upload.js";
-import {requestUserCard} from "../weibo/card.js";
 import {detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum} from "../weibo/photo.js";
-import {startUserStatusSchedule, closeUserStatusSchedule} from "../weibo/scheduler.js";
-
-/**
- * @private
- * @static
- */
-class WeiboUtils {
-
-    /**
-     * @param {string} src
-     * @return {string|null}
-     */
-    static extractPhotoIdFromUrl(src) {
-        try {
-            const url = new URL(src.startsWith("//") ? `http:${src}` : src);
-            return url.pathname.split("/").pop().split(".").shift();
-        } catch (e) {
-            console.warn(e);
-            return null;
-        }
-    }
-
-    /**
-     * @see https://www.v2ex.com/t/388152
-     * @param {string} pid
-     * @return {string|null}
-     */
-    static decodeUserIdFromPhotoId(pid) {
-        try {
-            const base = pid.slice(0, 8);
-            if (pid.startsWith("00")) {
-                return Base62.decode(base);
-            } else {
-                return Number.parseInt(base, 16).toString();
-            }
-        } catch (e) {
-            console.warn(e);
-            return null;
-        }
-    }
-
-    /**
-     * @param {string} url
-     * @return {string|null}
-     */
-    static getUserIdFromUrl(url) {
-        const pid = WeiboUtils.extractPhotoIdFromUrl(url);
-
-        if (pid) {
-            return WeiboUtils.decodeUserIdFromPhotoId(pid);
-        } else {
-            return null;
-        }
-    }
-
-}
 
 /**
  * @static
@@ -98,27 +40,6 @@ export class WeiboStatic {
      */
     static requestPhotos(page, count) {
         return requestPhotosFromSpecialAlbum(page, count);
-    }
-
-    static startSchedule() {
-        return startUserStatusSchedule();
-    }
-
-    static closeSchedule() {
-        return closeUserStatusSchedule();
-    }
-
-    /**
-     * @param {string} url
-     * @return {Promise<Object, Error>}
-     */
-    static getUserCard(url) {
-        const uid = WeiboUtils.getUserIdFromUrl(url);
-        if (uid) {
-            return requestUserCard(uid);
-        } else {
-            return Promise.reject(new Error(`Can not parse UserId from ${url}`));
-        }
     }
 
 }
