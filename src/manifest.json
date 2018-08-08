@@ -21,6 +21,7 @@
       "all_frames": true,
       "match_about_blank": true,
       "js": ["scripts/inject.js"],
+      "css": ["sheets/inject.css"],
       "matches": ["<all_urls>"],
       "run_at": "document_start"
     }
