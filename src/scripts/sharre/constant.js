@@ -37,7 +37,7 @@ export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 /**
  * @desc StorageKey
  */
-export const K_FORBID_DISPLAY_CHANGELOG = 'forbid_display_changelog';
+export const K_AUTO_DISPLAY_CHANGELOG = 'auto_display_changelog';
 
 /**
  * @desc 多用户的 Cache

@@ -4,35 +4,24 @@
  * found in the LICENSE file.
  */
 
-import {K_PERIOD_REQUEST_LOGIN, K_DISPLAY_USER_CARD} from "./sharre/constant.js";
+import {K_AUTO_DISPLAY_CHANGELOG} from "./sharre/constant.js";
 
-const displayUserCard = document.querySelector(`input[value="display_user_card"]`);
-const periodRequestLogin = document.querySelector(`input[value="period_request_login"]`);
+const displayChangelog = document.querySelector(`input[value="auto_display_changelog"]`);
 
-chrome.storage.sync.get([K_PERIOD_REQUEST_LOGIN, K_DISPLAY_USER_CARD], items => {
+chrome.storage.sync.get({
+    [K_AUTO_DISPLAY_CHANGELOG]: true,
+}, items => {
     if (chrome.runtime.lastError) return;
-    displayUserCard.checked = Boolean(items[K_DISPLAY_USER_CARD]);
-    periodRequestLogin.checked = Boolean(items[K_PERIOD_REQUEST_LOGIN]);
+    displayChangelog.checked = Boolean(items[K_AUTO_DISPLAY_CHANGELOG]);
 });
 
-displayUserCard.addEventListener("click", e => {
+displayChangelog.addEventListener("click", e => {
     const checked = e.target.checked;
     chrome.storage.sync.set({
-        [K_DISPLAY_USER_CARD]: checked,
+        [K_AUTO_DISPLAY_CHANGELOG]: checked,
     }, function () {
         if (chrome.runtime.lastError) {
-            displayUserCard.checked = !checked;
-        }
-    });
-});
-
-periodRequestLogin.addEventListener("click", e => {
-    const checked = e.target.checked;
-    chrome.storage.sync.set({
-        [K_PERIOD_REQUEST_LOGIN]: checked,
-    }, function () {
-        if (chrome.runtime.lastError) {
-            periodRequestLogin.checked = !checked;
+            displayChangelog.checked = !checked;
         }
     });
 });
