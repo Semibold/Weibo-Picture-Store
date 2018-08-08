@@ -23,7 +23,6 @@
 - 支持单条、多条模式的复制操作
 - 支持选择协议（http、https 和相对协议）
 - 支持三种固定裁剪尺寸和用户自定义尺寸
-- 支持微博图片的用户信息卡功能
 
 
 ## Instruction
@@ -72,10 +71,6 @@
 2. 在图片上右击可以复制图片地址
 3. 批量删除选中的文件（按住 Ctrl 键可以多选）
 4. 图片最近的修改时间
-
-![](screenshot/weibo-card.gif)
-
-微博图片的用户信息卡功能，可以查看微博图片PO主的相关信息。此功能默认关闭，可在扩展选项中开启。快捷键：`Esc` 键关闭当前窗口中的微博信息卡，按住 `Alt` 键可以禁止微博信息卡更新位置。另外可以使用默认快捷 `Alt+Shift+C`（可在 chrome://extensions/shortcuts 键盘快捷键中修改按键）来禁用/启用当前域名下的微博信息卡功能，用这种方式禁用时，扩展图标上会多出 Badge 提示——字母 `D`。
 
 
 ## Concept
@@ -155,6 +150,5 @@
 
 - [JetBrains IDEs](https://www.jetbrains.com/)
 - [Font Awesome](https://fontawesome.com/)
-- [Base62 encode/decode](https://github.com/andrew/base62.js)
 - [Base64 encode/decode](https://github.com/beatgammit/base64-js)
 - [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）

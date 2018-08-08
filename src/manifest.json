@@ -21,6 +21,7 @@
       "all_frames": true,
       "match_about_blank": true,
       "js": ["scripts/inject.js"],
+      "css": ["sheets/inject.css"],
       "matches": ["<all_urls>"],
       "run_at": "document_start"
     }
@@ -36,15 +37,8 @@
         "default": "Shift+Alt+T"
       },
       "description": "开关置顶标签页中的视频"
-    },
-    "weibo-card-of-current-tab": {
-      "suggested_key": {
-        "default": "Shift+Alt+C"
-      },
-      "description": "开关标签页的微博信息卡"
     }
   },
-  "content_security_policy": "script-src 'self' https://weibo.com; object-src 'self'",
   "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
   "minimum_chrome_version": "66",
   "options_ui": {
