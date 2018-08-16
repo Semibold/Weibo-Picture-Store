@@ -8,6 +8,7 @@ import {Utils} from "../sharre/utils.js";
 import {FEATURE_ID} from "../sharre/constant.js";
 import {USER_INFO_CACHE, USER_INFO_EXPIRED} from "../sharre/constant.js";
 import {requestUserId} from "./author.js";
+import {logger} from "../background/internal-logger.js";
 
 /**
  * @desc Singleton
@@ -32,16 +33,29 @@ async function tryCheckoutSpecialAlbumId() {
                 }
 
                 if (albumInfo.albumId) {
+                    logger.add({
+                        module: "CheckoutSpecialAlbumId",
+                        message: "检出指定的微相册成功",
+                    });
                     return Promise.resolve({
                         uid: albumInfo.uid,
                         albumId: albumInfo.albumId,
                     });
                 } else {
-                    return Promise.reject({
-                        canCreateNewAlbum: albumInfo.counter < overflow,
-                    });
+                    const canCreateNewAlbum = albumInfo.counter < overflow;
+                    logger.add({
+                        module: "CheckoutSpecialAlbumId",
+                        message: "没有检测到指定的微相册",
+                        remark: `能否创建新的微相册：${canCreateNewAlbum}`,
+                    }, "warn");
+                    return Promise.reject({canCreateNewAlbum});
                 }
             } else {
+                logger.add({
+                    module: "CheckoutSpecialAlbumId",
+                    message: "检出指定的微相册失败，数据异常",
+                    remark: JSON.stringify(json),
+                }, "error");
                 return Promise.reject(new Error("Invalid Data"));
             }
         });
@@ -67,11 +81,20 @@ async function tryCreateNewAlbum() {
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
         .then(json => {
             if (json && json["result"]) {
+                logger.add({
+                    module: "CreateNewAlbum",
+                    message: "创建微相册成功",
+                });
                 return {
                     uid: json["data"]["uid"].toString(),
                     albumId: json["data"]["album_id"].toString(),
                 };
             } else {
+                logger.add({
+                    module: "CreateNewAlbum",
+                    message: "创建微相册失败，数据异常",
+                    remark: JSON.stringify(json),
+                }, "error");
                 return Promise.reject(new Error("Invalid Data"));
             }
         });

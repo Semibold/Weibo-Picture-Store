@@ -9,12 +9,14 @@ import {
     M_BATCH_DELETE,
     M_UPLOAD_IMAGE,
     M_UPLOAD_HISTORY,
+    M_DOWNLOAD_LOG,
 } from "../sharre/constant.js";
 import {Utils} from "../sharre/utils.js";
 import {Base64} from "../sharre/base64.js";
 import {PConfig} from "../sharre/constant.js";
 import {WeiboUpload} from "./weibo-action.js";
 import {fetchBlob} from "./fetch-blob.js";
+import {logger} from "./internal-logger.js";
 
 const copyToClipboardId = Utils.randomString(16);
 
@@ -62,6 +64,16 @@ chrome.contextMenus.create({
 
 
 /**
+ * @desc 导出日志
+ */
+chrome.contextMenus.create({
+    title: "导出日志",
+    contexts: ["browser_action"],
+    id: M_DOWNLOAD_LOG,
+});
+
+
+/**
  * @desc 上传当前视频帧
  */
 chrome.contextMenus.create({
@@ -86,6 +98,9 @@ chrome.contextMenus.create({
  */
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
+        case M_DOWNLOAD_LOG:
+            logger.download();
+            break;
         case M_UPLOAD_HISTORY:
             chrome.tabs.create({url: "history.html"});
             break;

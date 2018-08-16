@@ -27,6 +27,7 @@ export const M_BATCH_DELETE = "menu_batch_delete";
 export const M_UPLOAD_HISTORY = "menu_upload_history";
 export const M_UPLOAD_IMAGE = "menu_upload_image";
 export const M_VIDEO_FRAME = "menu_video_frame";
+export const M_DOWNLOAD_LOG = "menu_download_log";
 
 /**
  * @desc signal

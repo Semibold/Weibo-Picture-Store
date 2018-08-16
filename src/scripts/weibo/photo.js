@@ -8,6 +8,7 @@ import {Utils} from "../sharre/utils.js";
 import {USER_INFO_CACHE} from "../sharre/constant.js";
 import {requestSpecialAlbumId} from "./album.js";
 import {requestSignIn} from "./author.js";
+import {logger} from "../background/internal-logger.js";
 
 /**
  * @package
@@ -132,20 +133,43 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                         updated: item["updated_at"],
                     });
                 }
+                logger.add({
+                    module: "requestPhotosFromSpecialAlbum",
+                    message: "获取微相册的全部图片成功",
+                });
                 return {total, photos};
             } else {
+                logger.add({
+                    module: "requestPhotosFromSpecialAlbum",
+                    message: "获取微相册的全部图片失败，数据异常",
+                    remark: JSON.stringify(json),
+                }, "warn");
                 return Promise.reject(new Error("Invalid Data"));
             }
         })
         .catch(reason => {
             if (_replay) {
                 promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
+                logger.add({
+                    module: "requestPhotosFromSpecialAlbum",
+                    message: reason,
+                    remark: "已经重试过了，这里直接抛出错误",
+                }, "warn");
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
                     if (json.login) {
+                        logger.add({
+                            module: "requestPhotosFromSpecialAlbum",
+                            message: "用户登录状态已被激活，重新尝试获取微相册的全部图片",
+                        });
                         return requestPhotosFromSpecialAlbum(page, count, true);
                     } else {
+                        logger.add({
+                            module: "requestPhotosFromSpecialAlbum",
+                            message: "用户处于登出状态，中止重试操作",
+                            remark: JSON.stringify(json),
+                        }, "warn");
                         return Promise.reject(reason);
                     }
                 });
