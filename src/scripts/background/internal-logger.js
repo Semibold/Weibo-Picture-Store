@@ -9,14 +9,15 @@ const MAXIMUM_LOGS = 20000;
 class InternalLogger extends Set {
 
     /**
-     * @param {Object} obj              - 注意：此对象的内容会被更改
-     * @param {string} obj.module       - 所属模块
-     * @param {string} obj.message      - 抛出的错误信息
-     * @param {string} [obj.remark]     - 备注信息
-     * @param {string} [type]           - "log" | "warn" | "error"
+     * @param {Object} obj                  - 注意：此对象的内容会被更改
+     * @param {string} obj.module           - 所属模块
+     * @param {string|Error} obj.message    - 抛出的错误信息
+     * @param {string} [obj.remark]         - 备注信息
+     * @param {string} [type]               - "log" | "warn" | "error"
      */
     add(obj, type = "log") {
         const types = ["log", "warn", "error"];
+        const info = {message: "N/A", remark: "N/A"};
         if (!types.includes(type)) {
             throw new Error("Invalid `type` parameter");
         }
@@ -24,9 +25,19 @@ class InternalLogger extends Set {
             const [key, value] = Object.entries(this).shift();
             this.delete(value);
         }
-        super.add(Object.assign(obj, {
+        if (typeof obj.remark === "string") {
+            info.remark = obj.remark;
+        }
+        if (typeof obj.message === "string") {
+            info.message = obj.message;
+        } else {
+            const error = obj.message;
+            if (error && typeof error.message === "string") {
+                info.message = error.message;
+            }
+        }
+        super.add(Object.assign(obj, info, {
             type,
-            remark: obj.remark || "N/A",
             timestamp: Date.now(),
         }));
     }
