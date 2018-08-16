@@ -63,7 +63,7 @@ class InternalLogger extends Set {
             url: blobUrl,
             filename: "Weibo-Picture-Store_logs.txt",
         }, downloadId => {
-            Url.revokeObjectURL(blobUrl);
+            URL.revokeObjectURL(blobUrl);
         });
     }
 
