@@ -19,6 +19,7 @@ import "./background/events-handler.js";
  */
 import {fetchBlob} from "./background/fetch-blob.js";
 import {WeiboStatic, WeiboUpload} from "./background/weibo-action.js";
+import {logger} from "./background/internal-logger.js";
 
 /**
  * @desc Core Share Module (APIs)
@@ -27,4 +28,5 @@ self.coreAPIs = {
     fetchBlob,
     WeiboStatic,
     WeiboUpload,
+    logger,
 };
