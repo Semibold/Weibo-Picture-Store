@@ -143,7 +143,7 @@ async function uploader(item, _replay = false) {
                         });
                         return Promise.reject({
                             login: reason.login,
-                            terminable: true,
+                            terminable: !reason.login,
                         });
                     })
                     .then(json => {
@@ -152,7 +152,7 @@ async function uploader(item, _replay = false) {
                         } else {
                             return Promise.reject({
                                 login: reason.login,
-                                terminable: true,
+                                terminable: !reason.login,
                             });
                         }
                     });
