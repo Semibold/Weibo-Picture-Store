@@ -9,6 +9,7 @@ import {FP_TYPE_UPLOAD} from "../sharre/constant.js";
 
 import {requestUpload} from "../weibo/upload.js";
 import {detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum} from "../weibo/photo.js";
+import {logger} from "./internal-logger.js";
 
 /**
  * @static
@@ -84,6 +85,11 @@ export class WeiboUpload {
         this.tailer.iterator.next().then(it => {
             if (it.done) {
                 if (this.queues.length) {
+                    logger.add({
+                        module: "WeiboUpload",
+                        message: "迭代队列异常，中止后续操作",
+                        remark: `剩余的迭代队列数量为：${this.queues.length}`,
+                    }, "warn");
                     /**
                      * @desc 迭代器提前终止的情况
                      * @desc 处理 FileProgress，然后清空 this.queues 队列

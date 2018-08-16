@@ -10,6 +10,7 @@ import {Utils} from "../sharre/utils.js";
 import {PConfig} from "../sharre/constant.js";
 import {attachPhotoToSpecialAlbum} from "./photo.js";
 import {requestSignIn} from "./author.js";
+import {logger} from "../background/internal-logger.js";
 
 /**
  * @param {Blob|File} blob
@@ -120,15 +121,37 @@ async function uploader(item, _replay = false) {
                 if (pid) {
                     try {
                         const uid = JSON.parse(atob(data)).uid.toString();
+                        logger.add({
+                            module: "uploader",
+                            message: "用户信息解析成功",
+                        });
                         attachPhotoToSpecialAlbum(pid, uid);
                     } catch (e) {
+                        logger.add({
+                            module: "uploader",
+                            message: "用户信息解析失败",
+                        }, "warn");
                         attachPhotoToSpecialAlbum(pid);
                     }
+                    logger.add({
+                        module: "uploader",
+                        message: "上传图片成功",
+                    });
                     return Object.assign(item, {pid});
                 } else {
+                    logger.add({
+                        module: "uploader",
+                        message: "上传图片失败，数据异常",
+                        remark: text,
+                    }, "error");
                     return Promise.reject(new Error("Invalid Data"));
                 }
             } else {
+                logger.add({
+                    module: "uploader",
+                    message: "上传图片失败，数据异常",
+                    remark: text,
+                }, "error");
                 return Promise.reject(new Error("Invalid Data"));
             }
         }).catch(reason => {
@@ -141,6 +164,11 @@ async function uploader(item, _replay = false) {
                             title: chrome.i18n.getMessage("fail_title"),
                             message: "微博登录信息校验成功，可是。。。图片上传失败了呢",
                         });
+                        logger.add({
+                            module: "uploader",
+                            message: "请求用户登录状态时，捕获到异常",
+                            remark: JSON.stringify(reason),
+                        }, "warn");
                         return Promise.reject({
                             login: reason.login,
                             terminable: !reason.login,
@@ -148,8 +176,17 @@ async function uploader(item, _replay = false) {
                     })
                     .then(json => {
                         if (json.login) {
+                            logger.add({
+                                module: "uploader",
+                                message: "用户登录状态已被激活，重新尝试上传图片"
+                            });
                             return uploader(item, true);
                         } else {
+                            logger.add({
+                                module: "uploader",
+                                message: "用户处于登出状态，中止重试操作",
+                                remark: JSON.stringify(json),
+                            }, "warn");
                             return Promise.reject({
                                 login: reason.login,
                                 terminable: !reason.login,
@@ -157,6 +194,11 @@ async function uploader(item, _replay = false) {
                         }
                     });
             } else {
+                logger.add({
+                    module: "uploader",
+                    message: reason,
+                    remark: "已经重试过了，这里直接抛出错误",
+                }, "warn");
                 return Promise.reject(reason);
             }
         });
