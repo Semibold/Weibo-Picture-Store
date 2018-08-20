@@ -26,7 +26,7 @@ async function tryCheckoutSpecialAlbumId() {
                 for (const item of json["data"]["album_list"]) {
                     albumInfo.counter++;
                     if (item["description"] === FEATURE_ID) {
-                        albumInfo.uid = item['uid'].toString();
+                        albumInfo.uid = item["uid"].toString();
                         albumInfo.albumId = item["album_id"].toString();
                         break;
                     }

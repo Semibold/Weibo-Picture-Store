@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
     }
     if (message.type === M_VIDEO_FRAME) {
-        const videoRefs = document.querySelectorAll('video');
+        const videoRefs = document.querySelectorAll("video");
         for (const videoRef of videoRefs) {
             /**
              * @desc 为什么不用 video.src 的写法？
