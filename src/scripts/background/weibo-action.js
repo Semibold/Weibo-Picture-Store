@@ -89,7 +89,7 @@ export class WeiboUpload {
                         module: "WeiboUpload",
                         message: "迭代队列异常，中止后续操作",
                         remark: `剩余的迭代队列数量为：${this.queues.length}`,
-                    }, "warn");
+                    }, logger.LEVEL.warn);
                     /**
                      * @desc 迭代器提前终止的情况
                      * @desc 处理 FileProgress，然后清空 this.queues 队列

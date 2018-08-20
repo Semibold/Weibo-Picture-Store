@@ -143,7 +143,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                     module: "requestPhotosFromSpecialAlbum",
                     message: "获取微相册的全部图片失败，数据异常",
                     remark: JSON.stringify(json),
-                }, "warn");
+                }, logger.LEVEL.warn);
                 return Promise.reject(new Error("Invalid Data"));
             }
         })
@@ -154,7 +154,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                     module: "requestPhotosFromSpecialAlbum",
                     message: reason,
                     remark: "已经重试过了，这里直接抛出错误",
-                }, "warn");
+                }, logger.LEVEL.warn);
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
@@ -169,7 +169,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                             module: "requestPhotosFromSpecialAlbum",
                             message: "用户处于登出状态，中止重试操作",
                             remark: JSON.stringify(json),
-                        }, "warn");
+                        }, logger.LEVEL.warn);
                         return Promise.reject(reason);
                     }
                 });

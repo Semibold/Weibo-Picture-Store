@@ -4,24 +4,34 @@
  * found in the LICENSE file.
  */
 
-const MAXIMUM_LOGS = 20000;
+const MAXIMUM_LOGS = 10000;
 
 class InternalLogger extends Set {
+
+    // noinspection JSMethodCanBeStatic
+    /**
+     * @return {{log: string, warn: string, error: string}}
+     */
+    get LEVEL() {
+        return {log: "log", warn: "warn", error: "error"};
+    }
 
     /**
      * @param {Object} obj                  - 注意：此对象的内容会被更改
      * @param {string} obj.module           - 所属模块
-     * @param {string|Error} obj.message    - 抛出的错误信息
+     * @param {string|Error} obj.message    - 抛出的信息
      * @param {string} [obj.remark]         - 备注信息
-     * @param {string} [type]               - "log" | "warn" | "error"
+     * @param {string} [type]               - keyof this.LEVEL
+     * @return {boolean}
      */
-    add(obj, type = "log") {
-        const types = ["log", "warn", "error"];
+    add(obj, type = this.LEVEL.log) {
+        const types = Object.keys(this.LEVEL);
         const info = {message: "N/A", remark: "N/A"};
         if (!types.includes(type)) {
-            throw new Error("Invalid `type` parameter");
+            console.warn("Invalid `type` parameter");
+            return false;
         }
-        if (this.size > MAXIMUM_LOGS) {
+        while (this.size >= MAXIMUM_LOGS) {
             const [key, value] = Object.entries(this).shift();
             this.delete(value);
         }
@@ -40,13 +50,14 @@ class InternalLogger extends Set {
             type,
             timestamp: Date.now(),
         }));
+        return true;
     }
 
     /**
      * @param {string[]} [types]
      * @return {string}
      */
-    serialize(types = ["log", "warn", "error"]) {
+    serialize(types = Object.keys(this.LEVEL)) {
         const caches = [];
         const padNum = Math.max(...types.map(x => x.length));
         this.forEach((k, v) => {

@@ -47,7 +47,7 @@ async function tryCheckoutSpecialAlbumId() {
                         module: "CheckoutSpecialAlbumId",
                         message: "没有检测到指定的微相册",
                         remark: `能否创建新的微相册：${canCreateNewAlbum}`,
-                    }, "warn");
+                    }, logger.LEVEL.warn);
                     return Promise.reject({canCreateNewAlbum});
                 }
             } else {
@@ -55,7 +55,7 @@ async function tryCheckoutSpecialAlbumId() {
                     module: "CheckoutSpecialAlbumId",
                     message: "检出指定的微相册失败，数据异常",
                     remark: JSON.stringify(json),
-                }, "error");
+                }, logger.LEVEL.error);
                 return Promise.reject(new Error("Invalid Data"));
             }
         });
@@ -94,7 +94,7 @@ async function tryCreateNewAlbum() {
                     module: "CreateNewAlbum",
                     message: "创建微相册失败，数据异常",
                     remark: JSON.stringify(json),
-                }, "error");
+                }, logger.LEVEL.error);
                 return Promise.reject(new Error("Invalid Data"));
             }
         });

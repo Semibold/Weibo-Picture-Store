@@ -130,7 +130,7 @@ async function uploader(item, _replay = false) {
                         logger.add({
                             module: "uploader",
                             message: "用户信息解析失败",
-                        }, "warn");
+                        }, logger.LEVEL.warn);
                         attachPhotoToSpecialAlbum(pid);
                     }
                     logger.add({
@@ -143,7 +143,7 @@ async function uploader(item, _replay = false) {
                         module: "uploader",
                         message: "上传图片失败，数据异常",
                         remark: text,
-                    }, "error");
+                    }, logger.LEVEL.error);
                     return Promise.reject(new Error("Invalid Data"));
                 }
             } else {
@@ -151,7 +151,7 @@ async function uploader(item, _replay = false) {
                     module: "uploader",
                     message: "上传图片失败，数据异常",
                     remark: text,
-                }, "error");
+                }, logger.LEVEL.error);
                 return Promise.reject(new Error("Invalid Data"));
             }
         }).catch(reason => {
@@ -168,7 +168,7 @@ async function uploader(item, _replay = false) {
                             module: "uploader",
                             message: "请求用户登录状态时，捕获到异常",
                             remark: JSON.stringify(reason),
-                        }, "warn");
+                        }, logger.LEVEL.warn);
                         return Promise.reject({
                             login: reason.login,
                             terminable: !reason.login,
@@ -186,7 +186,7 @@ async function uploader(item, _replay = false) {
                                 module: "uploader",
                                 message: "用户处于登出状态，中止重试操作",
                                 remark: JSON.stringify(json),
-                            }, "warn");
+                            }, logger.LEVEL.warn);
                             return Promise.reject({
                                 login: reason.login,
                                 terminable: !reason.login,
@@ -198,7 +198,7 @@ async function uploader(item, _replay = false) {
                     module: "uploader",
                     message: reason,
                     remark: "已经重试过了，这里直接抛出错误",
-                }, "warn");
+                }, logger.LEVEL.warn);
                 return Promise.reject(reason);
             }
         });

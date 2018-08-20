@@ -45,7 +45,7 @@ async function getUserStatus(notify) {
                 logger.add({
                     module: "getUserStatus",
                     message: "用户处于登出状态",
-                }, "warn");
+                }, logger.LEVEL.warn);
                 return {login: false};
             }
         })
@@ -62,7 +62,7 @@ async function getUserStatus(notify) {
                 module: "getUserStatus",
                 message: reason,
                 remark: "请求发生错误，假设用户处于登出状态，可能会导致实际的用户状态和获得的用户状态结果不一致",
-            }, "error");
+            }, logger.LEVEL.error);
             return {login: false};
         });
 }
@@ -78,7 +78,7 @@ async function setUserStatus(notify) {
             logger.add({
                 module: "setUserStatus",
                 message: "检测到用户处于登录状态，中断激活用户登录状态的操作",
-            }, "warn");
+            }, logger.LEVEL.warn);
             return Promise.reject(json);
         } else {
             return Utils.fetch("http://weibo.com/aj/onoff/setstatus", {
@@ -115,7 +115,7 @@ async function setUserStatus(notify) {
                             module: "setUserStatus",
                             message: "没有检测到重定向链接",
                             remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
-                        }, "error");
+                        }, logger.LEVEL.error);
                         return Promise.reject(new Error(response.url));
                     }
                 } else {
@@ -123,7 +123,7 @@ async function setUserStatus(notify) {
                         module: "setUserStatus",
                         message: response.statusText,
                         remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
-                    }, "warn");
+                    }, logger.LEVEL.warn);
                     return Promise.reject(new Error(response.statusText));
                 }
             }).then(result => {
@@ -171,7 +171,7 @@ export async function requestUserId() {
                     module: "requestUserId",
                     message: "获取用户信息失败",
                     remark: "这种情况下无法命中缓存，没有其他影响",
-                }, "warn");
+                }, logger.LEVEL.warn);
                 return Promise.reject(new Error("UserId not found"));
             }
         });

@@ -64,7 +64,7 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 module: "FetchBlob",
                 message: reason,
                 remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
-            }, "warn");
+            }, logger.LEVEL.warn);
             return Promise.reject(reason);
         })
         .finally(() => {
