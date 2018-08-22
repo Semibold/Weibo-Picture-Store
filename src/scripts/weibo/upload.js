@@ -112,11 +112,18 @@ async function uploader(item, _replay = false) {
         .then(text => {
             if (text) {
                 const tree = new DOMParser().parseFromString(text, "text/xml");
-                const data = tree.querySelector("data").textContent;
-                const pid = tree.querySelector("pic_1 > pid").textContent;
-                const size = tree.querySelector("pic_1 > size").textContent;
-                const width = tree.querySelector("pic_1 > width").textContent;
-                const height = tree.querySelector("pic_1 > height").textContent;
+                const node = {
+                    data: tree.querySelector("data"),
+                    pid: tree.querySelector("pic_1 > pid"),
+                    size: tree.querySelector("pic_1 > size"),
+                    width: tree.querySelector("pic_1 > width"),
+                    height: tree.querySelector("pic_1 > height"),
+                };
+                const data = node.data && node.data.textContent;
+                const pid = node.pid && node.pid.textContent;
+                const size = node.size && node.size.textContent;
+                const width = node.width && node.width.textContent;
+                const height = node.height && node.height.textContent;
 
                 if (pid) {
                     try {
