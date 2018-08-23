@@ -8,6 +8,8 @@ html[data-__MSG_@@extension_id__] {
     pointer-events: none !important;
 }
 
+html[data-__MSG_@@extension_id__] img,
+html[data-__MSG_@@extension_id__] picture,
 html[data-__MSG_@@extension_id__] iframe,
 html[data-__MSG_@@extension_id__] embed,
 html[data-__MSG_@@extension_id__] object,
