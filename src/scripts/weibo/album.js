@@ -20,6 +20,14 @@ async function tryCheckoutSpecialAlbumId() {
     return Utils
         .fetch(Utils.buildURL("http://photo.weibo.com/albums/get_all", {page: 1, count: overflow}))
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
+        .catch(reason => {
+            logger.add({
+                module: "tryCheckoutSpecialAlbumId",
+                message: reason,
+                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
+            }, logger.LEVEL.error);
+            return Promise.reject(reason);
+        })
         .then(json => {
             if (json && json["result"]) {
                 const albumInfo = {counter: 0, uid: null, albumId: null};
@@ -81,6 +89,14 @@ async function tryCreateNewAlbum() {
     return Utils
         .fetch("http://photo.weibo.com/albums/create", {method, body})
         .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
+        .catch(reason => {
+            logger.add({
+                module: "tryCreateNewAlbum",
+                message: reason,
+                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
+            }, logger.LEVEL.error);
+            return Promise.reject(reason);
+        })
         .then(json => {
             if (json && json["result"]) {
                 logger.add({
