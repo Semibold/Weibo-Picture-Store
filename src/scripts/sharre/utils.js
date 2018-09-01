@@ -5,6 +5,8 @@
  */
 
 import {SINGLETON_CACHE} from "./constant.js";
+import {Base64} from "./base64.js";
+import {logger} from "../background/internal-logger.js";
 
 /**
  * @static
@@ -31,7 +33,14 @@ export class Utils {
             cache: "default",
             redirect: "follow",
             referrer: "client",
-        }, init));
+        }, init)).catch(reason => {
+            logger.add({
+                module: "Utils.fetch",
+                message: reason,
+                remark: input,
+            }, logger.LEVEL.warn);
+            return Promise.reject(reason);
+        });
     }
 
     /**
@@ -143,6 +152,15 @@ export class Utils {
         const result = document.execCommand("copy");
         container.remove();
         return result;
+    }
+
+    /**
+     * @param {Object} obj
+     * @return {string}
+     */
+    static createJsonDataURL(obj) {
+        const text = Base64.encode(JSON.stringify(obj));
+        return `data:application/json;base64,${text}`;
     }
 
     /**
