@@ -15,7 +15,8 @@ import {logger} from "../background/internal-logger.js";
 /**
  * @param {Blob|File} blob
  * @param {"arrayBuffer"|"dataURL"} channelType
- * @return {Promise<*, void>}
+ * @return {Promise<*>}
+ * @reject {void}
  */
 async function readAsChannelType(blob, channelType) {
     return new Promise((resolve, reject) => {
@@ -43,7 +44,8 @@ async function readAsChannelType(blob, channelType) {
  * @param {Blob|File} blob
  * @param {"arrayBuffer"|"dataURL"} [channelType="arrayBuffer"]
  * @param {boolean} [_replay=false]
- * @return {Promise<PackedItem, Error>}
+ * @return {Promise<PackedItem>}
+ * @reject {Error}
  */
 async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     const data = {};
@@ -68,7 +70,8 @@ const typeSlopId = Utils.randomString(16);
 
 /**
  * @param {PackedItem} item
- * @return {Promise<PackedItem, Error>}
+ * @return {Promise<PackedItem>}
+ * @reject {Error}
  */
 async function purity(item) {
     if (!PConfig.weiboSupportedTypes[item.mimeType]) {
@@ -97,7 +100,8 @@ const loginFailedId = Utils.randomString(16);
 /**
  * @param {PackedItem} item
  * @param {boolean} [_replay=false]
- * @return {Promise<PackedItem, Error|{login: boolean, terminable: boolean}>}
+ * @return {Promise<PackedItem>}
+ * @reject {Error|{login: boolean, terminable: boolean}}
  */
 async function uploader(item, _replay = false) {
     const oneline = channel[item.channelType];
@@ -214,7 +218,8 @@ async function uploader(item, _replay = false) {
 /**
  * @public
  * @param {Blob|File} blob
- * @return {Promise<PackedItem, Error|{login: boolean, terminable: boolean}>}
+ * @return {Promise<PackedItem>}
+ * @reject {Error|{login: boolean, terminable: boolean}}
  */
 export async function requestUpload(blob) {
     return await uploader(await purity(await reader(blob)));

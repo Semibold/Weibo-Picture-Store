@@ -15,7 +15,8 @@ const fetchFailedId = Utils.randomString(16);
  * @async
  * @param {string} srcUrl
  * @param {string} [pageUrl]
- * @return {Promise<Blob, Error>}
+ * @return {Promise<Blob>}
+ * @reject {Error}
  */
 export async function fetchBlob(srcUrl, pageUrl) {
     const delayInfo = {interval: 500, timerId: null};

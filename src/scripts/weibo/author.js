@@ -20,7 +20,7 @@ chrome.notifications.onClicked.addListener(notificationId => {
 
 /**
  * @param {boolean} notify
- * @return {Promise<{login: boolean}, void>}
+ * @return {Promise<{login: boolean}>}
  */
 async function getUserStatus(notify) {
     return Utils
@@ -70,7 +70,7 @@ async function getUserStatus(notify) {
 /**
  * @desc Singleton
  * @param {boolean} notify
- * @return {Promise<{login: boolean}, void>}
+ * @return {Promise<{login: boolean}>}
  */
 async function setUserStatus(notify) {
     return getUserStatus(false).then(json => {
@@ -141,7 +141,7 @@ const setUserStatusWithoutNotify = setUserStatus.bind(null, false);
 /**
  * @package
  * @param {boolean} [notify=false]
- * @return {Promise<{login: boolean}, void>}
+ * @return {Promise<{login: boolean}>}
  */
 export async function requestSignIn(notify = false) {
     if (notify) {
@@ -153,7 +153,8 @@ export async function requestSignIn(notify = false) {
 
 /**
  * @package
- * @return {Promise<{uid: string}, Error>}
+ * @return {Promise<{uid: string}>}
+ * @reject {Error}
  */
 export async function requestUserId() {
     return Utils

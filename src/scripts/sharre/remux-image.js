@@ -11,7 +11,8 @@ import {MAXIMUM_EDGE} from "./constant.js";
 
 /**
  * @param blob
- * @return {Promise<Blob, Error>}
+ * @return {Promise<Blob>}
+ * @reject {Error}
  */
 export async function remuxImage(blob) {
     return createImageBitmap(blob)

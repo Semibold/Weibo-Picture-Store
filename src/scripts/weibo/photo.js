@@ -15,7 +15,8 @@ import {logger} from "../background/internal-logger.js";
  * @param {string} pid
  * @param {string} [uid]
  * @param {boolean} [_replay=false]
- * @return {Promise<void, Error>}
+ * @return {Promise<void>}
+ * @reject {Error}
  */
 export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
     const overflow = 1000; // 相册的最大存储量
@@ -52,7 +53,8 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
  * @public
  * @param {string[]} photoIds
  * @param {boolean} [_replay=false]
- * @return {Promise<*, Error>}
+ * @return {Promise<*>}
+ * @reject {Error}
  */
 export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
     const promise = requestSpecialAlbumId();
@@ -104,7 +106,8 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
  *     picName: string,
  *     updated: string
  *   }[]
- * }>, Error}
+ * }>}
+ * @reject {Error}
  */
 export async function requestPhotosFromSpecialAlbum(page, count, _replay = false) {
     const promise = requestSpecialAlbumId();

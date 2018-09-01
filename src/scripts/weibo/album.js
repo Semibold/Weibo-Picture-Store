@@ -12,7 +12,8 @@ import {logger} from "../background/internal-logger.js";
 
 /**
  * @desc Singleton
- * @return {Promise<{uid: string, albumId: string}, {canCreateNewAlbum: boolean}|Error>}
+ * @return {Promise<{uid: string, albumId: string}>}
+ * @reject {{canCreateNewAlbum: boolean}|Error}
  */
 async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
@@ -64,7 +65,8 @@ async function tryCheckoutSpecialAlbumId() {
 /**
  * @desc Singleton
  * @desc Referer wanted: "${protocol}//photo.weibo.com/${uid}/client"
- * @return {Promise<{uid: string, albumId: string}, Error>}
+ * @return {Promise<{uid: string, albumId: string}>}
+ * @reject {Error}
  */
 async function tryCreateNewAlbum() {
     const method = "POST";
@@ -103,7 +105,8 @@ async function tryCreateNewAlbum() {
 /**
  * @package
  * @param {string} [uid]
- * @return {Promise<{uid: string, albumId: string}, Error>}
+ * @return {Promise<{uid: string, albumId: string}>}
+ * @reject {Error}
  */
 export async function requestSpecialAlbumId(uid) {
     const cacheId = uid || await requestUserId().then(info => info.uid).catch(Utils.noop);
