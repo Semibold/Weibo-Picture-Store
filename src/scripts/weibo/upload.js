@@ -40,6 +40,9 @@ async function readAsChannelType(blob, channelType) {
  * @property {string} channelType
  * @property {string} mimeType
  * @property {string} [pid]
+ * @property {number} [size]
+ * @property {number} [width]
+ * @property {number} [height]
  *
  * @param {Blob|File} blob
  * @param {"arrayBuffer"|"dataURL"} [channelType="arrayBuffer"]
@@ -148,7 +151,12 @@ async function uploader(item, _replay = false) {
                         module: "uploader",
                         message: "上传图片成功",
                     });
-                    return Object.assign(item, {pid});
+                    return Object.assign(item, {
+                        pid,
+                        size: Number(size),
+                        width: Number(width),
+                        height: Number(height),
+                    });
                 } else {
                     logger.add({
                         module: "uploader",
