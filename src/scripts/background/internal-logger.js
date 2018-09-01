@@ -20,24 +20,34 @@ class InternalLogger extends Set {
      * @param {Object} obj                  - 注意：此对象的内容会被更改
      * @param {string} obj.module           - 所属模块
      * @param {string|Error} obj.message    - 抛出的信息
-     * @param {string} [obj.remark]         - 备注信息
+     * @param {string|Object} [obj.remark]  - 备注信息
      * @param {string} [type]               - keyof this.LEVEL
      * @return {boolean}
      */
     add(obj, type = this.LEVEL.log) {
         const types = Object.keys(this.LEVEL);
         const info = {message: "N/A", remark: "N/A"};
+
         if (!types.includes(type)) {
             console.warn("Invalid `type` parameter");
             return false;
         }
+
         while (this.size >= MAXIMUM_LOGS) {
             const [key, value] = Object.entries(this).shift();
             this.delete(value);
         }
+
         if (typeof obj.remark === "string") {
             info.remark = obj.remark;
+        } else if (obj.remark) {
+            try {
+                info.remark = JSON.stringify(obj.remark);
+            } catch (e) {
+                console.warn(e);
+            }
         }
+
         if (typeof obj.message === "string") {
             info.message = obj.message;
         } else {
@@ -46,10 +56,12 @@ class InternalLogger extends Set {
                 info.message = error.message;
             }
         }
+
         super.add(Object.assign(obj, info, {
             type,
             timestamp: Date.now(),
         }));
+
         return true;
     }
 
