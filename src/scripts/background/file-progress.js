@@ -84,7 +84,7 @@ function coreInternalHander(tid) {
         const hat = 5;    // 5-90-5
         const gap = (100 - hat * 2) / dtd.total;
         const step = gap / avr / fps;
-        const next = Math.floor(hat + dtd.settle * gap + Math.min(++dtd.cycle, avr * fps) * step);
+        const next = Math.floor(hat * 2 + dtd.settle * gap + Math.min(++dtd.cycle, avr * fps) * step);
         chrome.notifications.create(dtd.notifyId, {
             type: "progress",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
