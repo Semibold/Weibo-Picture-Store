@@ -50,7 +50,7 @@ export class Dispatcher {
 
     /** @private */
     genConfigProxy() {
-        const padding = {scheme: "1", clipsize: "1"};
+        const padding = {scheme: "2", clipsize: "1"};
         const customConfig = {
             scheme: localStorage.getItem(`${this.customConfigKey}.scheme`),
             clipsize: localStorage.getItem(`${this.customConfigKey}.clipsize`),
