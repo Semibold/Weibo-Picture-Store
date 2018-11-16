@@ -92,7 +92,11 @@ function coreInternalHander(tid) {
             message: message,
             contextMessage: contextMessage,
             progress: Math.max(0, Math.min(100, next)),
-            requireInteraction: true,
+
+            /**
+             * @desc Workaround for Windows 10 native notification which cannot be cleared immediately.
+             */
+            // requireInteraction: true,
         }, notificationId => {
             if (dtd.settle === dtd.total) {
                 dtd.timerId && clearTimeout(dtd.timerId);
