@@ -34,7 +34,7 @@ class InternalLogger extends Set {
         }
 
         while (this.size >= MAXIMUM_LOGS) {
-            const [key, value] = Object.entries(this).shift();
+            const value = Array.from(this).shift();
             this.delete(value);
         }
 
