@@ -2,6 +2,11 @@
 
 > 更新日志
 
+### 5.4.4
+
+- 调整：弹窗的默认协议使用 https
+- 措施：由于 [issue 899527](https://bugs.chromium.org/p/chromium/issues/detail?id=899527) 的问题，上传进度提示暂时取消常驻状态
+
 
 ### 5.4.2
 
