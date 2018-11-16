@@ -76,6 +76,7 @@ export class SectionTable {
     }
 
     static importNode() {
+        // language=HTML
         const html = `
             <section>
                 <div class="holder-wrapper">

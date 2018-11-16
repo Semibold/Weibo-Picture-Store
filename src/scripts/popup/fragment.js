@@ -6,6 +6,7 @@
 
 import {Utils} from "../sharre/utils.js";
 
+// language=HTML
 const headHTML = `
     <div class="head-setting">
         <div class="head-network-protocol">
@@ -47,6 +48,7 @@ const headHTML = `
         <a class="head-browsing-history" title="查看上传记录"><i class="fa fa-history"></i></a>
     </div>`;
 
+// language=HTML
 const footHTML = `
     <div class="foot-bottom">
         <i class="fa fa-angle-double-left"></i>

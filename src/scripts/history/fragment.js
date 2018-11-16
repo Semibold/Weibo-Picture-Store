@@ -6,12 +6,14 @@
 
 import {Utils} from "../sharre/utils.js";
 
+// language=HTML
 const headHTML = `
     <h1>
         <span><i class="fa fa-paragraph"></i></span>
         <span>上传记录</span>
     </h1>`;
 
+// language=HTML
 const footHTML = `
     <div class="foot-bottom">
         <div class="foot-line"></div>

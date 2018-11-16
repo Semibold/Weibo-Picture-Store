@@ -270,6 +270,7 @@ export class Dispatcher {
     }
 
     static importNode() {
+        // language=HTML
         const html = `
             <section>
                 <div class="image-body">
