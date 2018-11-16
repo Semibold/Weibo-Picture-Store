@@ -186,7 +186,7 @@ async function uploader(item, _replay = false) {
                         logger.add({
                             module: "uploader",
                             message: "请求用户登录状态时，捕获到异常",
-                            remark: JSON.stringify(reason),
+                            remark: reason,
                         }, logger.LEVEL.warn);
                         return Promise.reject({
                             login: reason.login,
@@ -204,7 +204,7 @@ async function uploader(item, _replay = false) {
                             logger.add({
                                 module: "uploader",
                                 message: "用户处于登出状态，中止重试操作",
-                                remark: JSON.stringify(json),
+                                remark: json,
                             }, logger.LEVEL.warn);
                             return Promise.reject({
                                 login: reason.login,

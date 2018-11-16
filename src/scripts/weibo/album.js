@@ -63,7 +63,7 @@ async function tryCheckoutSpecialAlbumId() {
                 logger.add({
                     module: "CheckoutSpecialAlbumId",
                     message: "检出指定的微相册失败，数据异常",
-                    remark: JSON.stringify(json),
+                    remark: json,
                 }, logger.LEVEL.error);
                 return Promise.reject(new Error("Invalid Data"));
             }
@@ -111,7 +111,7 @@ async function tryCreateNewAlbum() {
                 logger.add({
                     module: "CreateNewAlbum",
                     message: "创建微相册失败，数据异常",
-                    remark: JSON.stringify(json),
+                    remark: json,
                 }, logger.LEVEL.error);
                 return Promise.reject(new Error("Invalid Data"));
             }

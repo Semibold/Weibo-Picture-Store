@@ -145,7 +145,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                 logger.add({
                     module: "requestPhotosFromSpecialAlbum",
                     message: "获取微相册的全部图片失败，数据异常",
-                    remark: JSON.stringify(json),
+                    remark: json,
                 }, logger.LEVEL.warn);
                 return Promise.reject(new Error("Invalid Data"));
             }
@@ -171,7 +171,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                         logger.add({
                             module: "requestPhotosFromSpecialAlbum",
                             message: "用户处于登出状态，中止重试操作",
-                            remark: JSON.stringify(json),
+                            remark: json,
                         }, logger.LEVEL.warn);
                         return Promise.reject(reason);
                     }
