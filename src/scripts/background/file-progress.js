@@ -107,10 +107,10 @@ function coreInternalHander(tid) {
                         });
                     }
                 });
+            } else {
+                dtd.timerId = nextFrame(loop);
             }
         });
-
-        dtd.timerId = nextFrame(loop);
     }
 
     dtd.timerId && clearTimeout(dtd.timerId);
