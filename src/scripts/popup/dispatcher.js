@@ -296,8 +296,8 @@ export class Dispatcher {
             UBB: `[IMG]${url}[/IMG]`,
             Markdown: `![image](${url})`,
         });
-        if (item.width && item.height) {
-            assignedPackedItem.HTML = `<img src="${url}" alt="image" width="${item.width}px">`;
+        if (item.width && item.height && clipsize === this.starter.clipsize[1]) {
+            assignedPackedItem.HTML = `<img src="${url}" alt="image" width="${item.width}" data-width="${item.width}" data-height="${item.height}">`;
         }
         return assignedPackedItem;
     }
