@@ -290,12 +290,16 @@ export class Dispatcher {
         const clipsize = this.starter.clipsize[this.config.clipsize];
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
         const url = `${scheme + PConfig.randomImageHost}/${clipsize}/${item.pid + suffix}`;
-        return Object.assign(item, {
+        const assignedPackedItem = Object.assign(item, {
             URL: url,
             HTML: `<img src="${url}" alt="image">`,
             UBB: `[IMG]${url}[/IMG]`,
             Markdown: `![image](${url})`,
         });
+        if (item.width && item.height) {
+            assignedPackedItem.HTML = `<img src="${url}" alt="image" width="${item.width}px">`;
+        }
+        return assignedPackedItem;
     }
 
     /** @private */
