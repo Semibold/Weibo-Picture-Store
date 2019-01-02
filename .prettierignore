@@ -1,0 +1,8 @@
+demo/**/*
+dist/**/*
+coverage/**/*
+node_modules/**/*
+
+# ignore root configration files
+*.json
+*.yml
