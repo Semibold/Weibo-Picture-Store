@@ -4,28 +4,28 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {
-    S_WITHOUT_CORS_MODE,
-    S_COMMAND_POINTER_EVENTS,
-} from "../sharre/constant.js";
+import { Utils } from "../sharre/utils.js";
+import { S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS } from "../sharre/constant.js";
 
 const mismatchSpecId = Utils.randomString(16);
 
 chrome.commands.onCommand.addListener(command => {
     switch (command) {
         case "pointer-events-of-current-tab":
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true,
-            }, tabs => {
-                for (const tab of tabs) {
-                    chrome.tabs.sendMessage(tab.id, {
-                        type: S_COMMAND_POINTER_EVENTS,
-                        command: command,
-                    });
-                }
-            });
+            chrome.tabs.query(
+                {
+                    active: true,
+                    currentWindow: true,
+                },
+                tabs => {
+                    for (const tab of tabs) {
+                        chrome.tabs.sendMessage(tab.id, {
+                            type: S_COMMAND_POINTER_EVENTS,
+                            command: command,
+                        });
+                    }
+                },
+            );
             break;
     }
 });

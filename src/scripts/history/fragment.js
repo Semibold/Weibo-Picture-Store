@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
+import { Utils } from "../sharre/utils.js";
 
 // language=HTML
 const headHTML = `
@@ -20,8 +20,12 @@ const footHTML = `
         <div class="foot-menu">
             <a href="${chrome.i18n.getMessage("project_issue")}" target="_blank" title="通过GitHub反馈问题">GitHub</a>
             <a href="mailto:${chrome.i18n.getMessage("author_email")}" title="通过电子邮件反馈问题">反馈</a>
-            <a href="${chrome.i18n.getMessage("project_donate")}" target="_blank" title="扩展很棒，捐赠以表支持 +1s">捐赠</a>
-            <a href="${chrome.i18n.getMessage("project_readme")}" target="_blank" title="操作指南及更新日志">更新日志</a>
+            <a href="${chrome.i18n.getMessage(
+                "project_donate",
+            )}" target="_blank" title="扩展很棒，捐赠以表支持 +1s">捐赠</a>
+            <a href="${chrome.i18n.getMessage(
+                "project_readme",
+            )}" target="_blank" title="操作指南及更新日志">更新日志</a>
         </div>
     </div>`;
 

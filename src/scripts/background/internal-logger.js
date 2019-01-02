@@ -7,13 +7,12 @@
 const MAXIMUM_LOGS = 10000;
 
 class InternalLogger extends Set {
-
     // noinspection JSMethodCanBeStatic
     /**
      * @return {{log: string, warn: string, error: string}}
      */
     get LEVEL() {
-        return {log: "log", warn: "warn", error: "error"};
+        return { log: "log", warn: "warn", error: "error" };
     }
 
     /**
@@ -26,7 +25,7 @@ class InternalLogger extends Set {
      */
     add(obj, type = this.LEVEL.log) {
         const types = Object.keys(this.LEVEL);
-        const info = {message: "N/A", remark: "N/A"};
+        const info = { message: "N/A", remark: "N/A" };
 
         if (!types.includes(type)) {
             console.warn("Invalid `type` parameter");
@@ -57,10 +56,12 @@ class InternalLogger extends Set {
             }
         }
 
-        super.add(Object.assign(obj, info, {
-            type,
-            timestamp: Date.now(),
-        }));
+        super.add(
+            Object.assign(obj, info, {
+                type,
+                timestamp: Date.now(),
+            }),
+        );
 
         return true;
     }
@@ -74,22 +75,28 @@ class InternalLogger extends Set {
         const padNum = Math.max(...types.map(x => x.length));
         this.forEach((k, v) => {
             if (types.includes(v.type)) {
-                caches.push(`[${v.type.toUpperCase().padEnd(padNum, ".")}]-[${new Date(v.timestamp).toISOString()}]-[${v.module}]-[${v.message}]-[${v.remark}]`);
+                caches.push(
+                    `[${v.type.toUpperCase().padEnd(padNum, ".")}]-[${new Date(v.timestamp).toISOString()}]-[${
+                        v.module
+                    }]-[${v.message}]-[${v.remark}]`,
+                );
             }
         });
         return caches.join("\r\n");
     }
 
     download() {
-        const blobUrl = URL.createObjectURL(new Blob([this.serialize()], {type: "text/plain"}));
-        chrome.downloads.download({
-            url: blobUrl,
-            filename: "Weibo-Picture-Store_logs.txt",
-        }, downloadId => {
-            URL.revokeObjectURL(blobUrl);
-        });
+        const blobUrl = URL.createObjectURL(new Blob([this.serialize()], { type: "text/plain" }));
+        chrome.downloads.download(
+            {
+                url: blobUrl,
+                filename: "Weibo-Picture-Store_logs.txt",
+            },
+            downloadId => {
+                URL.revokeObjectURL(blobUrl);
+            },
+        );
     }
-
 }
 
 /**

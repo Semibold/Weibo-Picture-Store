@@ -4,16 +4,15 @@
  * found in the LICENSE file.
  */
 
-import {SINGLETON_CACHE} from "./constant.js";
-import {Base64} from "./base64.js";
-import {logger} from "../background/internal-logger.js";
+import { SINGLETON_CACHE } from "./constant.js";
+import { Base64 } from "./base64.js";
+import { logger } from "../background/internal-logger.js";
 
 /**
  * @static
  * @typedef {Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Uint8ClampedArray|Float32Array|Float64Array} TypedArray
  */
 export class Utils {
-
     /**
      * @nosideeffects
      */
@@ -26,19 +25,28 @@ export class Utils {
      * @return {Promise<Response>}
      */
     static fetch(input, init) {
-        return fetch(input, Object.assign({
-            method: "GET",
-            mode: "cors",
-            credentials: "include",
-            cache: "default",
-            redirect: "follow",
-            referrer: "client",
-        }, init)).catch(reason => {
-            logger.add({
-                module: "Utils.fetch",
-                message: reason,
-                remark: input,
-            }, logger.LEVEL.warn);
+        return fetch(
+            input,
+            Object.assign(
+                {
+                    method: "GET",
+                    mode: "cors",
+                    credentials: "include",
+                    cache: "default",
+                    redirect: "follow",
+                    referrer: "client",
+                },
+                init,
+            ),
+        ).catch(reason => {
+            logger.add(
+                {
+                    module: "Utils.fetch",
+                    message: reason,
+                    remark: input,
+                },
+                logger.LEVEL.warn,
+            );
             return Promise.reject(reason);
         });
     }
@@ -169,11 +177,13 @@ export class Utils {
      */
     static singleton(func) {
         if (!SINGLETON_CACHE.has(func)) {
-            SINGLETON_CACHE.set(func, func().finally(() => {
-                SINGLETON_CACHE.delete(func);
-            }));
+            SINGLETON_CACHE.set(
+                func,
+                func().finally(() => {
+                    SINGLETON_CACHE.delete(func);
+                }),
+            );
         }
         return SINGLETON_CACHE.get(func);
     }
-
 }

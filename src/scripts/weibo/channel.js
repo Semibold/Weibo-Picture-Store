@@ -4,65 +4,74 @@
  * found in the LICENSE file.
  */
 
-import {Base64} from "../sharre/base64.js";
-import {bitmapMime} from "../sharre/bitmap-mime.js";
+import { Base64 } from "../sharre/base64.js";
+import { bitmapMime } from "../sharre/bitmap-mime.js";
 
 /**
  * @package
  * @desc 微博图片的两种上传方式
  */
-export const channel = new Proxy({
-    arrayBuffer: {
-        readType: "readAsArrayBuffer",
-        body(arrayBuffer) {
-            return arrayBuffer;
+export const channel = new Proxy(
+    {
+        arrayBuffer: {
+            readType: "readAsArrayBuffer",
+            body(arrayBuffer) {
+                return arrayBuffer;
+            },
+            param(option) {
+                return Object.assign(
+                    {
+                        s: "xml",
+                        ori: "1",
+                        data: "1",
+                        rotate: "0",
+                        wm: "",
+                        app: "miniblog",
+                        mime: "image/jpeg",
+                    },
+                    option,
+                );
+            },
+            mimeType(arrayBuffer) {
+                return bitmapMime(arrayBuffer);
+            },
         },
-        param(option) {
-            return Object.assign({
-                s: "xml",
-                ori: "1",
-                data: "1",
-                rotate: "0",
-                wm: "",
-                app: "miniblog",
-                mime: "image/jpeg",
-            }, option);
-        },
-        mimeType(arrayBuffer) {
-            return bitmapMime(arrayBuffer);
+        dataURL: {
+            readType: "readAsDataURL",
+            body(dataURL) {
+                const formData = new FormData();
+                formData.set("b64_data", dataURL.split(",")[1]);
+                return formData;
+            },
+            param(option) {
+                return Object.assign(
+                    {
+                        s: "xml",
+                        ori: "1",
+                        data: "base64",
+                        rotate: "0",
+                        wm: "",
+                        app: "miniblog",
+                        mime: "image/jpeg",
+                    },
+                    option,
+                );
+            },
+            mimeType(dataURL) {
+                return bitmapMime(Base64.toBuffer(dataURL.split(",")[1]));
+            },
         },
     },
-    dataURL: {
-        readType: "readAsDataURL",
-        body(dataURL) {
-            const formData = new FormData();
-            formData.set("b64_data", dataURL.split(",")[1]);
-            return formData;
-        },
-        param(option) {
-            return Object.assign({
-                s: "xml",
-                ori: "1",
-                data: "base64",
-                rotate: "0",
-                wm: "",
-                app: "miniblog",
-                mime: "image/jpeg",
-            }, option);
-        },
-        mimeType(dataURL) {
-            return bitmapMime(Base64.toBuffer(dataURL.split(",")[1]));
+    {
+        get(target, key, receiver) {
+            switch (key) {
+                case "arrayBuffer":
+                    return Reflect.get(target, "arrayBuffer", receiver);
+                case "dataURL":
+                    return Reflect.get(target, "dataURL", receiver);
+                default:
+                    throw new Error("Invalid key. Key must be `arrayBuffer` or `dataURL`");
+            }
         },
     },
-}, {
-    get(target, key, receiver) {
-        switch (key) {
-            case "arrayBuffer":
-                return Reflect.get(target, "arrayBuffer", receiver);
-            case "dataURL":
-                return Reflect.get(target, "dataURL", receiver);
-            default:
-                throw new Error("Invalid key. Key must be `arrayBuffer` or `dataURL`");
-        }
-    },
-});
+);

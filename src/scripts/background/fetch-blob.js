@@ -4,10 +4,10 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {FileProgress} from "./file-progress.js";
-import {FP_TYPE_DOWNLOAD} from "../sharre/constant.js";
-import {logger} from "./internal-logger.js";
+import { Utils } from "../sharre/utils.js";
+import { FileProgress } from "./file-progress.js";
+import { FP_TYPE_DOWNLOAD } from "../sharre/constant.js";
+import { logger } from "./internal-logger.js";
 
 const fetchFailedId = Utils.randomString(16);
 
@@ -19,7 +19,7 @@ const fetchFailedId = Utils.randomString(16);
  * @reject {Error}
  */
 export async function fetchBlob(srcUrl, pageUrl) {
-    const delayInfo = {interval: 500, timerId: null};
+    const delayInfo = { interval: 500, timerId: null };
     const progress = new FileProgress(FP_TYPE_DOWNLOAD);
 
     progress.padding(1);
@@ -34,19 +34,22 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 break;
             }
         }
-        details.requestHeaders.push({name, value});
-        return {requestHeaders: details.requestHeaders};
+        details.requestHeaders.push({ name, value });
+        return { requestHeaders: details.requestHeaders };
     }
 
     if (Utils.isValidURL(srcUrl) && Utils.isValidURL(pageUrl)) {
-        chrome.webRequest.onBeforeSendHeaders.addListener(beforeSendHeaders, {
-            urls: [srcUrl],
-        }, ["requestHeaders", "blocking"]);
+        chrome.webRequest.onBeforeSendHeaders.addListener(
+            beforeSendHeaders,
+            {
+                urls: [srcUrl],
+            },
+            ["requestHeaders", "blocking"],
+        );
     }
 
-    return Utils
-        .fetch(srcUrl, {credentials: "omit"})
-        .then(response => response.ok ? response.blob() : Promise.reject(new Error(response.statusText)))
+    return Utils.fetch(srcUrl, { credentials: "omit" })
+        .then(response => (response.ok ? response.blob() : Promise.reject(new Error(response.statusText))))
         .then(result => {
             clearTimeout(delayInfo.timerId);
             progress.consume();
@@ -61,11 +64,14 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 title: chrome.i18n.getMessage("warn_title"),
                 message: "无法读取远程文件",
             });
-            logger.add({
-                module: "FetchBlob",
-                message: reason,
-                remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
-            }, logger.LEVEL.warn);
+            logger.add(
+                {
+                    module: "FetchBlob",
+                    message: reason,
+                    remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
+                },
+                logger.LEVEL.warn,
+            );
             return Promise.reject(reason);
         })
         .finally(() => {

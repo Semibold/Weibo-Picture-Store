@@ -20,11 +20,15 @@ function beforeSendHeaders(details) {
             break;
         }
     }
-    details.requestHeaders.push({name, value});
-    return {requestHeaders: details.requestHeaders};
+    details.requestHeaders.push({ name, value });
+    return { requestHeaders: details.requestHeaders };
 }
 
-chrome.webRequest.onBeforeSendHeaders.addListener(beforeSendHeaders, {
-    urls,
-    types: ["xmlhttprequest"],
-}, ["requestHeaders", "blocking"]);
+chrome.webRequest.onBeforeSendHeaders.addListener(
+    beforeSendHeaders,
+    {
+        urls,
+        types: ["xmlhttprequest"],
+    },
+    ["requestHeaders", "blocking"],
+);

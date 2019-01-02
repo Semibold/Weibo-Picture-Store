@@ -1,7 +1,6 @@
 ---
 name: Bug report
 about: 问题反馈，请按照以下格式填写
-
 ---
 
 **Describe the bug**

@@ -7,8 +7,8 @@
 /**
  * WARNING: `requestAnimationFrame` has no effect on chrome background page
  */
-import {Utils} from "../sharre/utils.js";
-import {FP_TYPE_DOWNLOAD, FP_TYPE_UPLOAD} from "../sharre/constant.js";
+import { Utils } from "../sharre/utils.js";
+import { FP_TYPE_DOWNLOAD, FP_TYPE_UPLOAD } from "../sharre/constant.js";
 
 const fps = 25;
 const storeMap = new Map();
@@ -18,7 +18,6 @@ const nextFrame = callback => setTimeout(callback, 1000 / fps);
  * @desc 用于支持多类型
  */
 class TypeEntry {
-
     constructor(tid) {
         this.timerId = null;
         this.notifyId = Utils.randomString(16);
@@ -47,7 +46,6 @@ class TypeEntry {
             this.total += n;
         }
     }
-
 }
 
 new TypeEntry(FP_TYPE_UPLOAD);
@@ -80,41 +78,45 @@ function coreInternalHander(tid) {
     }
 
     function loop() {
-        const avr = 3;    // 3s
-        const hat = 5;    // 5-90-5
+        const avr = 3; // 3s
+        const hat = 5; // 5-90-5
         const gap = (100 - hat * 2) / dtd.total;
         const step = gap / avr / fps;
         const next = Math.floor(hat * 2 + dtd.settle * gap + Math.min(++dtd.cycle, avr * fps) * step);
-        chrome.notifications.create(dtd.notifyId, {
-            type: "progress",
-            iconUrl: chrome.i18n.getMessage("notify_icon"),
-            title: chrome.i18n.getMessage("info_title"),
-            message: message,
-            contextMessage: contextMessage,
-            progress: Math.max(0, Math.min(100, next)),
+        chrome.notifications.create(
+            dtd.notifyId,
+            {
+                type: "progress",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("info_title"),
+                message: message,
+                contextMessage: contextMessage,
+                progress: Math.max(0, Math.min(100, next)),
 
-            /**
-             * @desc Workaround for Windows 10 native notification which cannot be cleared immediately.
-             */
-            // requireInteraction: true,
-        }, notificationId => {
-            if (dtd.settle === dtd.total) {
-                dtd.timerId && clearTimeout(dtd.timerId);
-                dtd.reformat();
-                chrome.notifications.clear(notificationId, wasCleared => {
-                    if (wasCleared && tid === FP_TYPE_UPLOAD) {
-                        chrome.notifications.create(dtd.notifyId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("notify_icon"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: "文件上传流程结束啦！",
-                        });
-                    }
-                });
-            } else {
-                dtd.timerId = nextFrame(loop);
-            }
-        });
+                /**
+                 * @desc Workaround for Windows 10 native notification which cannot be cleared immediately.
+                 */
+                // requireInteraction: true,
+            },
+            notificationId => {
+                if (dtd.settle === dtd.total) {
+                    dtd.timerId && clearTimeout(dtd.timerId);
+                    dtd.reformat();
+                    chrome.notifications.clear(notificationId, wasCleared => {
+                        if (wasCleared && tid === FP_TYPE_UPLOAD) {
+                            chrome.notifications.create(dtd.notifyId, {
+                                type: "basic",
+                                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                                title: chrome.i18n.getMessage("info_title"),
+                                message: "文件上传流程结束啦！",
+                            });
+                        }
+                    });
+                } else {
+                    dtd.timerId = nextFrame(loop);
+                }
+            },
+        );
     }
 
     dtd.timerId && clearTimeout(dtd.timerId);
@@ -128,7 +130,6 @@ function coreInternalHander(tid) {
  * @desc 这个只能在 Background 中运行
  */
 export class FileProgress {
-
     constructor(tid) {
         this.tid = tid;
         this.dtd = storeMap.get(this.tid);
@@ -155,5 +156,4 @@ export class FileProgress {
     trigger() {
         return coreInternalHander(this.tid);
     }
-
 }

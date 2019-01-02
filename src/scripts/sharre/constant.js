@@ -55,22 +55,13 @@ export const SINGLETON_CACHE = new Map();
  * @static
  */
 export class PConfig {
-
     /**
      * @see https://support.google.com/webmasters/answer/2598805
      * @see https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
      * @return {string[]}
      */
     static get chromeSupportedTypes() {
-        return [
-            "image/jpeg",
-            "image/png",
-            "image/apng",
-            "image/gif",
-            "image/bmp",
-            "image/webp",
-            "image/x-icon",
-        ];
+        return ["image/jpeg", "image/png", "image/apng", "image/gif", "image/bmp", "image/webp", "image/x-icon"];
     }
 
     /**
@@ -99,10 +90,7 @@ export class PConfig {
 
     static get randomImageHost() {
         const rootZone = ".sinaimg.cn";
-        const urlPrefix = [
-            "ws1", "ws2", "ws3", "ws4",
-            "wx1", "wx2", "wx3", "wx4",
-        ];
+        const urlPrefix = ["ws1", "ws2", "ws3", "ws4", "wx1", "wx2", "wx3", "wx4"];
         const prefix = urlPrefix[Math.floor(Math.random() * urlPrefix.length)];
         return prefix + rootZone;
     }
@@ -115,5 +103,4 @@ export class PConfig {
             autoDisplayChangelog: true,
         };
     }
-
 }

@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {K_AUTO_DISPLAY_CHANGELOG, PConfig} from "../sharre/constant.js";
+import { K_AUTO_DISPLAY_CHANGELOG, PConfig } from "../sharre/constant.js";
 
 /**
  * @desc changelog
@@ -16,15 +16,18 @@ chrome.runtime.onInstalled.addListener(details => {
         });
     }
     if (details.reason === "update" && details.previousVersion !== "5.4.2") {
-        chrome.storage.sync.get({
-            [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
-        }, items => {
-            if (chrome.runtime.lastError) return;
-            if (items[K_AUTO_DISPLAY_CHANGELOG]) {
-                chrome.tabs.create({
-                    url: chrome.i18n.getMessage("project_changelog"),
-                });
-            }
-        });
+        chrome.storage.sync.get(
+            {
+                [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
+            },
+            items => {
+                if (chrome.runtime.lastError) return;
+                if (items[K_AUTO_DISPLAY_CHANGELOG]) {
+                    chrome.tabs.create({
+                        url: chrome.i18n.getMessage("project_changelog"),
+                    });
+                }
+            },
+        );
     }
 });

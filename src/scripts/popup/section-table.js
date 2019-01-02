@@ -4,11 +4,10 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {SectionEvent} from "./section-event.js";
+import { Utils } from "../sharre/utils.js";
+import { SectionEvent } from "./section-event.js";
 
 export class SectionTable {
-
     /**
      * @param {AssignedPackedItem} item
      */
@@ -51,8 +50,8 @@ export class SectionTable {
         this.sectionEvent = new SectionEvent(this).init();
     }
 
-    /** 
-     * @public 
+    /**
+     * @public
      * @param {AssignedPackedItem} item
      * @return {boolean}
      */
@@ -111,5 +110,4 @@ export class SectionTable {
             </section>`;
         return Utils.parseHTML(html);
     }
-
 }

@@ -4,12 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {
-    MAXIMUM_EDGE,
-    M_VIDEO_FRAME,
-    S_WITHOUT_CORS_MODE,
-    S_COMMAND_POINTER_EVENTS,
-} from "../sharre/constant.js";
+import { MAXIMUM_EDGE, M_VIDEO_FRAME, S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS } from "../sharre/constant.js";
 
 const attribute = `data-${chrome.runtime.id}`;
 const lightMark = document.createElement("mark");
@@ -55,17 +50,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             context.drawImage(videoRef, 0, 0, width, height);
             try {
                 const dataurl = canvas.toDataURL("image/jpeg", 0.95);
-                sendResponse({dataurl: dataurl});
+                sendResponse({ dataurl: dataurl });
             } catch (e) {
-                chrome.runtime.sendMessage({type: S_WITHOUT_CORS_MODE});
+                chrome.runtime.sendMessage({ type: S_WITHOUT_CORS_MODE });
             }
             break;
         }
     }
 });
 
-document.addEventListener("contextmenu", e => {
-    if (lightMark.parentElement) {
-        e.stopImmediatePropagation();
-    }
-}, true);
+document.addEventListener(
+    "contextmenu",
+    e => {
+        if (lightMark.parentElement) {
+            e.stopImmediatePropagation();
+        }
+    },
+    true,
+);

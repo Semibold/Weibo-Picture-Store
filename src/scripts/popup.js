@@ -5,9 +5,9 @@
  */
 
 import "./popup/fragment.js";
-import {PConfig} from "./sharre/constant.js";
-import {Dispatcher} from "./popup/dispatcher.js";
-import {backWindow} from "./sharre/alphabet.js";
+import { PConfig } from "./sharre/constant.js";
+import { Dispatcher } from "./popup/dispatcher.js";
+import { backWindow } from "./sharre/alphabet.js";
 
 document.title = chrome.i18n.getMessage("ext_name");
 
@@ -21,7 +21,7 @@ fileInput.addEventListener("change", e => {
 });
 
 browsingHistory.addEventListener("click", e => {
-    backWindow.chrome.tabs.create({url: "history.html"});
+    backWindow.chrome.tabs.create({ url: "history.html" });
 });
 
 document.addEventListener("keydown", e => {

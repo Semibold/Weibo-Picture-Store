@@ -4,19 +4,13 @@
  * found in the LICENSE file.
  */
 
-import {
-    M_VIDEO_FRAME,
-    M_BATCH_DELETE,
-    M_UPLOAD_IMAGE,
-    M_UPLOAD_HISTORY,
-    M_DOWNLOAD_LOG,
-} from "../sharre/constant.js";
-import {Utils} from "../sharre/utils.js";
-import {Base64} from "../sharre/base64.js";
-import {PConfig} from "../sharre/constant.js";
-import {WeiboUpload} from "./weibo-action.js";
-import {fetchBlob} from "./fetch-blob.js";
-import {logger} from "./internal-logger.js";
+import { M_VIDEO_FRAME, M_BATCH_DELETE, M_UPLOAD_IMAGE, M_UPLOAD_HISTORY, M_DOWNLOAD_LOG } from "../sharre/constant.js";
+import { Utils } from "../sharre/utils.js";
+import { Base64 } from "../sharre/base64.js";
+import { PConfig } from "../sharre/constant.js";
+import { WeiboUpload } from "./weibo-action.js";
+import { fetchBlob } from "./fetch-blob.js";
+import { logger } from "./internal-logger.js";
 
 const copyToClipboardId = Utils.randomString(16);
 
@@ -37,7 +31,6 @@ function writeToClipboard(item) {
     }
 }
 
-
 /**
  * @desc 上传记录的批量删除菜单
  */
@@ -46,12 +39,8 @@ chrome.contextMenus.create({
     id: M_BATCH_DELETE,
     contexts: ["link"],
     visible: false,
-    documentUrlPatterns: [
-        chrome.runtime.getURL("history.html"),
-        chrome.runtime.getURL("history.html?*"),
-    ],
+    documentUrlPatterns: [chrome.runtime.getURL("history.html"), chrome.runtime.getURL("history.html?*")],
 });
-
 
 /**
  * @desc 历史记录
@@ -62,7 +51,6 @@ chrome.contextMenus.create({
     id: M_UPLOAD_HISTORY,
 });
 
-
 /**
  * @desc 导出日志
  */
@@ -71,7 +59,6 @@ chrome.contextMenus.create({
     contexts: ["browser_action"],
     id: M_DOWNLOAD_LOG,
 });
-
 
 /**
  * @desc 上传当前视频帧
@@ -82,7 +69,6 @@ chrome.contextMenus.create({
     id: M_VIDEO_FRAME,
 });
 
-
 /**
  * @desc 上传图片
  */
@@ -91,7 +77,6 @@ chrome.contextMenus.create({
     contexts: ["image"],
     id: M_UPLOAD_IMAGE,
 });
-
 
 /**
  * @desc contextmenu events handler
@@ -102,7 +87,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             logger.download();
             break;
         case M_UPLOAD_HISTORY:
-            chrome.tabs.create({url: "history.html"});
+            chrome.tabs.create({ url: "history.html" });
             break;
         case M_UPLOAD_IMAGE:
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
@@ -116,27 +101,32 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             });
             break;
         case M_VIDEO_FRAME:
-            chrome.tabs.sendMessage(tab.id, {
-                type: M_VIDEO_FRAME,
-                srcUrl: info.srcUrl,
-            }, {frameId: info.frameId}, response => {
-                /**
-                 * @desc `response` 的数据结构: {dataurl: string}
-                 */
-                if (response) {
-                    const [t, b64] = response.dataurl.split(",");
-                    if (b64) {
-                        const blob = new Blob([Base64.toBuffer(b64)]);
-                        const weiboUpload = new WeiboUpload();
-                        weiboUpload.addQueues([blob]);
-                        weiboUpload.triggerIteration(it => {
-                            if (!it.done && it.value) {
-                                writeToClipboard(it.value);
-                            }
-                        });
+            chrome.tabs.sendMessage(
+                tab.id,
+                {
+                    type: M_VIDEO_FRAME,
+                    srcUrl: info.srcUrl,
+                },
+                { frameId: info.frameId },
+                response => {
+                    /**
+                     * @desc `response` 的数据结构: {dataurl: string}
+                     */
+                    if (response) {
+                        const [t, b64] = response.dataurl.split(",");
+                        if (b64) {
+                            const blob = new Blob([Base64.toBuffer(b64)]);
+                            const weiboUpload = new WeiboUpload();
+                            weiboUpload.addQueues([blob]);
+                            weiboUpload.triggerIteration(it => {
+                                if (!it.done && it.value) {
+                                    writeToClipboard(it.value);
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                },
+            );
             break;
     }
 });

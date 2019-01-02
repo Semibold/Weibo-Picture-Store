@@ -4,11 +4,11 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {USER_INFO_CACHE} from "../sharre/constant.js";
-import {requestSpecialAlbumId} from "./album.js";
-import {requestSignIn} from "./author.js";
-import {logger} from "../background/internal-logger.js";
+import { Utils } from "../sharre/utils.js";
+import { USER_INFO_CACHE } from "../sharre/constant.js";
+import { requestSpecialAlbumId } from "./album.js";
+import { requestSignIn } from "./author.js";
+import { logger } from "../background/internal-logger.js";
 
 /**
  * @package
@@ -33,7 +33,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
                 }),
             });
         })
-        .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
+        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .then(json => {
             if (!_replay && json && json["code"] === overflowCode) {
                 requestPhotosFromSpecialAlbum(20, 50)
@@ -66,9 +66,9 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
                     album_id: albumInfo.albumId,
                     photo_id: photoIds.join(","),
                 }),
-            })
+            });
         })
-        .then(response => response.ok ? response.json() : Promise.reject(new Error(response.statusText)))
+        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .then(json => {
             if (json && json["code"] === 0 && json["result"]) {
                 return Promise.resolve(json);
@@ -113,12 +113,14 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
     const promise = requestSpecialAlbumId();
     return promise
         .then(albumInfo => {
-            return Utils.fetch(Utils.buildURL("http://photo.weibo.com/photos/get_all", {
-                page: page,
-                count: count,
-                album_id: albumInfo.albumId,
-                __rnd: Date.now(),
-            }));
+            return Utils.fetch(
+                Utils.buildURL("http://photo.weibo.com/photos/get_all", {
+                    page: page,
+                    count: count,
+                    album_id: albumInfo.albumId,
+                    __rnd: Date.now(),
+                }),
+            );
         })
         .then(response => {
             return response.ok ? response.json() : Promise.reject(new Error(response.statusText));
@@ -140,24 +142,30 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                     module: "requestPhotosFromSpecialAlbum",
                     message: "获取微相册的全部图片成功",
                 });
-                return {total, photos};
+                return { total, photos };
             } else {
-                logger.add({
-                    module: "requestPhotosFromSpecialAlbum",
-                    message: "获取微相册的全部图片失败，数据异常",
-                    remark: json,
-                }, logger.LEVEL.warn);
+                logger.add(
+                    {
+                        module: "requestPhotosFromSpecialAlbum",
+                        message: "获取微相册的全部图片失败，数据异常",
+                        remark: json,
+                    },
+                    logger.LEVEL.warn,
+                );
                 return Promise.reject(new Error("Invalid Data"));
             }
         })
         .catch(reason => {
             if (_replay) {
                 promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
-                logger.add({
-                    module: "requestPhotosFromSpecialAlbum",
-                    message: reason,
-                    remark: "已经重试过了，这里直接抛出错误",
-                }, logger.LEVEL.warn);
+                logger.add(
+                    {
+                        module: "requestPhotosFromSpecialAlbum",
+                        message: reason,
+                        remark: "已经重试过了，这里直接抛出错误",
+                    },
+                    logger.LEVEL.warn,
+                );
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
@@ -168,11 +176,14 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                         });
                         return requestPhotosFromSpecialAlbum(page, count, true);
                     } else {
-                        logger.add({
-                            module: "requestPhotosFromSpecialAlbum",
-                            message: "用户处于登出状态，中止重试操作",
-                            remark: json,
-                        }, logger.LEVEL.warn);
+                        logger.add(
+                            {
+                                module: "requestPhotosFromSpecialAlbum",
+                                message: "用户处于登出状态，中止重试操作",
+                                remark: json,
+                            },
+                            logger.LEVEL.warn,
+                        );
                         return Promise.reject(reason);
                     }
                 });

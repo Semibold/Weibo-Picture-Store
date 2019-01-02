@@ -4,13 +4,12 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {SharreM} from "../sharre/alphabet.js";
-import {PConfig} from "../sharre/constant.js";
-import {SectionTable} from "./section-table.js";
+import { Utils } from "../sharre/utils.js";
+import { SharreM } from "../sharre/alphabet.js";
+import { PConfig } from "../sharre/constant.js";
+import { SectionTable } from "./section-table.js";
 
 export class Dispatcher {
-
     constructor() {
         this.config = null;
         this.starter = {
@@ -32,7 +31,7 @@ export class Dispatcher {
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clipsize");
         this.external = this.starter.clipsize;
-        this.checkout = {clear: true};
+        this.checkout = { clear: true };
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
         this.copyId = Utils.randomString(16);
@@ -50,7 +49,7 @@ export class Dispatcher {
 
     /** @private */
     genConfigProxy() {
-        const padding = {scheme: "2", clipsize: "1"};
+        const padding = { scheme: "2", clipsize: "1" };
         const customConfig = {
             scheme: localStorage.getItem(`${this.customConfigKey}.scheme`),
             clipsize: localStorage.getItem(`${this.customConfigKey}.clipsize`),
@@ -194,21 +193,30 @@ export class Dispatcher {
                         file && buffer.push(file);
                     }
                     if (item.kind === "string" && typeof item.getAsString === "function") {
-                        queues.push(new Promise((resolve, reject) => {
-                            item.getAsString(str => {
-                                const multiple = str.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-                                const multipleBuffer = [];
+                        queues.push(
+                            new Promise((resolve, reject) => {
+                                item.getAsString(str => {
+                                    const multiple = str
+                                        .replace(/\r\n/g, "\n")
+                                        .replace(/\r/g, "\n")
+                                        .split("\n");
+                                    const multipleBuffer = [];
 
-                                while (multiple.length) {
-                                    const url = multiple.shift();
-                                    if (Utils.isValidURL(url)) {
-                                        multipleBuffer.push(SharreM.fetchBlob(url).then(blob => buffer.push(blob)).catch(Utils.noop));
+                                    while (multiple.length) {
+                                        const url = multiple.shift();
+                                        if (Utils.isValidURL(url)) {
+                                            multipleBuffer.push(
+                                                SharreM.fetchBlob(url)
+                                                    .then(blob => buffer.push(blob))
+                                                    .catch(Utils.noop),
+                                            );
+                                        }
                                     }
-                                }
 
-                                Promise.all(multipleBuffer).then(resolve);
-                            });
-                        }).catch(Utils.noop));
+                                    Promise.all(multipleBuffer).then(resolve);
+                                });
+                            }).catch(Utils.noop),
+                        );
                     }
                 }
 
@@ -217,8 +225,8 @@ export class Dispatcher {
         });
     }
 
-    /** 
-     * @private 
+    /**
+     * @private
      * @param {PackedItem|Object|void} data
      * @param {boolean} [clear]
      */
@@ -233,7 +241,7 @@ export class Dispatcher {
         }
 
         const sectionTable = new SectionTable(this.transformer(data)).init();
-        const hybrid = {sectionTable, data};
+        const hybrid = { sectionTable, data };
 
         this.fillCopyMode(sectionTable.domNodes.section);
         this.list.set(sectionTable.domNodes.section, hybrid);
@@ -271,14 +279,14 @@ export class Dispatcher {
         }
     }
 
-    /** 
+    /**
      * @typedef {PackedItem} AssignedPackedItem
      * @property {string} URL
      * @property {string} HTML
      * @property {string} UBB
      * @property {string} Markdown
-     * 
-     * @private 
+     *
+     * @private
      * @param {PackedItem|Object} item
      * @return {*|AssignedPackedItem}
      */
@@ -297,7 +305,9 @@ export class Dispatcher {
             Markdown: `![image](${url})`,
         });
         if (item.width && item.height && clipsize === this.starter.clipsize[1]) {
-            assignedPackedItem.HTML = `<img src="${url}" alt="image" width="${item.width}" data-width="${item.width}" data-height="${item.height}">`;
+            assignedPackedItem.HTML = `<img src="${url}" alt="image" width="${item.width}" data-width="${
+                item.width
+            }" data-height="${item.height}">`;
         }
         return assignedPackedItem;
     }
@@ -330,5 +340,4 @@ export class Dispatcher {
             }
         }
     }
-
 }

@@ -4,13 +4,13 @@
  * found in the LICENSE file.
  */
 
-import {channel} from "./channel.js";
-import {remuxImage} from "../sharre/remux-image.js";
-import {Utils} from "../sharre/utils.js";
-import {PConfig} from "../sharre/constant.js";
-import {attachPhotoToSpecialAlbum} from "./photo.js";
-import {requestSignIn} from "./author.js";
-import {logger} from "../background/internal-logger.js";
+import { channel } from "./channel.js";
+import { remuxImage } from "../sharre/remux-image.js";
+import { Utils } from "../sharre/utils.js";
+import { PConfig } from "../sharre/constant.js";
+import { attachPhotoToSpecialAlbum } from "./photo.js";
+import { requestSignIn } from "./author.js";
+import { logger } from "../background/internal-logger.js";
 
 /**
  * @param {Blob|File} blob
@@ -110,12 +110,11 @@ async function uploader(item, _replay = false) {
     const oneline = channel[item.channelType];
     const method = "POST";
     const body = oneline.body(item.result);
-    const param = oneline.param({mime: item.mimeType});
+    const param = oneline.param({ mime: item.mimeType });
     const url = "http://picupload.weibo.com/interface/pic_upload.php";
 
-    return Utils
-        .fetch(Utils.buildURL(url, param), {method, body})
-        .then(response => response.ok ? response.text() : Promise.reject(new Error(response.statusText)))
+    return Utils.fetch(Utils.buildURL(url, param), { method, body })
+        .then(response => (response.ok ? response.text() : Promise.reject(new Error(response.statusText))))
         .then(text => {
             if (text) {
                 const tree = new DOMParser().parseFromString(text, "text/xml");
@@ -141,10 +140,13 @@ async function uploader(item, _replay = false) {
                         });
                         attachPhotoToSpecialAlbum(pid, uid);
                     } catch (e) {
-                        logger.add({
-                            module: "uploader",
-                            message: "用户信息解析失败",
-                        }, logger.LEVEL.warn);
+                        logger.add(
+                            {
+                                module: "uploader",
+                                message: "用户信息解析失败",
+                            },
+                            logger.LEVEL.warn,
+                        );
                         attachPhotoToSpecialAlbum(pid);
                     }
                     logger.add({
@@ -158,36 +160,47 @@ async function uploader(item, _replay = false) {
                         height: Number(height),
                     });
                 } else {
-                    logger.add({
-                        module: "uploader",
-                        message: "上传图片失败，数据异常",
-                        remark: text,
-                    }, logger.LEVEL.error);
+                    logger.add(
+                        {
+                            module: "uploader",
+                            message: "上传图片失败，数据异常",
+                            remark: text,
+                        },
+                        logger.LEVEL.error,
+                    );
                     return Promise.reject(new Error("Invalid Data"));
                 }
             } else {
-                logger.add({
-                    module: "uploader",
-                    message: "上传图片失败，数据异常",
-                    remark: text,
-                }, logger.LEVEL.error);
+                logger.add(
+                    {
+                        module: "uploader",
+                        message: "上传图片失败，数据异常",
+                        remark: text,
+                    },
+                    logger.LEVEL.error,
+                );
                 return Promise.reject(new Error("Invalid Data"));
             }
-        }).catch(reason => {
+        })
+        .catch(reason => {
             if (!_replay) {
                 return requestSignIn(true)
                     .catch(reason => {
-                        reason.login && chrome.notifications.create(loginFailedId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("notify_icon"),
-                            title: chrome.i18n.getMessage("fail_title"),
-                            message: "微博登录信息校验成功，可是。。。图片上传失败了呢",
-                        });
-                        logger.add({
-                            module: "uploader",
-                            message: "请求用户登录状态时，捕获到异常",
-                            remark: reason,
-                        }, logger.LEVEL.warn);
+                        reason.login &&
+                            chrome.notifications.create(loginFailedId, {
+                                type: "basic",
+                                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                                title: chrome.i18n.getMessage("fail_title"),
+                                message: "微博登录信息校验成功，可是。。。图片上传失败了呢",
+                            });
+                        logger.add(
+                            {
+                                module: "uploader",
+                                message: "请求用户登录状态时，捕获到异常",
+                                remark: reason,
+                            },
+                            logger.LEVEL.warn,
+                        );
                         return Promise.reject({
                             login: reason.login,
                             terminable: !reason.login,
@@ -197,15 +210,18 @@ async function uploader(item, _replay = false) {
                         if (json.login) {
                             logger.add({
                                 module: "uploader",
-                                message: "用户登录状态已被激活，重新尝试上传图片"
+                                message: "用户登录状态已被激活，重新尝试上传图片",
                             });
                             return uploader(item, true);
                         } else {
-                            logger.add({
-                                module: "uploader",
-                                message: "用户处于登出状态，中止重试操作",
-                                remark: json,
-                            }, logger.LEVEL.warn);
+                            logger.add(
+                                {
+                                    module: "uploader",
+                                    message: "用户处于登出状态，中止重试操作",
+                                    remark: json,
+                                },
+                                logger.LEVEL.warn,
+                            );
                             return Promise.reject({
                                 login: reason.login,
                                 terminable: !reason.login,
@@ -213,11 +229,14 @@ async function uploader(item, _replay = false) {
                         }
                     });
             } else {
-                logger.add({
-                    module: "uploader",
-                    message: reason,
-                    remark: "已经重试过了，这里直接抛出错误",
-                }, logger.LEVEL.warn);
+                logger.add(
+                    {
+                        module: "uploader",
+                        message: reason,
+                        remark: "已经重试过了，这里直接抛出错误",
+                    },
+                    logger.LEVEL.warn,
+                );
                 return Promise.reject(reason);
             }
         });

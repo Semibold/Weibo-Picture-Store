@@ -15,25 +15,27 @@ chrome.browserAction.onClicked.addListener(tab => {
             const left = Math.floor(screen.availWidth / 2 - width / 2);
 
             popupState.set("locked", true);
-            chrome.windows.create({
-                top,
-                left,
-                width,
-                height,
-                focused: true,
-                incognito: false,
-                type: "popup",
-                url: "popup.html",
-            }, result => {
-                popupState.set("id", result.id);
-                popupState.set("locked", false);
-            });
+            chrome.windows.create(
+                {
+                    top,
+                    left,
+                    width,
+                    height,
+                    focused: true,
+                    incognito: false,
+                    type: "popup",
+                    url: "popup.html",
+                },
+                result => {
+                    popupState.set("id", result.id);
+                    popupState.set("locked", false);
+                },
+            );
         } else {
-            chrome.windows.update(popupState.get("id"), {focused: true});
+            chrome.windows.update(popupState.get("id"), { focused: true });
         }
     }
 });
-
 
 chrome.windows.onRemoved.addListener(windowId => {
     windowId === popupState.get("id") && popupState.delete("id");

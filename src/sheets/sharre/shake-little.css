@@ -152,7 +152,8 @@
     98% {
         transform: translate(1px, 0px) rotate(0.5deg);
     }
-    0%, 100% {
+    0%,
+    100% {
         transform: translate(0, 0) rotate(0);
     }
 }

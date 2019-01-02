@@ -4,11 +4,10 @@
  * found in the LICENSE file.
  */
 
-import {Utils} from "../sharre/utils.js";
-import {SharreM} from "../sharre/alphabet.js";
+import { Utils } from "../sharre/utils.js";
+import { SharreM } from "../sharre/alphabet.js";
 
 export class Dispatcher {
-
     constructor() {
         this.checkout = {
             page: 1,
@@ -30,9 +29,12 @@ export class Dispatcher {
         this.fragment = document.createDocumentFragment();
         this.sections = new Map();
         this.selected = new Set();
-        this.observer = new IntersectionObserver((entries, observer) => {
-            this.observerCallback(entries, observer);
-        }, {rootMargin: "0%", threshold: 0});
+        this.observer = new IntersectionObserver(
+            (entries, observer) => {
+                this.observerCallback(entries, observer);
+            },
+            { rootMargin: "0%", threshold: 0 },
+        );
     }
 
     /**
@@ -72,29 +74,34 @@ export class Dispatcher {
             const promise = this.getPageList();
             this.locked = true;
             this.progressbar.dataset.hidden = false;
-            promise.then(result => {
-                this.checkout.page++;
-                return result;
-            }).catch(reason => {
-                this.errorInjector();
-            }).finally(() => {
-                const {page, pages} = this.checkout;
-                if (!pages || page > pages) {
-                    this.ended = true;
-                }
-                if (this.ended) {
-                    this.observer.unobserve(this.foot);
-                }
-                if (this.loading.parentElement) {
-                    this.loading.remove();
-                }
-                this.progressbar.dataset.hidden = true;
-            }).then(result => {
-                this.availableChecker();
-            }).finally(() => {
-                this.locked = false;
-                this.observerCallback();
-            });
+            promise
+                .then(result => {
+                    this.checkout.page++;
+                    return result;
+                })
+                .catch(reason => {
+                    this.errorInjector();
+                })
+                .finally(() => {
+                    const { page, pages } = this.checkout;
+                    if (!pages || page > pages) {
+                        this.ended = true;
+                    }
+                    if (this.ended) {
+                        this.observer.unobserve(this.foot);
+                    }
+                    if (this.loading.parentElement) {
+                        this.loading.remove();
+                    }
+                    this.progressbar.dataset.hidden = true;
+                })
+                .then(result => {
+                    this.availableChecker();
+                })
+                .finally(() => {
+                    this.locked = false;
+                    this.observerCallback();
+                });
         }
     }
 
@@ -122,7 +129,7 @@ export class Dispatcher {
      */
     getPageList() {
         // 修正删除数据后的分页信息
-        const {page, count, prevdel} = this.checkout;
+        const { page, count, prevdel } = this.checkout;
         const forward = Math.ceil(prevdel / count);
         const start = -prevdel % count; // 微相册返回的分页数据可能不等于 count 值，因此 start 应取 <=0 的值。
         this.checkout.page -= forward;
@@ -259,7 +266,7 @@ export class Dispatcher {
             this.main.append(this.exception);
         }
     }
-    
+
     /**
      * @private
      */
@@ -283,5 +290,4 @@ export class Dispatcher {
             </section>`;
         return Utils.parseHTML(html);
     }
-
 }

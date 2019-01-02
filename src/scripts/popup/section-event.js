@@ -5,9 +5,8 @@
  */
 
 export class SectionEvent {
-
     /**
-     * @param {SectionTable} sectionTable 
+     * @param {SectionTable} sectionTable
      */
     constructor(sectionTable) {
         this.section = sectionTable.domNodes.section;
@@ -48,5 +47,4 @@ export class SectionEvent {
         }
         this.eventHandlers.clear();
     }
-
 }
