@@ -243,7 +243,7 @@ async function uploader(item, _replay = false) {
 }
 
 /**
- * @public
+ * @export
  * @param {Blob|File} blob
  * @return {Promise<PackedItem>}
  * @reject {Error|{login: boolean, terminable: boolean}}

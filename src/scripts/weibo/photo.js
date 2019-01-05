@@ -11,7 +11,7 @@ import { requestSignIn } from "./author.js";
 import { logger } from "../background/internal-logger.js";
 
 /**
- * @package
+ * @export
  * @param {string} pid
  * @param {string} [uid]
  * @param {boolean} [_replay=false]
@@ -50,7 +50,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
 }
 
 /**
- * @public
+ * @export
  * @param {string[]} photoIds
  * @param {boolean} [_replay=false]
  * @return {Promise<*>}
@@ -93,7 +93,7 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
 }
 
 /**
- * @public
+ * @export
  * @param {number} page
  * @param {number} count
  * @param {boolean} [_replay=false]

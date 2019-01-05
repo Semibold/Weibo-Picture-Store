@@ -109,8 +109,8 @@ async function setUserStatus(notify) {
                                     iframe.onerror = null;
                                     iframe.remove();
                                 };
+                                // Useless
                                 iframe.onerror = e => {
-                                    // Useless
                                     reject();
                                     iframe.onload = null;
                                     iframe.onerror = null;
@@ -162,7 +162,7 @@ const setUserStatusWithNotify = setUserStatus.bind(null, true);
 const setUserStatusWithoutNotify = setUserStatus.bind(null, false);
 
 /**
- * @package
+ * @export
  * @param {boolean} [notify=false]
  * @return {Promise<{login: boolean}>}
  */
@@ -175,7 +175,7 @@ export async function requestSignIn(notify = false) {
 }
 
 /**
- * @package
+ * @export
  * @return {Promise<{uid: string}>}
  * @reject {Error}
  */

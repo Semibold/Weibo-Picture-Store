@@ -39,7 +39,7 @@ const headHTML = `
             </label>
             <label title="自定义裁剪尺寸">
                 <input type="radio" name="clipsize" value="4">
-                <input type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="off" class="custom-clipsize">
+                <input type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="on" class="custom-clipsize">
             </label>
         </div>
     </div>

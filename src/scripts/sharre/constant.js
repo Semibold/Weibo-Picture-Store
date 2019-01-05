@@ -36,7 +36,7 @@ export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
 export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 
 /**
- * @desc StorageKey
+ * @desc chrome.StorageArea
  */
 export const K_AUTO_DISPLAY_CHANGELOG = "auto_display_changelog";
 

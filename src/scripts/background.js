@@ -24,9 +24,4 @@ import { logger } from "./background/internal-logger.js";
 /**
  * @desc Core Share Module (APIs)
  */
-self.coreAPIs = {
-    fetchBlob,
-    WeiboStatic,
-    WeiboUpload,
-    logger,
-};
+self.coreAPIs = { fetchBlob, WeiboStatic, WeiboUpload, logger };

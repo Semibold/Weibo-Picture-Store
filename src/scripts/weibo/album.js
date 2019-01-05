@@ -132,7 +132,7 @@ async function tryCreateNewAlbum() {
 }
 
 /**
- * @package
+ * @export
  * @param {string} [uid]
  * @return {Promise<{uid: string, albumId: string}>}
  * @reject {Error}

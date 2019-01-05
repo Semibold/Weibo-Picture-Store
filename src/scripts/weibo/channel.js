@@ -8,7 +8,7 @@ import { Base64 } from "../sharre/base64.js";
 import { bitmapMime } from "../sharre/bitmap-mime.js";
 
 /**
- * @package
+ * @export
  * @desc 微博图片的两种上传方式
  */
 export const channel = new Proxy(

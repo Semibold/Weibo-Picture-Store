@@ -66,6 +66,7 @@ const BITMAP_PATTERN_TABLE = [
 
 /**
  * @desc image type pattern matching algorithm
+ * @return {boolean}
  */
 function isPatternMatch(buffer, item) {
     const input = new Uint8Array(buffer);

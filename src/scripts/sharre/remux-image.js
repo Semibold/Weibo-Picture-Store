@@ -10,7 +10,7 @@
 import { MAXIMUM_EDGE } from "./constant.js";
 
 /**
- * @param blob
+ * @param {ImageBitmapSource} blob
  * @return {Promise<Blob>}
  * @reject {Error}
  */

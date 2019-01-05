@@ -125,7 +125,7 @@ function coreInternalHander(tid) {
 }
 
 /**
- * @package
+ * @export
  * @desc Progress 的内部实现是用单例模式（上传、下载各一种）
  * @desc 这个只能在 Background 中运行
  */

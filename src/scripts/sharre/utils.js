@@ -172,7 +172,7 @@ export class Utils {
     }
 
     /**
-     * @param {Function} func
+     * @param {Function} func - MUST be a parameterless function
      * @return {Promise<*>}
      */
     static singleton(func) {

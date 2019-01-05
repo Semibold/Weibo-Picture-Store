@@ -15,7 +15,7 @@ chrome.runtime.onInstalled.addListener(details => {
             url: chrome.i18n.getMessage("project_readme"),
         });
     }
-    if (details.reason === "update" && details.previousVersion !== "5.4.2") {
+    if (details.reason === "update") {
         chrome.storage.sync.get(
             {
                 [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
