@@ -65,11 +65,12 @@ export class WeiboUpload {
     /**
      * @public
      * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
-     * @param {Function} [cb]
+     * @param {Function} [cb] - 这个回调函数应当依赖持久型的变量，否则会造成不可预测的问题
      */
     triggerIteration(cb) {
         if (this.tailer.done && this.queues.length) {
             this.startPrivateIteration(cb);
+            this.tailer.done = !this.queues.length;
             this.tailer.progress.trigger();
         }
     }

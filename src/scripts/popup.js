@@ -5,9 +5,10 @@
  */
 
 import "./popup/fragment.js";
-import { PConfig } from "./sharre/constant.js";
+import { EL_ALLOW_DIRECTORY_UPLOAD, PConfig } from "./sharre/constant.js";
 import { Dispatcher } from "./popup/dispatcher.js";
 import { backWindow } from "./sharre/alphabet.js";
+import { detectDirectoryUpload, fetchDirectory } from "./sharre/fetch-directory.js";
 
 document.title = chrome.i18n.getMessage("ext_name");
 
@@ -35,5 +36,18 @@ document.addEventListener("keydown", e => {
 document.addEventListener("dragover", e => e.preventDefault());
 document.addEventListener("drop", e => {
     e.preventDefault();
-    dispatcher.requester(e.dataTransfer.files);
+    if (EL_ALLOW_DIRECTORY_UPLOAD && detectDirectoryUpload()) {
+        fetchDirectory(e.dataTransfer.items).then(result => {
+            Object.keys(result).forEach(key => {
+                const value = result[key];
+                if (value.fromDirectory) {
+                    dispatcher.requester(value.files, key);
+                } else {
+                    dispatcher.requester(value.files);
+                }
+            });
+        });
+    } else {
+        dispatcher.requester(e.dataTransfer.files);
+    }
 });

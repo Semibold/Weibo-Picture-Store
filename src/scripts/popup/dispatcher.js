@@ -35,6 +35,9 @@ export class Dispatcher {
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
         this.copyId = Utils.randomString(16);
+        this.directorySymbol = "\uD83D\uDCC1";
+        this.classifyMap = new Map();
+        this.prestoreMap = new Map();
         this.weiboUpload = new SharreM.WeiboUpload();
     }
 
@@ -146,21 +149,30 @@ export class Dispatcher {
             const buttonCopy = e.target.closest(".button-copy");
 
             if (buttonCopy) {
+                const buffer = [];
                 const type = buttonCopy.dataset.type;
                 const prev = document.activeElement;
 
                 if (this.batch) {
-                    const buffer = [];
                     for (const hybrid of this.list.values()) {
-                        buffer.push(this.transformer(hybrid.data)[type]);
+                        const tdata = this.transformer(hybrid.data);
+                        if (Array.isArray(tdata)) {
+                            tdata.forEach(td => buffer.push(td[type]));
+                        } else {
+                            buffer.push(tdata[type]);
+                        }
                     }
-                    this.copier.value = buffer.join("\n");
                 } else {
                     const section = buttonCopy.closest("section");
-                    const input = this.list.get(section).sectionTable.domNodes[`input${type}`];
-                    this.copier.value = input.value;
+                    const tdata = this.transformer(this.list.get(section).data);
+                    if (Array.isArray(tdata)) {
+                        tdata.forEach(td => buffer.push(td[type]));
+                    } else {
+                        buffer.push(tdata[type]);
+                    }
                 }
 
+                this.copier.value = buffer.join("\n");
                 this.copier.focus();
                 this.copier.select();
 
@@ -227,7 +239,9 @@ export class Dispatcher {
 
     /**
      * @private
-     * @param {PackedItem|Object|void} data
+     * @param {PackedItem[]|PackedItem|Object|void} data - No internal validation.
+     *        `data.length` MUST be greater than 0 if data is array.
+     *
      * @param {boolean} [clear]
      */
     renderSection(data, clear) {
@@ -240,7 +254,7 @@ export class Dispatcher {
             this.clearCurrentList();
         }
 
-        const sectionTable = new SectionTable(this.transformer(data)).init();
+        const sectionTable = new SectionTable(this.getLastItemFromList(this.transformer(data))).init();
         const hybrid = { sectionTable, data };
 
         this.fillCopyMode(sectionTable.domNodes.section);
@@ -252,14 +266,14 @@ export class Dispatcher {
     /** @private */
     renderScheme() {
         for (const hybrid of this.list.values()) {
-            hybrid.sectionTable.repaint(this.transformer(hybrid.data));
+            hybrid.sectionTable.repaint(this.getLastItemFromList(this.transformer(hybrid.data)));
         }
     }
 
     /** @private */
     renderClipsize() {
         for (const hybrid of this.list.values()) {
-            hybrid.sectionTable.repaint(this.transformer(hybrid.data));
+            hybrid.sectionTable.repaint(this.getLastItemFromList(this.transformer(hybrid.data)));
         }
     }
 
@@ -285,12 +299,16 @@ export class Dispatcher {
      * @property {string} HTML
      * @property {string} UBB
      * @property {string} Markdown
+     * @property {string} [fullPath]
      *
      * @private
-     * @param {PackedItem|Object} item
+     * @param {PackedItem[]|PackedItem|Object} item
      * @return {*|AssignedPackedItem}
      */
     transformer(item) {
+        if (Array.isArray(item)) {
+            return item.map(d => this.transformer(d));
+        }
         if (!item || !item.pid) {
             return item;
         }
@@ -312,6 +330,29 @@ export class Dispatcher {
         return assignedPackedItem;
     }
 
+    /**
+     * @private
+     * @param {*[]|AssignedPackedItem[]} items
+     * @return {*|AssignedPackedItem}
+     */
+    getLastItemFromList(items) {
+        if (Array.isArray(items)) {
+            const d = items.slice(-1).pop();
+            if (d && d.URL) {
+                return Object.assign({}, d, {
+                    URL: this.directorySymbol + d.URL,
+                    HTML: this.directorySymbol + d.HTML,
+                    UBB: this.directorySymbol + d.UBB,
+                    Markdown: this.directorySymbol + d.Markdown,
+                });
+            } else {
+                return d;
+            }
+        } else {
+            return items;
+        }
+    }
+
     /** @private */
     clearCurrentList() {
         if (this.list.size) {
@@ -325,16 +366,44 @@ export class Dispatcher {
     /**
      * @public
      * @param {ArrayLike<Blob|File>|(Blob|File)[]} blobs
+     * @param {string} [fullPath] - Indicates that it is from a folder.
      */
-    requester(blobs) {
+    requester(blobs, fullPath) {
         if (blobs) {
             this.weiboUpload.addQueues(Array.from(blobs));
+            if (fullPath) {
+                for (const blob of Array.from(blobs)) {
+                    this.classifyMap.set(blob, fullPath);
+                }
+            }
             if (this.checkout.clear) {
                 this.weiboUpload.triggerIteration(it => {
                     if (it.done) {
+                        if (this.prestoreMap.size) {
+                            for (const [fullPath, prestore] of this.prestoreMap.entries()) {
+                                this.renderSection(prestore, this.checkout.clear);
+                            }
+                        }
+                        this.prestoreMap.clear();
+                        this.classifyMap.clear();
                         this.checkout.clear = true;
                     } else {
-                        this.renderSection(it.value, this.checkout.clear);
+                        if (this.classifyMap.has(it.value.blob)) {
+                            const fullPath = this.classifyMap.get(it.value.blob);
+                            const prestore = this.prestoreMap.get(fullPath) || [];
+                            prestore.push(Object.assign({ fullPath }, it.value));
+                            this.prestoreMap.set(fullPath, prestore);
+                            this.classifyMap.delete(it.value.blob);
+                            if (
+                                Array.from(this.classifyMap.values()).every(path => path !== fullPath) &&
+                                prestore.length
+                            ) {
+                                this.renderSection(prestore, this.checkout.clear);
+                                this.prestoreMap.delete(fullPath);
+                            }
+                        } else {
+                            this.renderSection(it.value, this.checkout.clear);
+                        }
                     }
                 });
             }

@@ -61,6 +61,9 @@ export class SectionTable {
             this.domNodes.inputHTML.value = item.HTML;
             this.domNodes.inputUBB.value = item.UBB;
             this.domNodes.inputMarkdown.value = item.Markdown;
+            if (item.fullPath) {
+                this.domNodes.imageHolder.title = `图片目录：${item.fullPath}`;
+            }
             return true;
         } else {
             return false;

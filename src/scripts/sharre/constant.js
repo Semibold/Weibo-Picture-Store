@@ -15,6 +15,11 @@ export const FEATURE_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUW
 export const MAXIMUM_EDGE = 2 ** 15 - 1;
 
 /**
+ * @desc Experimental
+ */
+export const EL_ALLOW_DIRECTORY_UPLOAD = true;
+
+/**
  * @desc FileProgress 的类型
  */
 export const FP_TYPE_UPLOAD = 1;
