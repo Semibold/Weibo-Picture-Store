@@ -7,7 +7,7 @@
 import { channel } from "./channel.js";
 import { remuxImage } from "../sharre/remux-image.js";
 import { Utils } from "../sharre/utils.js";
-import { PConfig } from "../sharre/constant.js";
+import { PConfig, MAXIMUM_WEIBO_PICTURE_SIZE } from "../sharre/constant.js";
 import { attachPhotoToSpecialAlbum } from "./photo.js";
 import { requestSignIn } from "./author.js";
 import { logger } from "../background/internal-logger.js";
@@ -86,7 +86,7 @@ async function purity(item) {
         });
         return Promise.reject(new Error("Unsupported file format"));
     }
-    if (item.blob.size > 20 * 1024 * 1024 - 1) {
+    if (item.blob.size > MAXIMUM_WEIBO_PICTURE_SIZE) {
         chrome.notifications.create(sizeSlopId, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notify_icon"),

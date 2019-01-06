@@ -5,6 +5,7 @@
  */
 
 import { logger } from "../background/internal-logger.js";
+import { MAXIMUM_WEIBO_PICTURE_SIZE } from "./constant.js";
 
 const registrar = { hasDirectoryUpload: null };
 
@@ -169,6 +170,7 @@ export async function fetchDirectory(items) {
         .then(() => {
             const result = {};
             for (const virtualFile of virtualFiles) {
+                if (virtualFile.file.size > MAXIMUM_WEIBO_PICTURE_SIZE) continue; // Quietly discard there files
                 const fullPath = resolveRelativeFullPath(virtualFile);
                 if (!result[fullPath]) {
                     result[fullPath] = { files: [], fromDirectory: virtualFile.fromDirectory };

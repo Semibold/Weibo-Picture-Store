@@ -15,6 +15,11 @@ export const FEATURE_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUW
 export const MAXIMUM_EDGE = 2 ** 15 - 1;
 
 /**
+ * @desc 微博图片最大的文件大小
+ */
+export const MAXIMUM_WEIBO_PICTURE_SIZE = 20 * 1024 * 1024 - 1;
+
+/**
  * @desc Experimental
  */
 export const EL_ALLOW_DIRECTORY_UPLOAD = true;
