@@ -7,7 +7,7 @@
 import { Utils } from "../sharre/utils.js";
 import { FileProgress } from "./file-progress.js";
 import { FP_TYPE_DOWNLOAD } from "../sharre/constant.js";
-import { logger } from "./internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 const fetchFailedId = Utils.randomString(16);
 
@@ -64,14 +64,11 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 title: chrome.i18n.getMessage("warn_title"),
                 message: "无法读取远程文件",
             });
-            logger.add(
-                {
-                    module: "FetchBlob",
-                    message: reason,
-                    remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
-                },
-                logger.LEVEL.warn,
-            );
+            Log.w({
+                module: "FetchBlob",
+                message: reason,
+                remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
+            });
             return Promise.reject(reason);
         })
         .finally(() => {

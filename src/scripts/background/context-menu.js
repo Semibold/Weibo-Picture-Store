@@ -10,7 +10,7 @@ import { Base64 } from "../sharre/base64.js";
 import { PConfig } from "../sharre/constant.js";
 import { WeiboUpload } from "./weibo-action.js";
 import { fetchBlob } from "./fetch-blob.js";
-import { logger } from "./internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 const copyToClipboardId = Utils.randomString(16);
 
@@ -84,7 +84,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     switch (info.menuItemId) {
         case M_DOWNLOAD_LOG:
-            logger.download();
+            Log.download();
             break;
         case M_UPLOAD_HISTORY:
             chrome.tabs.create({ url: "history.html" });

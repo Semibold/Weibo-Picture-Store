@@ -5,7 +5,7 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { logger } from "../background/internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 const signedNid = Utils.randomString(16);
 const iframeId = `iframe-${Utils.randomString(6)}`;
@@ -30,7 +30,7 @@ async function getUserStatus(notify) {
         .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .then(json => {
             if (json && json["code"] === "100000") {
-                logger.add({
+                Log.d({
                     module: "getUserStatus",
                     message: "用户处于登录状态",
                 });
@@ -45,13 +45,10 @@ async function getUserStatus(notify) {
                         contextMessage: "单击转到微博的登录页面进行登录操作",
                         requireInteraction: true,
                     });
-                logger.add(
-                    {
-                        module: "getUserStatus",
-                        message: "用户处于登出状态",
-                    },
-                    logger.LEVEL.warn,
-                );
+                Log.w({
+                    module: "getUserStatus",
+                    message: "用户处于登出状态",
+                });
                 return { login: false };
             }
         })
@@ -65,14 +62,11 @@ async function getUserStatus(notify) {
                     contextMessage: "单击转到微博的登录页面进行登录操作",
                     requireInteraction: true,
                 });
-            logger.add(
-                {
-                    module: "getUserStatus",
-                    message: reason,
-                    remark: "请求发生错误，假设用户处于登出状态，可能会导致实际的用户状态和获得的用户状态结果不一致",
-                },
-                logger.LEVEL.error,
-            );
+            Log.e({
+                module: "getUserStatus",
+                message: reason,
+                remark: "请求发生错误，假设用户处于登出状态，可能会导致实际的用户状态和获得的用户状态结果不一致",
+            });
             return { login: false };
         });
 }
@@ -85,13 +79,10 @@ async function getUserStatus(notify) {
 async function setUserStatus(notify) {
     return getUserStatus(false).then(json => {
         if (json.login) {
-            logger.add(
-                {
-                    module: "setUserStatus",
-                    message: "检测到用户处于登录状态，中断激活用户登录状态的操作",
-                },
-                logger.LEVEL.warn,
-            );
+            Log.w({
+                module: "setUserStatus",
+                message: "检测到用户处于登录状态，中断激活用户登录状态的操作",
+            });
             return Promise.reject(json);
         } else {
             return Utils.fetch("http://weibo.com/aj/onoff/setstatus", {
@@ -120,31 +111,25 @@ async function setUserStatus(notify) {
                             iframe.id = iframeId;
                             iframe.src = response.url;
                             document.body.append(iframe);
-                            logger.add({
+                            Log.d({
                                 module: "setUserStatus",
                                 message: "用户可能处于未激活的登录状态，尝试激活",
                             });
                             return promise;
                         } else {
-                            logger.add(
-                                {
-                                    module: "setUserStatus",
-                                    message: "没有检测到重定向链接",
-                                    remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
-                                },
-                                logger.LEVEL.error,
-                            );
+                            Log.e({
+                                module: "setUserStatus",
+                                message: "没有检测到重定向链接",
+                                remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
+                            });
                             return Promise.reject(new Error(response.url));
                         }
                     } else {
-                        logger.add(
-                            {
-                                module: "setUserStatus",
-                                message: response.statusText,
-                                remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
-                            },
-                            logger.LEVEL.warn,
-                        );
+                        Log.w({
+                            module: "setUserStatus",
+                            message: response.statusText,
+                            remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
+                        });
                         return Promise.reject(new Error(response.statusText));
                     }
                 })
@@ -186,20 +171,17 @@ export async function requestUserId() {
         .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .then(json => {
             if (json && json["retcode"] === 0 && json["uid"]) {
-                logger.add({
+                Log.d({
                     module: "requestUserId",
                     message: "获取用户信息成功",
                 });
                 return { uid: json["uid"] };
             } else {
-                logger.add(
-                    {
-                        module: "requestUserId",
-                        message: "获取用户信息失败",
-                        remark: "这种情况下无法命中缓存，没有其他影响",
-                    },
-                    logger.LEVEL.warn,
-                );
+                Log.w({
+                    module: "requestUserId",
+                    message: "获取用户信息失败",
+                    remark: "这种情况下无法命中缓存，没有其他影响",
+                });
                 return Promise.reject(new Error("UserId not found"));
             }
         });

@@ -8,34 +8,42 @@ import { Utils } from "../sharre/utils.js";
 import { FEATURE_ID } from "../sharre/constant.js";
 import { USER_INFO_CACHE, USER_INFO_EXPIRED } from "../sharre/constant.js";
 import { requestUserId } from "./author.js";
-import { logger } from "../background/internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 /**
  * @desc Singleton
- * @return {Promise<{uid: string, albumId: string}>}
+ * @typedef {Object} AlbumInfo
+ * @property {string} uid
+ * @property {string} albumId
+ * @property {*[]} albumList
+ *
+ * @return {Promise<AlbumInfo>}
  * @reject {{canCreateNewAlbum: boolean}|Error}
  */
 async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
-    return Utils.fetch(Utils.buildURL("http://photo.weibo.com/albums/get_all", { page: 1, count: overflow }))
+    return Utils.fetch(
+        Utils.buildURL("http://photo.weibo.com/albums/get_all", { page: 1, count: overflow, __rnd: Date.now() }),
+    )
         .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .catch(reason => {
-            logger.add(
-                {
-                    module: "tryCheckoutSpecialAlbumId",
-                    message: reason,
-                    remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
-                },
-                logger.LEVEL.error,
-            );
+            Log.e({
+                module: "tryCheckoutSpecialAlbumId",
+                message: reason,
+                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
+            });
             return Promise.reject(reason);
         })
         .then(json => {
             if (json && json["result"]) {
-                const albumInfo = { counter: 0, uid: null, albumId: null };
+                const albumInfo = { uid: null, albumId: null };
+                // 从新到旧排序
+                const albumList = json["data"]["album_list"]
+                    .filter(info => info["description"] === FEATURE_ID)
+                    .sort((prev, next) => Number(next["timestamp"]) - Number(prev["timestamp"]));
+                const total = Math.max(json["data"]["total"], json["data"]["album_list"].length);
 
-                for (const item of json["data"]["album_list"]) {
-                    albumInfo.counter++;
+                for (const item of albumList) {
                     if (item["description"] === FEATURE_ID) {
                         albumInfo.uid = item["uid"].toString();
                         albumInfo.albumId = item["album_id"].toString();
@@ -44,35 +52,30 @@ async function tryCheckoutSpecialAlbumId() {
                 }
 
                 if (albumInfo.albumId) {
-                    logger.add({
+                    Log.d({
                         module: "CheckoutSpecialAlbumId",
                         message: "检出指定的微相册成功",
                     });
                     return Promise.resolve({
                         uid: albumInfo.uid,
                         albumId: albumInfo.albumId,
+                        albumList,
                     });
                 } else {
-                    const canCreateNewAlbum = albumInfo.counter < overflow;
-                    logger.add(
-                        {
-                            module: "CheckoutSpecialAlbumId",
-                            message: "没有检测到指定的微相册",
-                            remark: `能否创建新的微相册：${canCreateNewAlbum}`,
-                        },
-                        logger.LEVEL.warn,
-                    );
+                    const canCreateNewAlbum = total < overflow;
+                    Log.w({
+                        module: "CheckoutSpecialAlbumId",
+                        message: "没有检测到指定的微相册",
+                        remark: `能否创建新的微相册：${canCreateNewAlbum}`,
+                    });
                     return Promise.reject({ canCreateNewAlbum });
                 }
             } else {
-                logger.add(
-                    {
-                        module: "CheckoutSpecialAlbumId",
-                        message: "检出指定的微相册失败，数据异常",
-                        remark: json,
-                    },
-                    logger.LEVEL.error,
-                );
+                Log.e({
+                    module: "CheckoutSpecialAlbumId",
+                    message: "检出指定的微相册失败，数据异常",
+                    remark: json,
+                });
                 return Promise.reject(new Error("Invalid Data"));
             }
         });
@@ -97,19 +100,16 @@ async function tryCreateNewAlbum() {
     return Utils.fetch("http://photo.weibo.com/albums/create", { method, body })
         .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .catch(reason => {
-            logger.add(
-                {
-                    module: "tryCreateNewAlbum",
-                    message: reason,
-                    remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
-                },
-                logger.LEVEL.error,
-            );
+            Log.e({
+                module: "tryCreateNewAlbum",
+                message: reason,
+                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
+            });
             return Promise.reject(reason);
         })
         .then(json => {
             if (json && json["result"]) {
-                logger.add({
+                Log.d({
                     module: "CreateNewAlbum",
                     message: "创建微相册成功",
                 });
@@ -118,26 +118,48 @@ async function tryCreateNewAlbum() {
                     albumId: json["data"]["album_id"].toString(),
                 };
             } else {
-                logger.add(
-                    {
-                        module: "CreateNewAlbum",
-                        message: "创建微相册失败，数据异常",
-                        remark: json,
-                    },
-                    logger.LEVEL.error,
-                );
+                Log.e({
+                    module: "CreateNewAlbum",
+                    message: "创建微相册失败，数据异常",
+                    remark: json,
+                });
                 return Promise.reject(new Error("Invalid Data"));
             }
         });
 }
 
 /**
+ * @param {AlbumInfo} albumInfo
+ * @return {AlbumInfo}
+ */
+function setUserInfoCache(albumInfo) {
+    if (albumInfo && albumInfo.albumId && albumInfo.uid) {
+        USER_INFO_CACHE.set(
+            albumInfo.uid,
+            Object.assign(
+                {
+                    timestamp: Date.now(),
+                },
+                albumInfo,
+            ),
+        );
+    }
+    return albumInfo;
+}
+
+/**
  * @export
  * @param {string} [uid]
- * @return {Promise<{uid: string, albumId: string}>}
+ * @param {boolean} [forceCreateNewAlbum]
+ * @return {Promise<AlbumInfo>}
  * @reject {Error}
  */
-export async function requestSpecialAlbumId(uid) {
+export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
+    if (forceCreateNewAlbum) {
+        return Utils.singleton(tryCreateNewAlbum)
+            .then(tinyAlbumInfo => Utils.singleton(tryCheckoutSpecialAlbumId))
+            .then(setUserInfoCache);
+    }
     const cacheId =
         uid ||
         (await requestUserId()
@@ -162,7 +184,10 @@ export async function requestSpecialAlbumId(uid) {
         .catch(reason => {
             if (reason && reason.canCreateNewAlbum != null) {
                 if (reason.canCreateNewAlbum) {
-                    return Utils.singleton(tryCreateNewAlbum);
+                    // Always return tryCheckoutSpecialAlbumId result.
+                    return Utils.singleton(tryCreateNewAlbum).then(tinyAlbumInfo =>
+                        Utils.singleton(tryCheckoutSpecialAlbumId),
+                    );
                 } else {
                     return Promise.reject(new Error("Cannot create new album"));
                 }
@@ -170,18 +195,5 @@ export async function requestSpecialAlbumId(uid) {
                 return Promise.reject(reason);
             }
         })
-        .then(albumInfo => {
-            if (albumInfo && albumInfo.albumId && albumInfo.uid) {
-                USER_INFO_CACHE.set(
-                    albumInfo.uid,
-                    Object.assign(
-                        {
-                            timestamp: Date.now(),
-                        },
-                        albumInfo,
-                    ),
-                );
-            }
-            return albumInfo;
-        });
+        .then(setUserInfoCache);
 }

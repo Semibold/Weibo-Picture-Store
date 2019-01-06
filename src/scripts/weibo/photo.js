@@ -8,7 +8,7 @@ import { Utils } from "../sharre/utils.js";
 import { USER_INFO_CACHE } from "../sharre/constant.js";
 import { requestSpecialAlbumId } from "./album.js";
 import { requestSignIn } from "./author.js";
-import { logger } from "../background/internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 /**
  * @export
@@ -21,7 +21,7 @@ import { logger } from "../background/internal-logger.js";
 export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
     const overflow = 1000; // 相册的最大存储量
     const overflowCode = 11112; // 相册存储量溢出时的返回码
-    const promise = requestSpecialAlbumId(uid);
+    const promise = requestSpecialAlbumId(uid, _replay);
     return promise
         .then(albumInfo => {
             return Utils.fetch("http://photo.weibo.com/upload/photo", {
@@ -36,9 +36,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
         .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
         .then(json => {
             if (!_replay && json && json["code"] === overflowCode) {
-                requestPhotosFromSpecialAlbum(20, 50)
-                    .then(json => detachPhotoFromSpecialAlbum(json.photos.map(item => item.photoId)))
-                    .then(json => attachPhotoToSpecialAlbum(pid, uid, true));
+                attachPhotoToSpecialAlbum(pid, uid, true);
             }
         })
         .catch(reason => {
@@ -52,18 +50,19 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
 /**
  * @export
  * @param {string[]} photoIds
+ * @param {string} [albumId]
  * @param {boolean} [_replay=false]
  * @return {Promise<*>}
  * @reject {Error}
  */
-export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
+export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = false) {
     const promise = requestSpecialAlbumId();
     return promise
         .then(albumInfo => {
             return Utils.fetch("http://photo.weibo.com/albums/delete_batch", {
                 method: "POST",
                 body: Utils.createSearchParams({
-                    album_id: albumInfo.albumId,
+                    album_id: albumId || albumInfo.albumId,
                     photo_id: photoIds.join(","),
                 }),
             });
@@ -83,7 +82,7 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
             } else {
                 return requestSignIn(true).then(json => {
                     if (json.login) {
-                        return detachPhotoFromSpecialAlbum(photoIds, true);
+                        return detachPhotoFromSpecialAlbum(photoIds, albumId, true);
                     } else {
                         return Promise.reject(reason);
                     }
@@ -94,30 +93,37 @@ export async function detachPhotoFromSpecialAlbum(photoIds, _replay = false) {
 
 /**
  * @export
+ * @typedef {Object} AlbumContents
+ * @property {number} total
+ * @property {string} albumId
+ * @property {*[]} albumList
+ * @property {Array<Object>} photos[]
+ * @property {string} photos.albumId
+ * @property {string} photos.photoId
+ * @property {string} photos.picHost
+ * @property {string} photos.picName
+ * @property {string} photos.updated
+ *
  * @param {number} page
  * @param {number} count
+ * @param {string} [albumId]
  * @param {boolean} [_replay=false]
- * @return {Promise<{
- *   total: number,
- *   photos: {
- *     albumId: string,
- *     photoId: string,
- *     picHost: string,
- *     picName: string,
- *     updated: string
- *   }[]
- * }>}
+ * @return {Promise<AlbumContents>}
  * @reject {Error}
  */
-export async function requestPhotosFromSpecialAlbum(page, count, _replay = false) {
+export async function requestPhotosFromSpecialAlbum(page, count, albumId, _replay = false) {
     const promise = requestSpecialAlbumId();
+    const albumList = [];
     return promise
         .then(albumInfo => {
+            if (Array.isArray(albumInfo.albumList)) {
+                albumList.push(...albumInfo.albumList);
+            }
             return Utils.fetch(
                 Utils.buildURL("http://photo.weibo.com/photos/get_all", {
                     page: page,
                     count: count,
-                    album_id: albumInfo.albumId,
+                    album_id: albumId || albumInfo.albumId,
                     __rnd: Date.now(),
                 }),
             );
@@ -128,6 +134,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
         .then(json => {
             if (json && json["code"] === 0 && json["result"]) {
                 const total = json["data"]["total"];
+                const albumId = json["data"]["album_id"];
                 const photos = [];
                 for (const item of json["data"]["photo_list"]) {
                     photos.push({
@@ -138,52 +145,43 @@ export async function requestPhotosFromSpecialAlbum(page, count, _replay = false
                         updated: item["updated_at"],
                     });
                 }
-                logger.add({
+                Log.d({
                     module: "requestPhotosFromSpecialAlbum",
                     message: "获取微相册的全部图片成功",
                 });
-                return { total, photos };
+                return { albumList, total, albumId, photos };
             } else {
-                logger.add(
-                    {
-                        module: "requestPhotosFromSpecialAlbum",
-                        message: "获取微相册的全部图片失败，数据异常",
-                        remark: json,
-                    },
-                    logger.LEVEL.warn,
-                );
+                Log.w({
+                    module: "requestPhotosFromSpecialAlbum",
+                    message: "获取微相册的全部图片失败，数据异常",
+                    remark: json,
+                });
                 return Promise.reject(new Error("Invalid Data"));
             }
         })
         .catch(reason => {
             if (_replay) {
                 promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
-                logger.add(
-                    {
-                        module: "requestPhotosFromSpecialAlbum",
-                        message: reason,
-                        remark: "已经重试过了，这里直接抛出错误",
-                    },
-                    logger.LEVEL.warn,
-                );
+                Log.w({
+                    module: "requestPhotosFromSpecialAlbum",
+                    message: reason,
+                    remark: "已经重试过了，这里直接抛出错误",
+                });
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
                     if (json.login) {
-                        logger.add({
+                        Log.d({
                             module: "requestPhotosFromSpecialAlbum",
                             message: "用户登录状态已被激活，重新尝试获取微相册的全部图片",
                         });
-                        return requestPhotosFromSpecialAlbum(page, count, true);
+                        return requestPhotosFromSpecialAlbum(page, count, albumId, true);
                     } else {
-                        logger.add(
-                            {
-                                module: "requestPhotosFromSpecialAlbum",
-                                message: "用户处于登出状态，中止重试操作",
-                                remark: json,
-                            },
-                            logger.LEVEL.warn,
-                        );
+                        Log.w({
+                            module: "requestPhotosFromSpecialAlbum",
+                            message: "用户处于登出状态，中止重试操作",
+                            remark: json,
+                        });
                         return Promise.reject(reason);
                     }
                 });

@@ -9,7 +9,7 @@ import { FP_TYPE_UPLOAD } from "../sharre/constant.js";
 
 import { requestUpload } from "../weibo/upload.js";
 import { detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum } from "../weibo/photo.js";
-import { logger } from "./internal-logger.js";
+import { Log } from "../sharre/log.js";
 
 /**
  * @static
@@ -18,28 +18,22 @@ import { logger } from "./internal-logger.js";
 export class WeiboStatic {
     /**
      * @param {string[]} photoIds
+     * @param {string} [albumId]
      * @return {Promise<*, Error>}
      */
-    static detachPhoto(photoIds) {
-        return detachPhotoFromSpecialAlbum(photoIds);
+    static detachPhoto(photoIds, albumId) {
+        return detachPhotoFromSpecialAlbum(photoIds, albumId);
     }
 
     /**
      * @param {number} page
      * @param {number} count
-     * @return {Promise<{
-     *   total: number,
-     *   photos: {
-     *     albumId: string,
-     *     photoId: string,
-     *     picHost: string,
-     *     picName: string,
-     *     updated: string
-     *   }[]
-     * }>, Error}
+     * @param {string} [albumId]
+     * @return {Promise<AlbumContents>}
+     * @reject {Error}
      */
-    static requestPhotos(page, count) {
-        return requestPhotosFromSpecialAlbum(page, count);
+    static requestPhotos(page, count, albumId) {
+        return requestPhotosFromSpecialAlbum(page, count, albumId);
     }
 }
 
@@ -85,14 +79,11 @@ export class WeiboUpload {
             .then(it => {
                 if (it.done) {
                     if (this.queues.length) {
-                        logger.add(
-                            {
-                                module: "WeiboUpload",
-                                message: "迭代队列异常，中止后续操作",
-                                remark: `剩余的迭代队列数量为：${this.queues.length}`,
-                            },
-                            logger.LEVEL.warn,
-                        );
+                        Log.w({
+                            module: "WeiboUpload",
+                            message: "迭代队列异常，中止后续操作",
+                            remark: `剩余的迭代队列数量为：${this.queues.length}`,
+                        });
                         /**
                          * @desc 迭代器提前终止的情况
                          * @desc 处理 FileProgress，然后清空 this.queues 队列
