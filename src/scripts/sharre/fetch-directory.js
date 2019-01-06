@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-import { logger } from "../background/internal-logger.js";
 import { MAXIMUM_WEIBO_PICTURE_SIZE } from "./constant.js";
+import { Log } from "./log.js";
 
 const registrar = { hasDirectoryUpload: null };
 
@@ -25,14 +25,11 @@ export function detectDirectoryUpload() {
             return (registrar.hasDirectoryUpload = true);
         }
     } catch (e) {
-        logger.add(
-            {
-                module: "detectDirectoryUpload",
-                message: e,
-                remark: "Not support webkit directory upload",
-            },
-            logger.LEVEL.warn,
-        );
+        Log.w({
+            module: "detectDirectoryUpload",
+            message: e,
+            remark: "Not support webkit directory upload",
+        });
     }
     return (registrar.hasDirectoryUpload = false);
 }
@@ -72,14 +69,11 @@ function readDirectoryRecursive(virtualFileEntries, directoryEntry) {
                     }
                 },
                 err => {
-                    logger.add(
-                        {
-                            module: "readDirectoryRecursive",
-                            message: `读取目录 ${entry.fullPath} 时发生错误`,
-                            remark: err,
-                        },
-                        logger.LEVEL.warn,
-                    );
+                    Log.w({
+                        module: "readDirectoryRecursive",
+                        message: `读取目录 ${entry.fullPath} 时发生错误`,
+                        remark: err,
+                    });
                     if (subDirectoryEntryCaches.length) {
                         readDirectoryEntry(subDirectoryEntryCaches.shift());
                     } else {
@@ -151,14 +145,11 @@ export async function fetchDirectory(items) {
                                 resolve();
                             },
                             err => {
-                                logger.add(
-                                    {
-                                        module: "fetchDirectory",
-                                        message: `读取文件 ${fileEntry.fullPath} 时发生错误`,
-                                        remark: err,
-                                    },
-                                    logger.LEVEL.warn,
-                                );
+                                Log.w({
+                                    module: "fetchDirectory",
+                                    message: `读取文件 ${fileEntry.fullPath} 时发生错误`,
+                                    remark: err,
+                                });
                                 resolve();
                             },
                         );

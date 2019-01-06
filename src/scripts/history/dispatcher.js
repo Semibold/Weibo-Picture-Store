@@ -6,6 +6,7 @@
 
 import { Utils } from "../sharre/utils.js";
 import { SharreM } from "../sharre/alphabet.js";
+import { Log } from "../sharre/log.js";
 
 export class Dispatcher {
     constructor() {
@@ -14,6 +15,8 @@ export class Dispatcher {
             pages: 1,
             count: 50,
             prevdel: 0,
+            albumId: "",
+            albumList: [],
         };
         this.error = false;
         this.ended = false;
@@ -23,10 +26,13 @@ export class Dispatcher {
         this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
         this.foot = document.querySelector("#foot");
+        this.naviPrev = document.querySelector(".navi-prev");
+        this.naviNext = document.querySelector(".navi-next");
         this.progressbar = document.querySelector("#progress-bar");
         this.loading = document.createElement("div");
         this.exception = document.createElement("div");
         this.fragment = document.createDocumentFragment();
+        this.searchParams = new URLSearchParams(location.search);
         this.sections = new Map();
         this.selected = new Set();
         this.observer = new IntersectionObserver(
@@ -42,6 +48,7 @@ export class Dispatcher {
      */
     init() {
         this.createStructure();
+        this.parseQueryString();
         this.registerObserver();
         this.registerListener();
         return this;
@@ -55,6 +62,58 @@ export class Dispatcher {
         this.exception.append(Utils.parseHTML(`<button>载入数据错误，点击再次加载</button>`));
         this.loading.dataset.bio = "loading";
         this.main.append(this.loading);
+    }
+
+    /** @private */
+    parseQueryString() {
+        const albumId = this.searchParams.get("album_id");
+        if (albumId && /^[0-9]+$/.test(albumId)) {
+            this.checkout.albumId = albumId;
+        }
+    }
+
+    /**
+     * @private
+     * @param {string} albumId
+     */
+    flipPage(albumId) {
+        if (albumId) {
+            this.searchParams.set("album_id", albumId);
+            location.search = this.searchParams.toString();
+        } else {
+            console.warn("输入的 albumId 不是有效的相册ID");
+            Log.w({
+                module: "HistoryDispatcher",
+                message: "输入的 albumId 不是有效的相册ID",
+            });
+        }
+    }
+
+    /** @private */
+    renderPaging() {
+        this.naviPrev.dataset.disabled = !this.getPrevOrNextAlbumId(-1);
+        this.naviNext.dataset.disabled = !this.getPrevOrNextAlbumId(1);
+    }
+
+    /**
+     * @private
+     * @param {number} n
+     * @return {string|void}
+     */
+    getPrevOrNextAlbumId(n) {
+        const d = { pointer: -1 };
+        for (let i = 0; i < this.checkout.albumList.length; i++) {
+            const albumId = this.checkout.albumList[i]["album_id"].toString();
+            if (albumId === this.checkout.albumId) {
+                d.pointer = i;
+                break;
+            }
+        }
+        if (d.pointer < 0) return;
+        const info = this.checkout.albumList[d.pointer + n];
+        if (info) {
+            return info["album_id"].toString();
+        }
     }
 
     /**
@@ -134,7 +193,7 @@ export class Dispatcher {
         const start = -prevdel % count; // 微相册返回的分页数据可能不等于 count 值，因此 start 应取 <=0 的值。
         this.checkout.page -= forward;
 
-        return SharreM.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count)
+        return SharreM.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count, this.checkout.albumId)
             .then(json => {
                 this.checkout.prevdel -= prevdel;
                 if (this.checkout.prevdel < 0) {
@@ -144,6 +203,8 @@ export class Dispatcher {
             })
             .then(json => {
                 this.checkout.pages = Math.ceil(json.total / this.checkout.count);
+                this.checkout.albumId = json.albumId.toString();
+                this.checkout.albumList = json.albumList.slice(0).reverse(); // 从旧到新排序
                 for (const item of json.photos.slice(start)) {
                     const fragment = this.constructor.importNode();
                     const section = fragment.querySelector("section");
@@ -159,6 +220,11 @@ export class Dispatcher {
                 }
                 this.main.append(this.fragment);
                 return json;
+            })
+            .finally(() => {
+                if (page === 1) {
+                    this.renderPaging();
+                }
             });
     }
 
@@ -166,6 +232,8 @@ export class Dispatcher {
      * @private
      */
     registerListener() {
+        this.naviPrev.addEventListener("click", () => this.flipPage(this.getPrevOrNextAlbumId(-1)));
+        this.naviNext.addEventListener("click", () => this.flipPage(this.getPrevOrNextAlbumId(1)));
         this.exception.addEventListener("click", e => {
             this.error = false;
             this.exception.remove();
@@ -229,7 +297,7 @@ export class Dispatcher {
             n.dataset.selected = false;
         });
 
-        SharreM.WeiboStatic.detachPhoto(photoIds)
+        SharreM.WeiboStatic.detachPhoto(photoIds, this.checkout.albumId)
             .then(json => {
                 this.checkout.prevdel += photoIds.length;
             })

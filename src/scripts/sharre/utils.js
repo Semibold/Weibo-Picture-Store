@@ -6,7 +6,7 @@
 
 import { SINGLETON_CACHE } from "./constant.js";
 import { Base64 } from "./base64.js";
-import { logger } from "../background/internal-logger.js";
+import { Log } from "./log.js";
 
 /**
  * @static
@@ -39,14 +39,11 @@ export class Utils {
                 init,
             ),
         ).catch(reason => {
-            logger.add(
-                {
-                    module: "Utils.fetch",
-                    message: reason,
-                    remark: input,
-                },
-                logger.LEVEL.warn,
-            );
+            Log.w({
+                module: "Utils.fetch",
+                message: reason,
+                remark: input,
+            });
             return Promise.reject(reason);
         });
     }

@@ -11,6 +11,10 @@ const headHTML = `
     <h1>
         <span><i class="fa fa-paragraph"></i></span>
         <span>上传记录</span>
+        <span>
+            <a class="navi-prev" data-disabled="true" title="之前的相册"><i class="fa fa-chevron-left"></i></a>
+            <a class="navi-next" data-disabled="true" title="往后的相册"><i class="fa fa-chevron-right"></i></a>
+        </span>
     </h1>`;
 
 // language=HTML
