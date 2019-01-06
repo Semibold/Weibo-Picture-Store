@@ -88,10 +88,11 @@ async function tryCheckoutSpecialAlbumId() {
  * @reject {Error}
  */
 async function tryCreateNewAlbum() {
+    const d = new Date();
     const method = "POST";
     const body = Utils.createSearchParams({
         property: "2",
-        caption: "Weibo_Chrome",
+        caption: `Weibo_Chrome_${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`,
         description: FEATURE_ID,
         answer: "",
         question: "",
