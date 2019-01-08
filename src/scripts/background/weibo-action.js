@@ -10,6 +10,7 @@ import { FP_TYPE_UPLOAD } from "../sharre/constant.js";
 import { requestUpload } from "../weibo/upload.js";
 import { detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum } from "../weibo/photo.js";
 import { Log } from "../sharre/log.js";
+import { signInByUserAccount } from "../weibo/author.js";
 
 /**
  * @static
@@ -34,6 +35,16 @@ export class WeiboStatic {
      */
     static requestPhotos(page, count, albumId) {
         return requestPhotosFromSpecialAlbum(page, count, albumId);
+    }
+
+    /**
+     * @param {string} username
+     * @param {string} password
+     * @return {Promise<void>}
+     * @reject {Error}
+     */
+    static signInByUserAccount(username, password) {
+        return signInByUserAccount(username, password);
     }
 }
 
