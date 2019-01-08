@@ -4,31 +4,26 @@
  * found in the LICENSE file.
  */
 
-const urls = ["http://photo.weibo.com/*", "https://photo.weibo.com/*"];
+import { HttpHeaders } from "./http-headers.js";
 
-/**
- * @desc 处理相关的 Referer
- * @return {{requestHeaders: chrome.webRequest.HttpHeader[]}}
- */
-function beforeSendHeaders(details) {
-    const url = new URL(details.url);
-    const name = "referer";
-    const value = `${url.protocol}//photo.weibo.com/`;
-    for (let i = 0; i < details.requestHeaders.length; i++) {
-        if (details.requestHeaders[i].name.toLowerCase() === name) {
-            details.requestHeaders.splice(i, 1);
-            break;
-        }
-    }
-    details.requestHeaders.push({ name, value });
-    return { requestHeaders: details.requestHeaders };
-}
-
-chrome.webRequest.onBeforeSendHeaders.addListener(
-    beforeSendHeaders,
+HttpHeaders.rewriteRequest(
     {
-        urls,
+        Referer: "http://photo.weibo.com/",
+        Origin: "http://photo.weibo.com",
+    },
+    {
+        urls: ["http://photo.weibo.com/*"],
         types: ["xmlhttprequest"],
     },
-    ["requestHeaders", "blocking"],
+);
+
+HttpHeaders.rewriteRequest(
+    {
+        Referer: "https://photo.weibo.com/",
+        Origin: "https://photo.weibo.com",
+    },
+    {
+        urls: ["https://photo.weibo.com/*"],
+        types: ["xmlhttprequest"],
+    },
 );
