@@ -13,15 +13,16 @@ import "./background/weibo-referer.js";
 import "./background/context-menu.js";
 import "./background/file-progress.js";
 import "./background/events-handler.js";
+import "./background/reflect-store.js";
 
 /**
  * @desc 不需要初始化，但是需要导出到外部
  */
-import { logdata } from "./background/persist-store.js";
+import { logdata, weibodata } from "./background/persist-store.js";
 import { fetchBlob } from "./background/fetch-blob.js";
 import { WeiboStatic, WeiboUpload } from "./background/weibo-action.js";
 
 /**
  * @desc Core Share Module (APIs)
  */
-self.coreAPIs = { logdata, fetchBlob, WeiboStatic, WeiboUpload };
+self.coreAPIs = { logdata, weibodata, fetchBlob, WeiboStatic, WeiboUpload };

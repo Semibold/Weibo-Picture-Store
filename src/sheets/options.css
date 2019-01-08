@@ -28,3 +28,12 @@ label > span {
     margin-left: 0.3em;
     user-select: none;
 }
+
+fieldset {
+    border-color: transparent;
+}
+
+fieldset > label {
+    display: block;
+    margin-top: 0.3em;
+}

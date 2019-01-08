@@ -49,6 +49,7 @@ export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
  * @desc chrome.StorageArea
  */
 export const K_AUTO_DISPLAY_CHANGELOG = "auto_display_changelog";
+export const K_WEIBO_ACCOUNT_DETAILS = "weibo_account_details"; // 存在本地的微博账号信息
 
 /**
  * @desc 多用户的 Cache
@@ -111,6 +112,11 @@ export class PConfig {
     static get defaultOptions() {
         return {
             autoDisplayChangelog: true,
+            weiboAccountDetails: {
+                username: "",
+                password: "",
+                allowUserAccount: false,
+            },
         };
     }
 }

@@ -19,6 +19,19 @@
                     <input type="checkbox" value="auto_display_changelog" /> <span>通知我更新详情</span>
                 </label>
             </div>
+            <h2>微博账户</h2>
+            <div>
+                <label
+                    title="账号/密码不会同步到 Chrome 浏览器云端。填写的信息和你常用的微博账号不同，可能会强制登出你常用的微博账号"
+                >
+                    <input type="checkbox" value="allow_user_account" /> <span>使用账号和密码登录</span>
+                </label>
+                <fieldset disabled>
+                    <label><input type="text" placeholder="邮箱/手机号" id="username"/></label>
+                    <label><input type="password" placeholder="请输入密码" id="password"/></label>
+                    <label><input type="button" value="确认" id="confirm"/></label>
+                </fieldset>
+            </div>
         </div>
         <script type="module" src="scripts/options.js"></script>
     </body>
