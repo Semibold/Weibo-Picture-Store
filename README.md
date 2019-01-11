@@ -157,7 +157,13 @@
 
 ## Thanks
 
--   [JetBrains IDEs](https://www.jetbrains.com/)
+-   [JetBrains IDEs](https://www.jetbrains.com/?from=Weibo-Picture-Store)
 -   [Font Awesome](https://fontawesome.com/)
 -   [Base64 encode/decode](https://github.com/beatgammit/base64-js)
 -   [@Suxiaogang](https://github.com/Suxiaogang/WeiboPicBed/)（参考了某些交互设计）
+
+<p align="center">
+  <a href="https://www.jetbrains.com/?from=Weibo-Picture-Store" title="前往官网了解JetBrains出品的IDEs">
+    <img src="scratches/jetbrains.svg" width="128" alt="JetBrains logo">
+  </a>
+</p>
