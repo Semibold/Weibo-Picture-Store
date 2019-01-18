@@ -20,7 +20,8 @@ export class WeiboStatic {
     /**
      * @param {string[]} photoIds
      * @param {string} [albumId]
-     * @return {Promise<*, Error>}
+     * @return {Promise<*>}
+     * @reject {Error}
      */
     static detachPhoto(photoIds, albumId) {
         return detachPhotoFromSpecialAlbum(photoIds, albumId);
@@ -70,7 +71,9 @@ export class WeiboUpload {
     /**
      * @public
      * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
-     * @param {Function} [cb] - 这个回调函数应当依赖持久型的变量，否则会造成不可预测的问题
+     * @param {Function} [cb] - 因为此函数只有在第一次运行时传入一次，所以这个函数**不属于**回调函数。
+     *                          因此它不应该依赖闭包中的变量或函数，应该依赖 Context 中的变量或方法。
+     *                          虽然大部分情况下程序能够正常运行，但是这种行为依然属于设计上的失误/错误。
      */
     triggerIteration(cb) {
         if (this.tailer.done && this.queues.length) {
@@ -127,7 +130,8 @@ export class WeiboUpload {
      * @private
      * @desc 迭代器迭代过程中遇到 Promise.reject，会造成迭代器提前结束
      *        为避免非致命性错误造成迭代器提前结束，异步生成器中需要处理这类错误
-     * @return {Promise<PackedItem|null, {login: boolean, terminable: boolean}>}
+     * @return {Promise<PackedItem|null>}
+     * @reject {{login: boolean, terminable: boolean}}
      */
     async *genUploadQueues() {
         while (this.queues.length) {

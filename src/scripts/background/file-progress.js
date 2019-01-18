@@ -81,7 +81,7 @@ class TypeEntry {
     }
 
     consume(n) {
-        if (Number.isInteger(n) && n > 0) {
+        if (Number.isSafeInteger(n) && n > 0) {
             if (this.settle + n <= this.total) {
                 this.settle += n;
             }
@@ -89,7 +89,7 @@ class TypeEntry {
     }
 
     padding(n) {
-        if (Number.isInteger(n) && n > 0) {
+        if (Number.isSafeInteger(n) && n > 0) {
             this.total += n;
         }
     }

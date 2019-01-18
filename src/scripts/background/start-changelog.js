@@ -16,6 +16,16 @@ chrome.runtime.onInstalled.addListener(details => {
         });
     }
     if (details.reason === "update") {
+        const [prevMajor, prevMinor] = details.previousVersion.split(".", 2);
+        const [major, minor] = chrome.runtime.getManifest().version.split(".", 2);
+        // Not display changelog if major and minor has not changed
+        if (prevMajor === major) {
+            if (prevMinor || minor) {
+                if (prevMinor === minor) return;
+            } else {
+                return;
+            }
+        }
         chrome.storage.sync.get(
             {
                 [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
