@@ -1,0 +1,44 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "custom_config.scheme",
+    "custom_config.clipsize",
+    "custom_clipsize"
+  ],
+  "properties": {
+    "custom_config.scheme": {
+      "$id": "#/properties/custom_config.scheme",
+      "type": "string",
+      "title": "The Custom_config.scheme Schema",
+      "default": "",
+      "examples": [
+        "2"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "custom_config.clipsize": {
+      "$id": "#/properties/custom_config.clipsize",
+      "type": "string",
+      "title": "The Custom_config.clipsize Schema",
+      "default": "",
+      "examples": [
+        "1"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "custom_clipsize": {
+      "$id": "#/properties/custom_clipsize",
+      "type": "string",
+      "title": "The Custom_clipsize Schema",
+      "default": "",
+      "examples": [
+        "bmiddle"
+      ],
+      "pattern": "^(.*)$"
+    }
+  }
+}
