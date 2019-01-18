@@ -39,8 +39,22 @@ const headHTML = `
             </label>
             <label title="自定义裁剪尺寸">
                 <input type="radio" name="clipsize" value="4">
-                <input type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="on" class="custom-clipsize">
+                <input list="custom-clipsize-list" type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="on" class="custom-clipsize">
             </label>
+            <datalist id="custom-clipsize-list">
+                <option value="wap800">800 像素宽度原比例缩放</option>
+                <option value="wap720">720 像素宽度原比例缩放</option>
+                <option value="wap360">360 像素宽度原比例缩放</option>
+                <option value="wap240">240 像素宽度原比例缩放</option>
+                <option value="wap180">180 像素宽度原比例缩放</option>
+                <option value="wap50">50 像素宽度原比例缩放</option>
+                <option value="bmiddle">440 像素宽度原比例缩放</option>
+                <option value="small">200 像素宽度原比例缩放</option>
+                <option value="thumb300">300 像素正方形裁剪</option>
+                <option value="thumb180">180 像素正方形裁剪</option>
+                <option value="thumb150">150 像素正方形裁剪</option>
+                <option value="square">80 像素正方形裁剪</option>
+            </datalist>
         </div>
     </div>
     <div class="head-feature">

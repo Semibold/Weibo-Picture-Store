@@ -84,7 +84,7 @@ export class SectionTable {
         const html = `
             <section>
                 <div class="holder-wrapper">
-                    <div class="image-holder" title="上传图片到微博相册"></div>
+                    <div class="image-holder" title="点击上传图片到微博相册"></div>
                 </div>
                 <div class="table-wrapper">
                     <table width="100%">
