@@ -33,7 +33,6 @@ fieldset {
     border-color: transparent;
 }
 
-fieldset > label {
-    display: block;
+fieldset > div {
     margin-top: 0.3em;
 }

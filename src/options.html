@@ -21,15 +21,23 @@
             </div>
             <h2>微博账户</h2>
             <div>
-                <label
-                    title="账号/密码不会同步到 Chrome 浏览器云端。填写的信息和你常用的微博账号不同，可能会强制登出你常用的微博账号"
-                >
+                <label title="账号/密码不会同步到任何服务器上">
                     <input type="checkbox" value="allow_user_account" /> <span>使用账号和密码登录</span>
                 </label>
                 <fieldset disabled>
-                    <label><input spellcheck="false" type="text" placeholder="邮箱/手机号" id="username"/></label>
-                    <label><input spellcheck="false" type="password" placeholder="请输入密码" id="password"/></label>
-                    <label><input spellcheck="false" type="button" value="确认" id="confirm"/></label>
+                    <div>
+                        <label title="邮箱/手机号"
+                            ><input spellcheck="false" type="text" placeholder="邮箱/手机号" id="username"
+                        /></label>
+                    </div>
+                    <div>
+                        <label title="请输入密码"
+                            ><input spellcheck="false" type="password" placeholder="请输入密码" id="password"
+                        /></label>
+                    </div>
+                    <div>
+                        <label><input spellcheck="false" type="button" value="确认" id="confirm"/></label>
+                    </div>
                 </fieldset>
             </div>
         </div>
