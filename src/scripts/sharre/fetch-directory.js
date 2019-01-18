@@ -71,8 +71,8 @@ function readDirectoryRecursive(virtualFileEntries, directoryEntry) {
                 err => {
                     Log.w({
                         module: "readDirectoryRecursive",
-                        message: `读取目录 ${entry.fullPath} 时发生错误`,
-                        remark: err,
+                        message: err,
+                        remark: `读取目录 ${entry.fullPath} 时发生错误`,
                     });
                     if (subDirectoryEntryCaches.length) {
                         readDirectoryEntry(subDirectoryEntryCaches.shift());
@@ -107,6 +107,8 @@ function resolveRelativeFullPath(virtualFile) {
 
 /**
  * @desc Be Careful: Non-standard APIs. Only support directory upload with webkit prefix.
+ * @todo Use Directory Upload(https://wicg.github.io/directory-upload/proposal.htm)
+ *       if that proposal has been implemented by browsers.(maybe)
  *
  * @export
  * @param {DataTransferItemList} items

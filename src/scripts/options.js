@@ -39,10 +39,10 @@ const confirm = document.getElementById("confirm");
 const username = document.getElementById("username");
 const password = document.getElementById("password");
 
-username.value = SharreM.weibodata.get("username");
-password.value = SharreM.weibodata.get("password");
+username.value = SharreM.weiboMap.get("username");
+password.value = SharreM.weiboMap.get("password");
 
-if (SharreM.weibodata.get("allowUserAccount")) {
+if (SharreM.weiboMap.get("allowUserAccount")) {
     allowUserAccount.checked = true;
     fieldset.disabled = false;
 }

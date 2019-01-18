@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import { logdata } from "../background/persist-store.js";
+import { logSet } from "../background/persist-store.js";
 
 const MAXIMUM_LOGS = 2000;
 const backWindow = chrome.extension.getBackgroundPage();
@@ -17,11 +17,11 @@ export class Log {
     /**
      * @private
      */
-    static get logdata() {
+    static get store() {
         if (backWindow === self) {
-            return logdata;
+            return logSet;
         } else {
-            return backWindow.SharreM.logdata;
+            return backWindow.SharreM.logSet;
         }
     }
 
@@ -35,9 +35,9 @@ export class Log {
     /**
      * @private
      * @typedef {Object} ErrObject
-     * @property {string} module                  - 所属模块
-     * @property {string|Error} message           - 抛出的信息
-     * @property {string|Object} [remark]         - 备注信息
+     * @property {string} module                                    - 所属模块
+     * @property {string|Error|DOMError|DOMException} message       - 抛出的信息
+     * @property {string|Object} [remark]                           - 备注信息
      *
      * @param {ErrObject} obj                      - 注意：此对象的内容会被更改
      * @param {string} [type]                      - keyof Log.LEVEL
@@ -52,9 +52,9 @@ export class Log {
             return false;
         }
 
-        while (Log.logdata.size >= MAXIMUM_LOGS) {
-            const value = Array.from(Log.logdata).shift();
-            Log.logdata.delete(value);
+        while (Log.store.size >= MAXIMUM_LOGS) {
+            const value = Array.from(Log.store).shift();
+            Log.store.delete(value);
         }
 
         if (typeof obj.remark === "string") {
@@ -76,7 +76,7 @@ export class Log {
             }
         }
 
-        Log.logdata.add(Object.assign(obj, info, { type, timestamp: Date.now() }));
+        Log.store.add(Object.assign(obj, info, { type, timestamp: Date.now() }));
 
         return true;
     }
@@ -113,7 +113,7 @@ export class Log {
     static serialize(types = Object.keys(Log.LEVEL)) {
         const caches = [];
         const padNum = Math.max(...types.map(x => x.length));
-        Log.logdata.forEach((k, v) => {
+        Log.store.forEach((k, v) => {
             if (types.includes(v.type)) {
                 caches.push(
                     `[${v.type.toUpperCase().padEnd(padNum, ".")}]-[${new Date(v.timestamp).toISOString()}]-[${

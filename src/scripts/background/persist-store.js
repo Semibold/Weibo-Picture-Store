@@ -7,9 +7,9 @@
 /**
  * @desc 日志数据
  */
-export const logdata = new Set();
+export const logSet = new Set();
 
 /**
  * @desc 微博信息
  */
-export const weibodata = new Map();
+export const weiboMap = new Map();

@@ -7,7 +7,7 @@
 import { Utils } from "../sharre/utils.js";
 import { Log } from "../sharre/log.js";
 import { HttpHeaders } from "../background/http-headers.js";
-import { weibodata } from "../background/persist-store.js";
+import { weiboMap } from "../background/persist-store.js";
 
 const signedNid = Utils.randomString(16);
 const signInFailedNid = Utils.randomString(16);
@@ -88,9 +88,9 @@ async function setUserStatus(notify) {
             });
             return Promise.reject(json);
         } else {
-            if (weibodata.get("allowUserAccount")) {
-                const username = weibodata.get("username");
-                const password = weibodata.get("password");
+            if (weiboMap.get("allowUserAccount")) {
+                const username = weiboMap.get("username");
+                const password = weiboMap.get("password");
                 return signInByUserAccount(username, password)
                     .catch(reason => {
                         notify &&
