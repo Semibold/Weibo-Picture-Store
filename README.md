@@ -84,8 +84,8 @@
 -   [自定义剪裁格式](docs/custom-clipsize.md)
 -   [获得/生成 CRX 文件](docs/get-crx-file.md)
 -   [已知问题](docs/known-issues.md)
--   [项目结构预览](docs/project-structure.md)
--   [基础架构预览](docs/architecture.md)
+-   [项目结构预览(开发者文档)](docs/project-structure.md)
+-   [基础架构预览(开发者文档)](docs/architecture.md)
 
 ## FAQ
 
