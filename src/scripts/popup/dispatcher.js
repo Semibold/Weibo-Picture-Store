@@ -34,11 +34,11 @@ export class Dispatcher {
         this.checkout = { clear: true };
         this.customConfigKey = "custom_config";
         this.customClipsizeKey = "custom_clipsize";
-        this.copyId = Utils.randomString(16);
+        this.nid = Utils.randomString(16);
         this.directorySymbol = "\uD83D\uDCC1";
         this.classifyMap = new Map();
         this.prestoreMap = new Map();
-        this.weiboUpload = new SharreM.WeiboUpload();
+        this.weiboUpload = new SharreM.WeiboUpload(true);
     }
 
     /** @public */
@@ -177,7 +177,7 @@ export class Dispatcher {
                 this.copier.select();
 
                 if (document.execCommand("copy")) {
-                    chrome.notifications.create(this.copyId, {
+                    chrome.notifications.create(this.nid, {
                         type: "basic",
                         iconUrl: chrome.i18n.getMessage("notify_icon"),
                         title: chrome.i18n.getMessage("info_title"),
@@ -299,7 +299,7 @@ export class Dispatcher {
      * @property {string} HTML
      * @property {string} UBB
      * @property {string} Markdown
-     * @property {string} [fullPath]
+     * @property {string} [fullDirectoryPath]
      *
      * @private
      * @param {PackedItem[]|PackedItem|Object} item
@@ -366,21 +366,21 @@ export class Dispatcher {
     /**
      * @public
      * @param {ArrayLike<Blob|File>|(Blob|File)[]} blobs
-     * @param {string} [fullPath] - Indicates that it is from a folder.
+     * @param {string} [fullDirectoryPath] - Non-empty string indicates that it is from a folder.
      */
-    requester(blobs, fullPath) {
-        if (blobs) {
+    requester(blobs, fullDirectoryPath) {
+        if (blobs && blobs.length) {
             this.weiboUpload.addQueues(Array.from(blobs));
-            if (fullPath) {
+            if (fullDirectoryPath) {
                 for (const blob of Array.from(blobs)) {
-                    this.classifyMap.set(blob, fullPath);
+                    this.classifyMap.set(blob, fullDirectoryPath);
                 }
             }
             if (this.checkout.clear) {
                 this.weiboUpload.triggerIteration(it => {
                     if (it.done) {
                         if (this.prestoreMap.size) {
-                            for (const [fullPath, prestore] of this.prestoreMap.entries()) {
+                            for (const [fullDirectoryPath, prestore] of this.prestoreMap.entries()) {
                                 this.renderSection(prestore, this.checkout.clear);
                             }
                         }
@@ -389,17 +389,17 @@ export class Dispatcher {
                         this.checkout.clear = true;
                     } else {
                         if (this.classifyMap.has(it.value.blob)) {
-                            const fullPath = this.classifyMap.get(it.value.blob);
-                            const prestore = this.prestoreMap.get(fullPath) || [];
-                            prestore.push(Object.assign({ fullPath }, it.value));
-                            this.prestoreMap.set(fullPath, prestore);
+                            const fullDirectoryPath = this.classifyMap.get(it.value.blob);
+                            const prestore = this.prestoreMap.get(fullDirectoryPath) || [];
+                            prestore.push(Object.assign({ fullDirectoryPath }, it.value));
+                            this.prestoreMap.set(fullDirectoryPath, prestore);
                             this.classifyMap.delete(it.value.blob);
                             if (
-                                Array.from(this.classifyMap.values()).every(path => path !== fullPath) &&
+                                Array.from(this.classifyMap.values()).every(path => path !== fullDirectoryPath) &&
                                 prestore.length
                             ) {
                                 this.renderSection(prestore, this.checkout.clear);
-                                this.prestoreMap.delete(fullPath);
+                                this.prestoreMap.delete(fullDirectoryPath);
                             }
                         } else {
                             this.renderSection(it.value, this.checkout.clear);

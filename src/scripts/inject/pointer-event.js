@@ -4,12 +4,10 @@
  * found in the LICENSE file.
  */
 
-import { MAXIMUM_EDGE, M_VIDEO_FRAME, S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS } from "../sharre/constant.js";
+import { MAXIMUM_EDGE, M_UPLOAD_FRAME, S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS } from "../sharre/constant.js";
 
 const attribute = `data-${chrome.runtime.id}`;
 const lightMark = document.createElement("mark");
-
-lightMark.dataset.injector = chrome.runtime.id;
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === S_COMMAND_POINTER_EVENTS) {
@@ -18,12 +16,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             lightMark.remove();
         } else {
             if (document.body) {
+                lightMark.dataset.injector = chrome.runtime.id;
                 document.documentElement.setAttribute(attribute, "");
                 document.body.append(lightMark);
             }
         }
     }
-    if (message.type === M_VIDEO_FRAME) {
+    if (message.type === M_UPLOAD_FRAME) {
         const videoRefs = document.querySelectorAll("video");
         for (const videoRef of videoRefs) {
             /**
@@ -49,7 +48,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             canvas.height = height;
             context.drawImage(videoRef, 0, 0, width, height);
             try {
-                const dataurl = canvas.toDataURL("image/jpeg", 0.95);
+                const dataurl = canvas.toDataURL("image/jpeg", 0.9);
                 sendResponse({ dataurl: dataurl });
             } catch (e) {
                 chrome.runtime.sendMessage({ type: S_WITHOUT_CORS_MODE });

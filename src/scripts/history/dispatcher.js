@@ -22,7 +22,7 @@ export class Dispatcher {
         this.ended = false;
         this.locked = false;
         this.maxselected = 50;
-        this.notifyId = Utils.randomString(16);
+        this.nid = Utils.randomString(16);
         this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
         this.foot = document.querySelector("#foot");
@@ -251,7 +251,7 @@ export class Dispatcher {
                         this.selected.add(section);
                         section.dataset.selected = true;
                     } else {
-                        chrome.notifications.create(this.notifyId, {
+                        chrome.notifications.create(this.nid, {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("notify_icon"),
                             title: chrome.i18n.getMessage("info_title"),
@@ -314,7 +314,7 @@ export class Dispatcher {
                 this.availableChecker();
             })
             .catch(reason => {
-                chrome.notifications.create(this.notifyId, {
+                chrome.notifications.create(this.nid, {
                     type: "basic",
                     iconUrl: chrome.i18n.getMessage("notify_icon"),
                     title: chrome.i18n.getMessage("info_title"),
