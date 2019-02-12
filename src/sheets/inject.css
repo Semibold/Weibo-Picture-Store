@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-html[data-__MSG_@@extension_id__] {
+html[data-__MSG_@@extension_id__] * {
     pointer-events: none !important;
 }
 
