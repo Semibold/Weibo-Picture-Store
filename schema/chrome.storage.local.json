@@ -5,7 +5,8 @@
   "type": "object",
   "title": "The Root Schema",
   "required": [
-    "weibo_account_details"
+    "weibo_account_details",
+    "dimension"
   ],
   "properties": {
     "weibo_account_details": {
@@ -45,6 +46,35 @@
           "default": false,
           "examples": [
             false
+          ]
+        }
+      }
+    },
+    "dimension": {
+      "$id": "#/properties/dimension",
+      "type": "object",
+      "title": "The Dimension Schema",
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "$id": "#/properties/dimension/properties/width",
+          "type": "integer",
+          "title": "The Width Schema",
+          "default": 0,
+          "examples": [
+            300
+          ]
+        },
+        "height": {
+          "$id": "#/properties/dimension/properties/height",
+          "type": "integer",
+          "title": "The Height Schema",
+          "default": 0,
+          "examples": [
+            150
           ]
         }
       }
