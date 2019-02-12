@@ -58,7 +58,7 @@ async function tryCheckoutSpecialAlbumId() {
                     Log.w({
                         module: "CheckoutSpecialAlbumId",
                         message: "没有检测到指定的微相册",
-                        remark: `能否创建新的微相册：${canCreateNewAlbum}`,
+                        remark: `能否创建新的微相册：${canCreateNewAlbum}，当前相册总数：${total}`,
                     });
                     return Promise.reject({ canCreateNewAlbum });
                 }
