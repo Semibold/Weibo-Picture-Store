@@ -6,11 +6,9 @@
 
 import { Utils } from "../sharre/utils.js";
 import { FileProgress } from "./file-progress.js";
-import { FP_TYPE_DOWNLOAD } from "../sharre/constant.js";
+import { FP_TYPE_DOWNLOAD, NID_GRAB_RESOURCE } from "../sharre/constant.js";
 import { Log } from "../sharre/log.js";
 import { HttpHeaders } from "./http-headers.js";
-
-const fetchFailedId = Utils.randomString(16);
 
 /**
  * @async
@@ -20,7 +18,6 @@ const fetchFailedId = Utils.randomString(16);
  * @reject {Error}
  */
 export async function fetchBlob(srcUrl, pageUrl) {
-    const delayInfo = { interval: 500, timerId: null };
     const progress = new FileProgress(FP_TYPE_DOWNLOAD);
     const killer =
         Utils.isValidURL(srcUrl) &&
@@ -28,19 +25,22 @@ export async function fetchBlob(srcUrl, pageUrl) {
         HttpHeaders.rewriteRequest({ Referer: pageUrl }, { urls: [srcUrl] });
 
     progress.padding(1);
-    delayInfo.timerId = setTimeout(() => progress.trigger(), delayInfo.interval);
+
+    Log.d({
+        module: "FetchBlob",
+        message: "开始读取远程文件",
+        remark: "大部分情况下都是从缓存中直接读取，因此不再提供下载进度提示",
+    });
 
     return Utils.fetch(srcUrl, { credentials: "omit" })
-        .then(response => (response.ok ? response.blob() : Promise.reject(new Error(response.statusText))))
-        .then(result => {
-            clearTimeout(delayInfo.timerId);
-            progress.consume();
-            return Promise.resolve(result);
+        .then(response => response.blob())
+        .then(blob => {
+            progress.succeed();
+            return blob;
         })
         .catch(reason => {
-            clearTimeout(delayInfo.timerId);
-            progress.consume();
-            chrome.notifications.create(fetchFailedId, {
+            progress.failure();
+            chrome.notifications.create(NID_GRAB_RESOURCE, {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                 title: chrome.i18n.getMessage("warn_title"),
@@ -49,11 +49,13 @@ export async function fetchBlob(srcUrl, pageUrl) {
             Log.w({
                 module: "FetchBlob",
                 message: reason,
-                remark: `获取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
+                remark: `读取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
             });
             return Promise.reject(reason);
         })
         .finally(() => {
-            if (killer) killer();
+            if (killer) {
+                killer();
+            }
         });
 }

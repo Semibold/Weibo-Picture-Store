@@ -5,9 +5,17 @@
  */
 
 import { channel } from "./channel.js";
-import { remuxImage } from "../sharre/remux-image.js";
 import { Utils } from "../sharre/utils.js";
-import { PConfig, MAXIMUM_WEIBO_PICTURE_SIZE } from "../sharre/constant.js";
+import {
+    PConfig,
+    MAXIMUM_WEIBO_PICTURE_SIZE,
+    E_INVALID_PARSED_DATA,
+    E_FILE_TYPE_RESTRICT,
+    E_FILE_SIZE_RESTRICT,
+    E_FILE_SIZE_OVERFLOW,
+    UNKNOWN_FILE_SIZE_RESTRICT,
+    NID_SIGNIN_RESULT,
+} from "../sharre/constant.js";
 import { attachPhotoToSpecialAlbum } from "./photo.js";
 import { requestSignIn } from "./author.js";
 import { Log } from "../sharre/log.js";
@@ -16,7 +24,7 @@ import { Log } from "../sharre/log.js";
  * @param {Blob|File} blob
  * @param {"arrayBuffer"|"dataURL"} channelType
  * @return {Promise<*>}
- * @reject {void}
+ * @reject {Promise<void>}
  */
 async function readAsChannelType(blob, channelType) {
     return new Promise((resolve, reject) => {
@@ -54,10 +62,10 @@ async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     const data = {};
     const oneline = channel[channelType];
     const result = await readAsChannelType(blob, channelType);
-    const mime = oneline.mimeType(result);
+    const mime = oneline.mimeType(result, blob);
     const chromeSupportedTypes = new Set(PConfig.chromeSupportedTypes);
     if (chromeSupportedTypes.has(mime) && !PConfig.weiboSupportedTypes[mime] && !_replay) {
-        const b = await remuxImage(blob);
+        const b = await Utils.remuxImage(blob);
         return await reader(b, channelType, true);
     } else {
         data.result = result;
@@ -68,37 +76,20 @@ async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     return data;
 }
 
-const sizeSlopId = Utils.randomString(16);
-const typeSlopId = Utils.randomString(16);
-
 /**
  * @param {PackedItem} item
  * @return {Promise<PackedItem>}
  * @reject {Error}
  */
-async function purity(item) {
+async function purifier(item) {
     if (!PConfig.weiboSupportedTypes[item.mimeType]) {
-        chrome.notifications.create(typeSlopId, {
-            type: "basic",
-            iconUrl: chrome.i18n.getMessage("notify_icon"),
-            title: chrome.i18n.getMessage("info_title"),
-            message: "暂不支持当前选中的文件格式",
-        });
-        return Promise.reject(new Error("Unsupported file format"));
+        throw new Error(E_FILE_TYPE_RESTRICT);
     }
     if (item.blob.size > MAXIMUM_WEIBO_PICTURE_SIZE) {
-        chrome.notifications.create(sizeSlopId, {
-            type: "basic",
-            iconUrl: chrome.i18n.getMessage("notify_icon"),
-            title: chrome.i18n.getMessage("info_title"),
-            message: `检测到某些文件的大小超过20MB，自动丢弃这些文件`,
-        });
-        return Promise.reject(new Error("Filesize overflow"));
+        throw new Error(E_FILE_SIZE_OVERFLOW);
     }
     return item;
 }
-
-const loginFailedId = Utils.randomString(16);
 
 /**
  * @param {PackedItem} item
@@ -114,7 +105,7 @@ async function uploader(item, _replay = false) {
     const url = "http://picupload.weibo.com/interface/pic_upload.php";
 
     return Utils.fetch(Utils.buildURL(url, param), { method, body })
-        .then(response => (response.ok ? response.text() : Promise.reject(new Error(response.statusText))))
+        .then(response => response.text())
         .then(text => {
             if (text) {
                 const tree = new DOMParser().parseFromString(text, "text/xml");
@@ -162,7 +153,7 @@ async function uploader(item, _replay = false) {
                         message: "上传图片失败，数据异常",
                         remark: text,
                     });
-                    return Promise.reject(new Error("Invalid Data"));
+                    throw new Error(E_INVALID_PARSED_DATA);
                 }
             } else {
                 Log.e({
@@ -170,7 +161,7 @@ async function uploader(item, _replay = false) {
                     message: "上传图片失败，数据异常",
                     remark: text,
                 });
-                return Promise.reject(new Error("Invalid Data"));
+                throw new Error(E_INVALID_PARSED_DATA);
             }
         })
         .catch(reason => {
@@ -178,7 +169,7 @@ async function uploader(item, _replay = false) {
                 return requestSignIn(true)
                     .catch(reason => {
                         reason.login &&
-                            chrome.notifications.create(loginFailedId, {
+                            chrome.notifications.create(NID_SIGNIN_RESULT, {
                                 type: "basic",
                                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                                 title: chrome.i18n.getMessage("fail_title"),
@@ -231,5 +222,9 @@ async function uploader(item, _replay = false) {
  * @reject {Error|{login: boolean, terminable: boolean}}
  */
 export async function requestUpload(blob) {
-    return await uploader(await purity(await reader(blob)));
+    if (blob.size > UNKNOWN_FILE_SIZE_RESTRICT) {
+        throw new Error(E_FILE_SIZE_RESTRICT);
+    } else {
+        return await uploader(await purifier(await reader(blob)));
+    }
 }

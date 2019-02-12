@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-import { SINGLETON_CACHE } from "./constant.js";
-import { Base64 } from "./base64.js";
 import { Log } from "./log.js";
 
 /**
@@ -17,36 +15,6 @@ export class Utils {
      * @nosideeffects
      */
     static noop() {}
-
-    /**
-     * @async
-     * @param {RequestInfo} input
-     * @param {RequestInit} [init]
-     * @return {Promise<Response>}
-     */
-    static fetch(input, init) {
-        return fetch(
-            input,
-            Object.assign(
-                {
-                    method: "GET",
-                    mode: "cors",
-                    credentials: "include",
-                    cache: "default",
-                    redirect: "follow",
-                    referrer: "client",
-                },
-                init,
-            ),
-        ).catch(reason => {
-            Log.w({
-                module: "Utils.fetch",
-                message: reason,
-                remark: input,
-            });
-            return Promise.reject(reason);
-        });
-    }
 
     /**
      * @param {string} maybeURL
@@ -160,27 +128,110 @@ export class Utils {
     }
 
     /**
-     * @param {Object} obj
-     * @return {string}
+     * @async
+     * @param {RequestInfo} input
+     * @param {RequestInit} [init]
+     * @return {Promise<Response>}
+     * @reject {Error|AbortError|TypeError}
      */
-    static createJsonDataURL(obj) {
-        const text = Base64.encode(JSON.stringify(obj));
-        return `data:application/json;base64,${text}`;
+    static async fetch(input, init) {
+        return fetch(
+            input,
+            Object.assign(
+                {
+                    method: "GET",
+                    mode: "cors",
+                    credentials: "include",
+                    cache: "default",
+                    redirect: "follow",
+                    referrer: "client",
+                },
+                init,
+            ),
+        )
+            .then(response => {
+                if (response.ok) {
+                    return response;
+                } else {
+                    throw new Error(response.statusText);
+                }
+            })
+            .catch(reason => {
+                Log.w({
+                    module: "Utils.fetch",
+                    message: reason,
+                    remark: input,
+                });
+                return Promise.reject(reason);
+            });
     }
 
     /**
-     * @param {Function} func - MUST be a parameterless function
-     * @return {Promise<*>}
+     * @param {Blob|File} blob
+     * @param {string} [mimeType = "image/png"]
+     * @param {number} [quality = 0.9]
+     * @return {Promise<Blob>}
+     * @reject {Error}
      */
-    static singleton(func) {
-        if (!SINGLETON_CACHE.has(func)) {
-            SINGLETON_CACHE.set(
-                func,
-                func().finally(() => {
-                    SINGLETON_CACHE.delete(func);
-                }),
+    static async remuxImage(blob, mimeType = "image/png", quality = 0.9) {
+        const objectURL = URL.createObjectURL(blob);
+
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = e => resolve(image);
+            image.onerror = e => reject(e);
+            image.src = objectURL;
+        })
+            .then(image => {
+                if (blob.type === "image/svg+xml") {
+                    let maxScale = 2;
+                    let minPixel = 420;
+                    let maxPixel = 840;
+                    if (image.naturalWidth / image.naturalHeight > 16 / 10) {
+                        const scale = Math.min(maxScale, Math.sqrt(image.naturalWidth / image.naturalHeight));
+                        minPixel = Math.floor(minPixel * scale);
+                        maxPixel = Math.floor(maxPixel * scale);
+                    }
+
+                    // Preserve aspect ratio
+                    image.width = Math.min(maxPixel, Math.max(minPixel, Math.floor(screen.width * 0.5)));
+                    image.height = Math.round((image.naturalHeight / image.naturalWidth) * image.width);
+                }
+
+                const width = image.width;
+                const height = image.height;
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+
+                canvas.width = width;
+                canvas.height = height;
+                context.drawImage(image, 0, 0, width, height);
+
+                return new Promise((resolve, reject) => canvas.toBlob(resolve, mimeType, quality));
+            })
+            .finally(() => {
+                URL.revokeObjectURL(objectURL);
+            });
+    }
+
+    /**
+     * @param {Iterable} iterable
+     * @return {Promise<{error: boolean, value: *}>}
+     * @no-reject
+     */
+    static async settled(iterable) {
+        const s = [];
+        for (const item of iterable) {
+            s.push(
+                Promise.resolve(item)
+                    .then(result => {
+                        return { error: false, value: result };
+                    })
+                    .catch(reason => {
+                        return { error: true, value: reason };
+                    }),
             );
         }
-        return SINGLETON_CACHE.get(func);
+        return Promise.all(s);
     }
 }

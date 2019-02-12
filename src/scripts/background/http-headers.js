@@ -12,10 +12,16 @@ export class HttpHeaders {
      * @private
      * @param {"responseHeaders"|"requestHeaders"} type
      * @param {Object.<string, string|null>} obj
+     * @param {boolean} [matchFounder = true]
      * @return {Function}
      */
-    static getHeadersHandler(type, obj) {
+    static getHeadersHandler(type, obj, matchFounder = true) {
         return details => {
+            if (matchFounder) {
+                // Ignore request if `isMatchSelfRules` return false.
+                if (!HttpHeaders.isMatchSelfRules(details)) return;
+            }
+
             const result = [];
             const keyMap = new Map();
             Object.keys(obj).forEach(name => keyMap.set(name.toLowerCase(), name));
@@ -46,13 +52,40 @@ export class HttpHeaders {
     }
 
     /**
+     * @private
+     * @param {chrome.webRequest.WebRequestDetails} details
+     * @return {boolean}
+     */
+    static isMatchSelfRules(details) {
+        /**
+         * @todo Starting from Chrome 72, an extension will be able to intercept a request only if it has
+         *       host permissions to both the requested URL and the request initiator.
+         * @desc It seems documents of Chrome extension has not been updated.
+         */
+        if (details.initiator) {
+            switch (details.initiator) {
+                case self.location.origin:
+                    return true;
+                case "null": // opaque origin
+                    return false;
+                default:
+                    return false;
+            }
+        } else {
+            // Intercept non-tab request only if initiator property does not exist.
+            return details.tabId === chrome.tabs.TAB_ID_NONE;
+        }
+    }
+
+    /**
      * @public
      * @param {Object.<string, string|null>} obj
      * @param {chrome.webRequest.RequestFilter} filter
+     * @param {boolean} [matchFounder]
      * @return {Function}
      */
-    static rewriteRequest(obj, filter) {
-        const handler = HttpHeaders.getHeadersHandler("requestHeaders", obj);
+    static rewriteRequest(obj, filter, matchFounder) {
+        const handler = HttpHeaders.getHeadersHandler("requestHeaders", obj, matchFounder);
         const extraInfoSpec = ["requestHeaders", "blocking"];
         const CONTEXT_OPTIONS = chrome.webRequest["OnBeforeSendHeadersOptions"];
         /**
@@ -78,10 +111,11 @@ export class HttpHeaders {
      * @public
      * @param {Object.<string, string|null>} obj
      * @param {chrome.webRequest.RequestFilter} filter
+     * @param {boolean} [matchFounder]
      * @return {Function}
      */
-    static rewriteResponse(obj, filter) {
-        const handler = HttpHeaders.getHeadersHandler("responseHeaders", obj);
+    static rewriteResponse(obj, filter, matchFounder) {
+        const handler = HttpHeaders.getHeadersHandler("responseHeaders", obj, matchFounder);
         const extraInfoSpec = ["responseHeaders", "blocking"];
         const CONTEXT_OPTIONS = chrome.webRequest["OnHeadersReceivedOptions"];
         /**

@@ -13,3 +13,8 @@ export const logSet = new Set();
  * @desc 微博信息
  */
 export const weiboMap = new Map();
+
+/**
+ * @desc 弹窗数据
+ */
+export const popupMap = new Map();

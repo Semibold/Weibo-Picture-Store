@@ -4,7 +4,14 @@
  * found in the LICENSE file.
  */
 
-import { M_VIDEO_FRAME, M_BATCH_DELETE, M_UPLOAD_IMAGE, M_UPLOAD_HISTORY, M_DOWNLOAD_LOG } from "../sharre/constant.js";
+import {
+    M_UPLOAD_FRAME,
+    M_BATCH_DELETE,
+    M_UPLOAD_IMAGE,
+    M_OPEN_HISTORY,
+    M_DOWNLOAD_LOG,
+    ET_UPLOAD_MUTATION,
+} from "../sharre/constant.js";
 import { Utils } from "../sharre/utils.js";
 import { Base64 } from "../sharre/base64.js";
 import { PConfig } from "../sharre/constant.js";
@@ -12,22 +19,31 @@ import { WeiboUpload } from "./weibo-action.js";
 import { fetchBlob } from "./fetch-blob.js";
 import { Log } from "../sharre/log.js";
 
-const copyToClipboardId = Utils.randomString(16);
+const weiboUpload = new WeiboUpload();
+
+weiboUpload.addEventListener(ET_UPLOAD_MUTATION, () => {
+    chrome.browserAction.setBadgeBackgroundColor({ color: "#8E7467" }, () => {
+        chrome.browserAction.setBadgeText({ text: String(weiboUpload.size || "") });
+    });
+});
 
 /**
- * @param {PackedItem} item
+ * @param {{done: boolean, value: PackedItem}} it
  */
-function writeToClipboard(item) {
-    const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
-    const url = `https://${PConfig.randomImageHost}/large/${item.pid + suffix}`;
-    const result = Utils.writeToClipboard(url);
-    if (result) {
-        chrome.notifications.create(copyToClipboardId, {
-            type: "basic",
-            iconUrl: chrome.i18n.getMessage("notify_icon"),
-            title: chrome.i18n.getMessage("info_title"),
-            message: "复制成功：链接已经复制到剪切板了呦~",
-        });
+function autoCopyUrlToClipboard(it) {
+    if (it && !it.done && it.value) {
+        const item = it.value;
+        const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
+        const url = `https://${PConfig.randomImageHost}/large/${item.pid + suffix}`;
+        const result = Utils.writeToClipboard(url);
+        if (result) {
+            chrome.notifications.create("copy_url_to_clipboard", {
+                type: "basic",
+                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                title: chrome.i18n.getMessage("info_title"),
+                message: "复制成功：链接已经复制到剪切板了呦~",
+            });
+        }
     }
 }
 
@@ -48,7 +64,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     title: "上传记录",
     contexts: ["browser_action"],
-    id: M_UPLOAD_HISTORY,
+    id: M_OPEN_HISTORY,
 });
 
 /**
@@ -66,7 +82,7 @@ chrome.contextMenus.create({
 chrome.contextMenus.create({
     title: "把当前的视频帧上传到微相册",
     contexts: ["video"],
-    id: M_VIDEO_FRAME,
+    id: M_UPLOAD_FRAME,
 });
 
 /**
@@ -86,43 +102,30 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         case M_DOWNLOAD_LOG:
             Log.download();
             break;
-        case M_UPLOAD_HISTORY:
+        case M_OPEN_HISTORY:
             chrome.tabs.create({ url: "history.html" });
             break;
         case M_UPLOAD_IMAGE:
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
-                const weiboUpload = new WeiboUpload();
                 weiboUpload.addQueues([blob]);
-                weiboUpload.triggerIteration(it => {
-                    if (!it.done && it.value) {
-                        writeToClipboard(it.value);
-                    }
-                });
+                weiboUpload.triggerIteration(autoCopyUrlToClipboard);
             });
             break;
-        case M_VIDEO_FRAME:
+        case M_UPLOAD_FRAME:
             chrome.tabs.sendMessage(
                 tab.id,
-                {
-                    type: M_VIDEO_FRAME,
-                    srcUrl: info.srcUrl,
-                },
+                { type: M_UPLOAD_FRAME, srcUrl: info.srcUrl },
                 { frameId: info.frameId },
                 response => {
                     /**
-                     * @desc `response` 的数据结构: {dataurl: string}
+                     * @var {{dataurl: string}} response
                      */
                     if (response) {
                         const [t, b64] = response.dataurl.split(",");
                         if (b64) {
                             const blob = new Blob([Base64.toBuffer(b64)]);
-                            const weiboUpload = new WeiboUpload();
                             weiboUpload.addQueues([blob]);
-                            weiboUpload.triggerIteration(it => {
-                                if (!it.done && it.value) {
-                                    writeToClipboard(it.value);
-                                }
-                            });
+                            weiboUpload.triggerIteration(autoCopyUrlToClipboard);
                         }
                     }
                 },

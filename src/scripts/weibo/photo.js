@@ -5,10 +5,11 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { USER_INFO_CACHE } from "../sharre/constant.js";
+import { USER_INFO_CACHE } from "./banker.js";
 import { requestSpecialAlbumId } from "./album.js";
 import { requestSignIn } from "./author.js";
 import { Log } from "../sharre/log.js";
+import { E_INVALID_PARSED_DATA } from "../sharre/constant.js";
 
 /**
  * @export
@@ -33,7 +34,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
                 }),
             });
         })
-        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
+        .then(response => response.json())
         .then(json => {
             if (!_replay && json && json["code"] === overflowCode) {
                 attachPhotoToSpecialAlbum(pid, uid, true);
@@ -67,12 +68,12 @@ export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = f
                 }),
             });
         })
-        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
+        .then(response => response.json())
         .then(json => {
             if (json && json["code"] === 0 && json["result"]) {
-                return Promise.resolve(json);
+                return json;
             } else {
-                return Promise.reject(new Error("Invalid Data"));
+                throw new Error(E_INVALID_PARSED_DATA);
             }
         })
         .catch(reason => {
@@ -128,9 +129,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                 }),
             );
         })
-        .then(response => {
-            return response.ok ? response.json() : Promise.reject(new Error(response.statusText));
-        })
+        .then(response => response.json())
         .then(json => {
             if (json && json["code"] === 0 && json["result"]) {
                 const total = json["data"]["total"];
@@ -156,7 +155,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                     message: "获取微相册的全部图片失败，数据异常",
                     remark: json,
                 });
-                return Promise.reject(new Error("Invalid Data"));
+                throw new Error(E_INVALID_PARSED_DATA);
             }
         })
         .catch(reason => {

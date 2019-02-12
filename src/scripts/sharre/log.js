@@ -113,6 +113,10 @@ export class Log {
     static serialize(types = Object.keys(Log.LEVEL)) {
         const caches = [];
         const padNum = Math.max(...types.map(x => x.length));
+        caches.push("------------------ Metadata Starting ------------------");
+        caches.push(`Version: ${chrome.runtime.getManifest().version}`);
+        caches.push(`User-Agent: ${self.navigator.userAgent}`);
+        caches.push("------------------ Metadata Finished ------------------");
         Log.store.forEach((k, v) => {
             if (types.includes(v.type)) {
                 caches.push(

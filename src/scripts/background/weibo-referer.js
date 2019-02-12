@@ -5,6 +5,7 @@
  */
 
 import { HttpHeaders } from "./http-headers.js";
+import { PSEUDO_MOBILE_UA } from "../sharre/constant.js";
 
 HttpHeaders.rewriteRequest(
     {
@@ -24,6 +25,28 @@ HttpHeaders.rewriteRequest(
     },
     {
         urls: ["https://photo.weibo.com/*"],
+        types: ["xmlhttprequest"],
+    },
+);
+
+HttpHeaders.rewriteRequest(
+    {
+        Origin: "https://passport.weibo.cn",
+        Referer: "https://passport.weibo.cn/sso/login",
+        "User-Agent": PSEUDO_MOBILE_UA,
+    },
+    {
+        urls: ["https://passport.weibo.cn/sso/login"],
+        types: ["xmlhttprequest"],
+    },
+);
+
+HttpHeaders.rewriteResponse(
+    {
+        "Access-Control-Allow-Origin": self.location.origin,
+    },
+    {
+        urls: ["https://passport.weibo.cn/sso/login"],
         types: ["xmlhttprequest"],
     },
 );

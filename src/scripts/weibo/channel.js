@@ -32,7 +32,10 @@ export const channel = new Proxy(
                     option,
                 );
             },
-            mimeType(arrayBuffer) {
+            mimeType(arrayBuffer, blob = null) {
+                if (blob && blob.type === "image/svg+xml") {
+                    return blob.type;
+                }
                 return bitmapMime(arrayBuffer);
             },
         },
@@ -57,7 +60,10 @@ export const channel = new Proxy(
                     option,
                 );
             },
-            mimeType(dataURL) {
+            mimeType(dataURL, blob = null) {
+                if (blob && blob.type === "image/svg+xml") {
+                    return blob.type;
+                }
                 return bitmapMime(Base64.toBuffer(dataURL.split(",")[1]));
             },
         },

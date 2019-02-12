@@ -5,13 +5,14 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { FEATURE_ID } from "../sharre/constant.js";
-import { USER_INFO_CACHE, USER_INFO_EXPIRED } from "../sharre/constant.js";
+import { E_CANT_CREATE_PALBUM, E_INVALID_PARSED_DATA, FEATURE_ID } from "../sharre/constant.js";
+import { singleton, setUserInfoCache, getUserInfoCache } from "./banker.js";
 import { requestUserId } from "./author.js";
 import { Log } from "../sharre/log.js";
 
 /**
- * @desc Singleton
+ * Singleton
+ *
  * @typedef {Object} AlbumInfo
  * @property {string} uid
  * @property {string} albumId
@@ -22,18 +23,13 @@ import { Log } from "../sharre/log.js";
  */
 async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
-    return Utils.fetch(
-        Utils.buildURL("http://photo.weibo.com/albums/get_all", { page: 1, count: overflow, __rnd: Date.now() }),
-    )
-        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
-        .catch(reason => {
-            Log.e({
-                module: "tryCheckoutSpecialAlbumId",
-                message: reason,
-                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
-            });
-            return Promise.reject(reason);
-        })
+    const url = Utils.buildURL("http://photo.weibo.com/albums/get_all", {
+        page: 1,
+        count: overflow,
+        __rnd: Date.now(),
+    });
+    return Utils.fetch(url)
+        .then(response => response.json())
         .then(json => {
             if (json && json["result"]) {
                 const albumInfo = { uid: null, albumId: null };
@@ -56,11 +52,7 @@ async function tryCheckoutSpecialAlbumId() {
                         module: "CheckoutSpecialAlbumId",
                         message: "检出指定的微相册成功",
                     });
-                    return Promise.resolve({
-                        uid: albumInfo.uid,
-                        albumId: albumInfo.albumId,
-                        albumList,
-                    });
+                    return Object.assign({ albumList }, albumInfo);
                 } else {
                     const canCreateNewAlbum = total < overflow;
                     Log.w({
@@ -76,14 +68,15 @@ async function tryCheckoutSpecialAlbumId() {
                     message: "检出指定的微相册失败，数据异常",
                     remark: json,
                 });
-                return Promise.reject(new Error("Invalid Data"));
+                throw new Error(E_INVALID_PARSED_DATA);
             }
         });
 }
 
 /**
- * @desc Singleton
- * @desc Referer wanted: "${protocol}//photo.weibo.com/${uid}/client"
+ * Singleton
+ * Referer wanted: "${protocol}//photo.weibo.com/${uid}/client"
+ *
  * @return {Promise<{uid: string, albumId: string}>}
  * @reject {Error}
  */
@@ -99,15 +92,7 @@ async function tryCreateNewAlbum() {
         album_id: "",
     });
     return Utils.fetch("http://photo.weibo.com/albums/create", { method, body })
-        .then(response => (response.ok ? response.json() : Promise.reject(new Error(response.statusText))))
-        .catch(reason => {
-            Log.e({
-                module: "tryCreateNewAlbum",
-                message: reason,
-                remark: "用户帐号可能处于异常状态，访问 http://photo.weibo.com 以确认账号状态",
-            });
-            return Promise.reject(reason);
-        })
+        .then(response => response.json())
         .then(json => {
             if (json && json["result"]) {
                 Log.d({
@@ -124,28 +109,9 @@ async function tryCreateNewAlbum() {
                     message: "创建微相册失败，数据异常",
                     remark: json,
                 });
-                return Promise.reject(new Error("Invalid Data"));
+                throw new Error(E_INVALID_PARSED_DATA);
             }
         });
-}
-
-/**
- * @param {AlbumInfo} albumInfo
- * @return {AlbumInfo}
- */
-function setUserInfoCache(albumInfo) {
-    if (albumInfo && albumInfo.albumId && albumInfo.uid) {
-        USER_INFO_CACHE.set(
-            albumInfo.uid,
-            Object.assign(
-                {
-                    timestamp: Date.now(),
-                },
-                albumInfo,
-            ),
-        );
-    }
-    return albumInfo;
 }
 
 /**
@@ -157,8 +123,8 @@ function setUserInfoCache(albumInfo) {
  */
 export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
     if (forceCreateNewAlbum) {
-        return Utils.singleton(tryCreateNewAlbum)
-            .then(tinyAlbumInfo => Utils.singleton(tryCheckoutSpecialAlbumId))
+        return singleton(tryCreateNewAlbum)
+            .then(tinyAlbumInfo => singleton(tryCheckoutSpecialAlbumId))
             .then(setUserInfoCache);
     }
     const cacheId =
@@ -166,31 +132,18 @@ export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
         (await requestUserId()
             .then(info => info.uid)
             .catch(Utils.noop));
+    const albumInfo = getUserInfoCache(cacheId);
 
-    if (cacheId && USER_INFO_CACHE.has(cacheId)) {
-        const albumInfo = USER_INFO_CACHE.get(cacheId);
-        if (
-            albumInfo &&
-            albumInfo.albumId &&
-            albumInfo.uid === cacheId &&
-            Date.now() - albumInfo.timestamp < USER_INFO_EXPIRED
-        ) {
-            return Promise.resolve(albumInfo);
-        } else {
-            USER_INFO_CACHE.delete(cacheId);
-        }
-    }
+    if (albumInfo) return albumInfo;
 
-    return Utils.singleton(tryCheckoutSpecialAlbumId)
+    return singleton(tryCheckoutSpecialAlbumId)
         .catch(reason => {
             if (reason && reason.canCreateNewAlbum != null) {
                 if (reason.canCreateNewAlbum) {
                     // Always return tryCheckoutSpecialAlbumId result.
-                    return Utils.singleton(tryCreateNewAlbum).then(tinyAlbumInfo =>
-                        Utils.singleton(tryCheckoutSpecialAlbumId),
-                    );
+                    return singleton(tryCreateNewAlbum).then(tinyAlbumInfo => singleton(tryCheckoutSpecialAlbumId));
                 } else {
-                    return Promise.reject(new Error("Cannot create new album"));
+                    throw new Error(E_CANT_CREATE_PALBUM);
                 }
             } else {
                 return Promise.reject(reason);

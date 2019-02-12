@@ -7,8 +7,7 @@
 /**
  * WARNING: `requestAnimationFrame` has no effect on chrome background page
  */
-import { Utils } from "../sharre/utils.js";
-import { FP_TYPE_DOWNLOAD, FP_TYPE_UPLOAD } from "../sharre/constant.js";
+import { FP_TYPE_DOWNLOAD, FP_TYPE_UPLOAD, FPC_DISCARD, FPC_FAILURE, FPC_SUCCEED } from "../sharre/constant.js";
 
 const fileProgressMap = new Map();
 
@@ -16,76 +15,51 @@ const fileProgressMap = new Map();
  * @desc 用于支持多类型
  */
 class TypeEntry {
-    /**
-     * @param {number} tid
-     * @return {boolean}
-     */
-    static notify(tid) {
-        let message;
-        let contextMessage;
-        let dtd = fileProgressMap.get(tid);
-
-        if (dtd.settle === dtd.total) {
-            return false;
-        }
-
-        switch (tid) {
-            case FP_TYPE_UPLOAD:
-                message = "当前提示在上传完成后会自动关闭";
-                contextMessage = "加速上传中，请耐心等候";
-                break;
-            case FP_TYPE_DOWNLOAD:
-                message = "当前提示在下载完成后会自动关闭";
-                contextMessage = "正在获取远程文件，请耐心等候";
-                break;
-            default:
-                return false;
-        }
-
-        chrome.notifications.create(
-            dtd.notifyId,
-            {
-                type: "basic",
-                iconUrl: chrome.i18n.getMessage("notify_icon"),
-                title: chrome.i18n.getMessage("info_title"),
-                message: message,
-                contextMessage: contextMessage,
-            },
-            notificationId => {
-                if (dtd.settle === dtd.total) {
-                    dtd.reformat();
-                    tid === FP_TYPE_UPLOAD &&
-                        chrome.notifications.create(notificationId, {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("notify_icon"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: "文件上传流程结束啦！",
-                        });
-                }
-            },
-        );
-
-        return true;
-    }
-
     constructor(tid) {
-        this.notifyId = Utils.randomString(16);
+        this.tid = tid;
         this.total = 0;
         this.settle = 0;
+        this.preStatus = { succeed: 0, discard: 0, failure: 0 };
+        this.curStatus = { succeed: 0, discard: 0, failure: 0 };
         fileProgressMap.set(tid, this);
     }
 
-    reformat() {
-        this.total = 0;
-        this.settle = 0;
+    reset() {
+        if (this.settle === this.total) {
+            this.preStatus = this.curStatus;
+            this.curStatus = { succeed: 0, discard: 0, failure: 0 };
+            this.total = 0;
+            this.settle = 0;
+            console.log(
+                `Type: ${this.tid}`,
+                `Succeed: ${this.preStatus.succeed}`,
+                `Failure: ${this.preStatus.failure}`,
+                `Discard: ${this.preStatus.discard}`,
+            );
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    consume(n) {
+    consume(n, type) {
         if (Number.isSafeInteger(n) && n > 0) {
             if (this.settle + n <= this.total) {
                 this.settle += n;
+                switch (type) {
+                    case FPC_SUCCEED:
+                        this.curStatus.succeed++;
+                        break;
+                    case FPC_DISCARD:
+                        this.curStatus.discard++;
+                        break;
+                    case FPC_FAILURE:
+                        this.curStatus.failure++;
+                        break;
+                }
             }
         }
+        this.reset();
     }
 
     padding(n) {
@@ -109,25 +83,23 @@ export class FileProgress {
         this.dtd = fileProgressMap.get(this.tid);
     }
 
-    /**
-     * @public
-     */
-    consume(n = 1) {
-        return this.dtd.consume(n);
+    get previousStatus() {
+        return Object.assign({}, this.dtd.preStatus);
     }
 
-    /**
-     * @public
-     */
+    succeed(n = 1) {
+        return this.dtd.consume(n, FPC_SUCCEED);
+    }
+
+    discard(n = 1) {
+        return this.dtd.consume(n, FPC_DISCARD);
+    }
+
+    failure(n = 1) {
+        return this.dtd.consume(n, FPC_FAILURE);
+    }
+
     padding(n = 1) {
         return this.dtd.padding(n);
-    }
-
-    /**
-     * @public
-     * @return {boolean}
-     */
-    trigger() {
-        return TypeEntry.notify(this.tid);
     }
 }
