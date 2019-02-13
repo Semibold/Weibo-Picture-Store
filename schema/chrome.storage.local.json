@@ -6,7 +6,7 @@
   "title": "The Root Schema",
   "required": [
     "weibo_account_details",
-    "dimension"
+    "popup_viewport_dimension"
   ],
   "properties": {
     "weibo_account_details": {
@@ -50,17 +50,17 @@
         }
       }
     },
-    "dimension": {
-      "$id": "#/properties/dimension",
+    "popup_viewport_dimension": {
+      "$id": "#/properties/popup_viewport_dimension",
       "type": "object",
-      "title": "The Dimension Schema",
+      "title": "The Popup_viewport_dimension Schema",
       "required": [
         "width",
         "height"
       ],
       "properties": {
         "width": {
-          "$id": "#/properties/dimension/properties/width",
+          "$id": "#/properties/popup_viewport_dimension/properties/width",
           "type": "integer",
           "title": "The Width Schema",
           "default": 0,
@@ -69,7 +69,7 @@
           ]
         },
         "height": {
-          "$id": "#/properties/dimension/properties/height",
+          "$id": "#/properties/popup_viewport_dimension/properties/height",
           "type": "integer",
           "title": "The Height Schema",
           "default": 0,
