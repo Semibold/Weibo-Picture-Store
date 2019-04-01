@@ -12,8 +12,8 @@ const SINGLETON_CACHE = new Map();
 /**
  * @desc 多用户的 Cache
  */
-export const USER_INFO_CACHE = new Map();
-export const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
+const USER_INFO_CACHE = new Map();
+const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
 
 /**
  * @param {Function} func - MUST be a parameterless function
@@ -45,7 +45,7 @@ export async function setUserInfoCache(albumInfo) {
 }
 
 /**
- * @param cacheId
+ * @param {string} cacheId
  * @return {Promise<AlbumInfo|void>}
  * @no-reject
  */
@@ -62,5 +62,16 @@ export async function getUserInfoCache(cacheId) {
         } else {
             USER_INFO_CACHE.delete(cacheId);
         }
+    }
+}
+
+/**
+ * @param {string} cacheId
+ * @return {Promise<void>}
+ * @no-reject
+ */
+export async function delUserInfoCache(cacheId) {
+    if (USER_INFO_CACHE.has(cacheId)) {
+        USER_INFO_CACHE.delete(cacheId);
     }
 }

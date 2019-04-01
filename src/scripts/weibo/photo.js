@@ -5,7 +5,7 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { USER_INFO_CACHE } from "./banker.js";
+import { delUserInfoCache } from "./banker.js";
 import { requestSpecialAlbumId } from "./album.js";
 import { requestSignIn } from "./author.js";
 import { Log } from "../sharre/log.js";
@@ -42,7 +42,7 @@ export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
         })
         .catch(reason => {
             if (_replay) {
-                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
+                promise.then(albumInfo => delUserInfoCache(albumInfo.uid));
             }
             return Promise.reject(reason);
         });
@@ -78,7 +78,7 @@ export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = f
         })
         .catch(reason => {
             if (_replay) {
-                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
+                promise.then(albumInfo => delUserInfoCache(albumInfo.uid));
                 return Promise.reject(reason);
             } else {
                 return requestSignIn(true).then(json => {
@@ -160,7 +160,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
         })
         .catch(reason => {
             if (_replay) {
-                promise.then(albumInfo => USER_INFO_CACHE.delete(albumInfo.uid));
+                promise.then(albumInfo => delUserInfoCache(albumInfo.uid));
                 Log.w({
                     module: "requestPhotosFromSpecialAlbum",
                     message: reason,
