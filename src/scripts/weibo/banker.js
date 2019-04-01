@@ -34,9 +34,10 @@ export function singleton(func) {
 
 /**
  * @param {AlbumInfo} albumInfo
- * @return {AlbumInfo}
+ * @return {Promise<AlbumInfo>}
+ * @no-reject
  */
-export function setUserInfoCache(albumInfo) {
+export async function setUserInfoCache(albumInfo) {
     if (albumInfo && albumInfo.albumId && albumInfo.uid) {
         USER_INFO_CACHE.set(albumInfo.uid, Object.assign({ timestamp: Date.now() }, albumInfo));
     }
@@ -45,9 +46,10 @@ export function setUserInfoCache(albumInfo) {
 
 /**
  * @param cacheId
- * @return {AlbumInfo|void}
+ * @return {Promise<AlbumInfo|void>}
+ * @no-reject
  */
-export function getUserInfoCache(cacheId) {
+export async function getUserInfoCache(cacheId) {
     if (cacheId && USER_INFO_CACHE.has(cacheId)) {
         const albumInfo = USER_INFO_CACHE.get(cacheId);
         if (
