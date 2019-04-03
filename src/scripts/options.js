@@ -4,40 +4,34 @@
  * found in the LICENSE file.
  */
 
-import { K_AUTO_DISPLAY_CHANGELOG, K_WEIBO_ACCOUNT_DETAILS, PConfig } from "./sharre/constant.js";
+import { K_AUTO_DISPLAY_CHANGELOG, K_WEIBO_ACCOUNT_DETAILS, K_WEIBO_INHERITED_WATERMARK } from "./sharre/constant.js";
 import { SharreM } from "./sharre/alphabet.js";
 
 const displayChangelog = document.querySelector(`input[value="auto_display_changelog"]`);
-
-chrome.storage.sync.get(
-    {
-        [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
-    },
-    items => {
-        if (chrome.runtime.lastError) return;
-        displayChangelog.checked = Boolean(items[K_AUTO_DISPLAY_CHANGELOG]);
-    },
-);
-
-displayChangelog.addEventListener("click", e => {
-    const checked = e.target.checked;
-    chrome.storage.sync.set(
-        {
-            [K_AUTO_DISPLAY_CHANGELOG]: checked,
-        },
-        function() {
-            if (chrome.runtime.lastError) {
-                displayChangelog.checked = !checked;
-            }
-        },
-    );
-});
-
+const inheritedWatermark = document.querySelector(`input[value="weibo_inherited_watermark"]`);
 const allowUserAccount = document.querySelector(`input[value="allow_user_account"]`);
+
 const fieldset = document.querySelector("fieldset");
 const confirm = document.getElementById("confirm");
 const username = document.getElementById("username");
 const password = document.getElementById("password");
+
+function registerInputClickEventWithSyncStorage(input, key) {
+    input.addEventListener("click", e => {
+        const checked = e.target.checked;
+        chrome.storage.sync.set({ [key]: checked }, function() {
+            if (chrome.runtime.lastError) {
+                input.checked = !checked;
+            }
+        });
+    });
+}
+
+displayChangelog.checked = Boolean(SharreM.genericMap.get(K_AUTO_DISPLAY_CHANGELOG));
+inheritedWatermark.checked = Boolean(SharreM.genericMap.get(K_WEIBO_INHERITED_WATERMARK));
+
+registerInputClickEventWithSyncStorage(displayChangelog, K_AUTO_DISPLAY_CHANGELOG);
+registerInputClickEventWithSyncStorage(inheritedWatermark, K_WEIBO_INHERITED_WATERMARK);
 
 username.value = SharreM.weiboMap.get("username");
 password.value = SharreM.weiboMap.get("password");
