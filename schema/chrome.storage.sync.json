@@ -5,13 +5,23 @@
   "type": "object",
   "title": "The Root Schema",
   "required": [
-    "auto_display_changelog"
+    "auto_display_changelog",
+    "weibo_inherited_watermark"
   ],
   "properties": {
     "auto_display_changelog": {
       "$id": "#/properties/auto_display_changelog",
       "type": "boolean",
       "title": "The Auto_display_changelog Schema",
+      "default": true,
+      "examples": [
+        true
+      ]
+    },
+    "weibo_inherited_watermark": {
+      "$id": "#/properties/weibo_inherited_watermark",
+      "type": "boolean",
+      "title": "The Weibo_inherited_watermark Schema",
       "default": false,
       "examples": [
         true
