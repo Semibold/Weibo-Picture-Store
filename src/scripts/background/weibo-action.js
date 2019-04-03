@@ -73,23 +73,12 @@ export class WeiboUpload extends EventTarget {
 
     /**
      * @public
-     */
-    get size() {
-        if (this.tailer.done) {
-            return this.queues.length;
-        } else {
-            return this.queues.length + 1;
-        }
-    }
-
-    /**
-     * @public
      * @param {(Blob|File)[]} blobs
      */
     addQueues(blobs) {
         this.queues.push(...blobs);
         this.tailer.progress.padding(blobs.length);
-        this.triggerQueuesViewChanged();
+        // this.triggerQueuesViewChanged();
     }
 
     /**
@@ -101,8 +90,9 @@ export class WeiboUpload extends EventTarget {
      */
     triggerIteration(cb) {
         if (this.tailer.done && this.queues.length) {
-            this.startPrivateIteration(cb);
+            this.tailer.done = !this.queues.length;
             this.triggerQueuesViewChanged(true);
+            this.startPrivateIteration(cb);
         }
     }
 
@@ -111,16 +101,14 @@ export class WeiboUpload extends EventTarget {
      * @param {boolean} [immediately = false]
      */
     triggerQueuesViewChanged(immediately = false) {
+        const currentQueuesLength = this.queues.length;
         const debounceHandler = () => {
             if (!this.tailer.done || immediately) {
-                this.dispatchEvent(new CustomEvent(ET_UPLOAD_MUTATION));
-            }
-            if (immediately && !this.size) {
-                Log.w({
-                    module: "WeiboUpload",
-                    message: `immediately: ${immediately}, size: ${this.queues.length}`,
-                    remark: "事件触发的时机不正确",
-                });
+                this.dispatchEvent(
+                    new CustomEvent(ET_UPLOAD_MUTATION, {
+                        detail: { size: currentQueuesLength },
+                    }),
+                );
             }
             clearTimeout(this.queuesChangedTimer);
             this.queuesChangedTimer = null;
@@ -138,7 +126,6 @@ export class WeiboUpload extends EventTarget {
      * @param {Function} [cb]
      */
     startPrivateIteration(cb) {
-        this.tailer.done = false;
         this.tailer.iterator
             .next()
             .finally(() => this.triggerQueuesViewChanged())

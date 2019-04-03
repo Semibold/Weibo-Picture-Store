@@ -16,8 +16,8 @@ const dispatcher = new Dispatcher().init();
 const fileInput = document.querySelector("#file-input");
 const browsingHistory = document.querySelector(".head-browsing-history");
 
-dispatcher.weiboUpload.addEventListener(ET_UPLOAD_MUTATION, () => {
-    const size = dispatcher.weiboUpload.size;
+dispatcher.weiboUpload.addEventListener(ET_UPLOAD_MUTATION, e => {
+    const size = e.detail.size;
     const originTitle = chrome.i18n.getMessage("ext_name");
     if (size) {
         document.title = `${originTitle} - 加速上传中...剩余 ${size} 个文件`;

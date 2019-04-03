@@ -21,9 +21,9 @@ import { Log } from "../sharre/log.js";
 
 const weiboUpload = new WeiboUpload();
 
-weiboUpload.addEventListener(ET_UPLOAD_MUTATION, () => {
+weiboUpload.addEventListener(ET_UPLOAD_MUTATION, e => {
     chrome.browserAction.setBadgeBackgroundColor({ color: "#8E7467" }, () => {
-        chrome.browserAction.setBadgeText({ text: String(weiboUpload.size || "") });
+        chrome.browserAction.setBadgeText({ text: String(e.detail.size || "") });
     });
 });
 
