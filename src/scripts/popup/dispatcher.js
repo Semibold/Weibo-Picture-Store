@@ -316,7 +316,7 @@ export class Dispatcher {
         const clipsize = this.starter.clipsize[this.config.clipsize];
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
         const url = `${scheme + PConfig.randomImageHost}/${clipsize}/${item.pid + suffix}`;
-        const filename = (item.blob && item.blob.name) || "image";
+        const filename = Utils.getFilenameWithoutSuffix(item.blob && item.blob.name);
         const assignedPackedItem = Object.assign(item, {
             URL: url,
             HTML: `<img src="${url}" alt="${filename}">`,

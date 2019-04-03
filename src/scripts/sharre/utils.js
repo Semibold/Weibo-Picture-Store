@@ -128,6 +128,25 @@ export class Utils {
     }
 
     /**
+     * @param {string} [filepath]
+     * @param {string} [defFilename="image"]
+     * @return {string}
+     */
+    static getFilenameWithoutSuffix(filepath, defFilename = "image") {
+        if (filepath) {
+            const filename = filepath.split("/").pop();
+            const segments = filename.split(".");
+            if (segments.length > 1) {
+                return segments.slice(0, -1).join(".") || filename;
+            } else {
+                return filename;
+            }
+        } else {
+            return defFilename;
+        }
+    }
+
+    /**
      * @async
      * @param {RequestInfo} input
      * @param {RequestInit} [init]
