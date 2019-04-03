@@ -93,15 +93,16 @@ async function purifier(item) {
 
 /**
  * @param {PackedItem} item
+ * @param {Watermark|null} [watermark]
  * @param {boolean} [_replay=false]
  * @return {Promise<PackedItem>}
  * @reject {Error|{login: boolean, terminable: boolean}}
  */
-async function uploader(item, _replay = false) {
+async function uploader(item, watermark = null, _replay = false) {
     const oneline = channel[item.channelType];
     const method = "POST";
     const body = oneline.body(item.result);
-    const param = oneline.param({ mime: item.mimeType });
+    const param = oneline.param({ mime: item.mimeType }, watermark);
     const url = "http://picupload.weibo.com/interface/pic_upload.php";
 
     return Utils.fetch(Utils.buildURL(url, param), { method, body })
@@ -191,7 +192,7 @@ async function uploader(item, _replay = false) {
                                 module: "uploader",
                                 message: "用户登录状态已被激活，重新尝试上传图片",
                             });
-                            return uploader(item, true);
+                            return uploader(item, watermark, true);
                         } else {
                             Log.w({
                                 module: "uploader",
@@ -218,13 +219,14 @@ async function uploader(item, _replay = false) {
 /**
  * @export
  * @param {Blob|File} blob
+ * @param {Watermark|null} [watermark]
  * @return {Promise<PackedItem>}
  * @reject {Error|{login: boolean, terminable: boolean}}
  */
-export async function requestUpload(blob) {
+export async function requestUpload(blob, watermark) {
     if (blob.size > UNKNOWN_FILE_SIZE_RESTRICT) {
         throw new Error(E_FILE_SIZE_RESTRICT);
     } else {
-        return await uploader(await purifier(await reader(blob)));
+        return await uploader(await purifier(await reader(blob)), watermark);
     }
 }

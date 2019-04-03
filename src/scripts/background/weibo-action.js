@@ -11,12 +11,15 @@ import {
     E_FILE_TYPE_RESTRICT,
     ET_UPLOAD_MUTATION,
     FP_TYPE_UPLOAD,
+    K_WEIBO_INHERITED_WATERMARK,
 } from "../sharre/constant.js";
 
 import { requestUpload } from "../weibo/upload.js";
 import { detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum } from "../weibo/photo.js";
 import { Log } from "../sharre/log.js";
 import { signInByUserAccount } from "../weibo/author.js";
+import { requestWeiboWatermark } from "../weibo/watermark.js";
+import { genericMap } from "./persist-store.js";
 
 /**
  * @static
@@ -179,8 +182,9 @@ export class WeiboUpload extends EventTarget {
      * @reject {{login: boolean, terminable: boolean}}
      */
     async *genUploadQueues() {
+        const watermark = await requestWeiboWatermark(genericMap.get(K_WEIBO_INHERITED_WATERMARK));
         while (this.queues.length) {
-            yield await requestUpload(this.queues.shift())
+            yield await requestUpload(this.queues.shift(), watermark)
                 .then(item => {
                     this.tailer.progress.succeed();
                     return Promise.resolve(item);
