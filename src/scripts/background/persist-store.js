@@ -10,6 +10,11 @@
 export const logSet = new Set();
 
 /**
+ * @desc 通用信息
+ */
+export const genericMap = new Map();
+
+/**
  * @desc 微博信息
  */
 export const weiboMap = new Map();

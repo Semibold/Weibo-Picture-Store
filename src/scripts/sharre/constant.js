@@ -50,6 +50,7 @@ export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
  * @desc chrome.StorageArea.sync
  */
 export const K_AUTO_DISPLAY_CHANGELOG = "auto_display_changelog";
+export const K_WEIBO_INHERITED_WATERMARK = "weibo_inherited_watermark";
 
 /**
  * @desc chrome.StorageArea.local
@@ -143,6 +144,7 @@ export class PConfig {
     static get defaultOptions() {
         return {
             autoDisplayChangelog: true,
+            inheritWeiboWatermark: false,
             weiboAccountDetails: {
                 username: "",
                 password: "",
