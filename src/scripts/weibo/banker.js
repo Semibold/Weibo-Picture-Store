@@ -34,10 +34,9 @@ export function singleton(func) {
 
 /**
  * @param {AlbumInfo} albumInfo
- * @return {Promise<AlbumInfo>}
- * @no-reject
+ * @return {AlbumInfo}
  */
-export async function setUserInfoCache(albumInfo) {
+export function setUserInfoCache(albumInfo) {
     if (albumInfo && albumInfo.albumId && albumInfo.uid) {
         USER_INFO_CACHE.set(albumInfo.uid, Object.assign({ timestamp: Date.now() }, albumInfo));
     }
@@ -46,10 +45,9 @@ export async function setUserInfoCache(albumInfo) {
 
 /**
  * @param {string} cacheId
- * @return {Promise<AlbumInfo|void>}
- * @no-reject
+ * @return {AlbumInfo|void}
  */
-export async function getUserInfoCache(cacheId) {
+export function getUserInfoCache(cacheId) {
     if (cacheId && USER_INFO_CACHE.has(cacheId)) {
         const albumInfo = USER_INFO_CACHE.get(cacheId);
         if (
@@ -67,11 +65,11 @@ export async function getUserInfoCache(cacheId) {
 
 /**
  * @param {string} cacheId
- * @return {Promise<void>}
- * @no-reject
+ * @return {boolean}
  */
-export async function delUserInfoCache(cacheId) {
+export function delUserInfoCache(cacheId) {
     if (USER_INFO_CACHE.has(cacheId)) {
-        USER_INFO_CACHE.delete(cacheId);
+        return USER_INFO_CACHE.delete(cacheId);
     }
+    return false;
 }

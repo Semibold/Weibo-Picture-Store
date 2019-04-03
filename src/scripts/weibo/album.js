@@ -132,7 +132,7 @@ export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
         (await requestUserId()
             .then(info => info.uid)
             .catch(Utils.noop));
-    const albumInfo = await getUserInfoCache(cacheId);
+    const albumInfo = getUserInfoCache(cacheId);
 
     if (albumInfo) return albumInfo;
 
