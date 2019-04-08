@@ -183,7 +183,7 @@ async function uploader(item, watermark = null, _replay = false) {
                         });
                         return Promise.reject({
                             login: reason.login,
-                            terminable: !reason.login,
+                            terminable: true,
                         });
                     })
                     .then(json => {
@@ -201,7 +201,7 @@ async function uploader(item, watermark = null, _replay = false) {
                             });
                             return Promise.reject({
                                 login: reason.login,
-                                terminable: !reason.login,
+                                terminable: true,
                             });
                         }
                     });
@@ -211,7 +211,10 @@ async function uploader(item, watermark = null, _replay = false) {
                     message: reason,
                     remark: "已经重试过了，这里直接抛出错误",
                 });
-                return Promise.reject(reason);
+                return Promise.reject({
+                    login: true,
+                    terminable: true,
+                });
             }
         });
 }
