@@ -177,11 +177,21 @@ export class Dispatcher {
                 this.copier.select();
 
                 if (document.execCommand("copy")) {
+                    // color for error: #F2355B
+                    buttonCopy.animate(
+                        [
+                            { backgroundColor: "#00a1d6" },
+                            { backgroundColor: "#0F2742", offset: 0.3 },
+                            { backgroundColor: "#0F2742" },
+                        ],
+                        { duration: 500, easing: "ease", fill: "backwards" },
+                    );
+                } else {
                     chrome.notifications.create(this.nid, {
                         type: "basic",
                         iconUrl: chrome.i18n.getMessage("notify_icon"),
-                        title: chrome.i18n.getMessage("info_title"),
-                        message: "复制成功：链接已经复制到剪切板了呦~",
+                        title: chrome.i18n.getMessage("warn_title"),
+                        message: "操作失败：链接没有复制到剪切板中(lll￢ω￢)",
                     });
                 }
 
