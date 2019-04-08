@@ -136,13 +136,15 @@ export class WeiboUpload extends EventTarget {
                     this.tailer.iterator = this.genUploadQueues();
                     if (this.notifyStats) {
                         const { succeed, failure, discard } = this.tailer.progress.previousStatus;
-                        chrome.notifications.create("upload_stats", {
-                            type: "basic",
-                            iconUrl: chrome.i18n.getMessage("notify_icon"),
-                            title: chrome.i18n.getMessage("info_title"),
-                            message: `成功：${succeed}，失败：${failure}，丢弃：${discard}`,
-                            contextMessage: "自动丢弃大小超过20MB及文件格式不受浏览器支持的文件",
-                        });
+                        if (failure || discard) {
+                            chrome.notifications.create("upload_stats", {
+                                type: "basic",
+                                iconUrl: chrome.i18n.getMessage("notify_icon"),
+                                title: chrome.i18n.getMessage("info_title"),
+                                message: `成功：${succeed}，失败：${failure}，丢弃：${discard}`,
+                                contextMessage: "自动丢弃大小超过20MB及文件格式不受浏览器支持的文件",
+                            });
+                        }
                     }
                     this.triggerQueuesViewChanged(true);
                 } else {
