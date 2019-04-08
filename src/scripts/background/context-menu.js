@@ -36,12 +36,12 @@ function autoCopyUrlToClipboard(it) {
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
         const url = `https://${PConfig.randomImageHost}/large/${item.pid + suffix}`;
         const result = Utils.writeToClipboard(url);
-        if (result) {
-            chrome.notifications.create("copy_url_to_clipboard", {
+        if (!result) {
+            chrome.notifications.create("copy_url_to_clipboard_failure", {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                 title: chrome.i18n.getMessage("info_title"),
-                message: "复制成功：链接已经复制到剪切板了呦~",
+                message: "操作失败：链接没有复制到剪切板中(lll￢ω￢)",
             });
         }
     }
