@@ -103,7 +103,7 @@ async function uploader(item, watermark = null, _replay = false) {
     const method = "POST";
     const body = oneline.body(item.result);
     const param = oneline.param({ mime: item.mimeType }, watermark);
-    const url = "http://picupload.weibo.com/interface/pic_upload.php";
+    const url = "https://picupload.weibo.com/interface/pic_upload.php";
 
     return Utils.fetch(Utils.buildURL(url, param), { method, body })
         .then(response => response.text())

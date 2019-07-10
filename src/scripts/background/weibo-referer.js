@@ -4,8 +4,40 @@
  * found in the LICENSE file.
  */
 
+/**
+ * @desc 涉及微博的相关域名
+ *  weibo.com
+ *  photo.weibo.com
+ *  picupload.weibo.com (picupload.service.weibo.com)
+ *
+ *  passport.weibo.cn
+ *  login.sina.com.cn
+ */
+
 import { HttpHeaders } from "./http-headers.js";
 import { PSEUDO_MOBILE_UA } from "../sharre/constant.js";
+
+// HttpHeaders.rewriteRequest(
+//     {
+//         Referer: "http://photo.weibo.com/",
+//         Origin: "http://photo.weibo.com",
+//     },
+//     {
+//         urls: ["http://picupload.weibo.com/*"],
+//         types: ["xmlhttprequest"],
+//     },
+// );
+//
+// HttpHeaders.rewriteRequest(
+//     {
+//         Referer: "https://photo.weibo.com/",
+//         Origin: "https://photo.weibo.com",
+//     },
+//     {
+//         urls: ["https://picupload.weibo.com/*"],
+//         types: ["xmlhttprequest"],
+//     },
+// );
 
 HttpHeaders.rewriteRequest(
     {
