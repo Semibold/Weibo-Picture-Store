@@ -63,4 +63,3 @@ class WeiboConfig {
 }
 
 export const weiboConfig = new WeiboConfig();
-self.s = weiboConfig;
