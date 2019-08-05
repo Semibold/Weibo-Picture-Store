@@ -12,28 +12,16 @@ import { SectionTable } from "./section-table.js";
 export class Dispatcher {
     constructor() {
         this.config = null;
-        this.starter = {
-            scheme: {
-                1: "http://",
-                2: "https://",
-                3: "//",
-            },
-            clipsize: {
-                1: "large",
-                2: "mw690",
-                3: "thumbnail",
-                4: "",
-            },
-        };
+        this.starter = SharreM.weiboConfig.starter;
         this.batch = false;
         this.list = new Map();
         this.main = document.querySelector("#main");
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clipsize");
-        this.external = this.starter.clipsize;
+        this.external = SharreM.weiboConfig.external;
         this.checkout = { clear: true };
-        this.customConfigKey = "custom_config";
-        this.customClipsizeKey = "custom_clipsize";
+        this.customConfigKey = SharreM.weiboConfig.customConfigKey;
+        this.customClipsizeKey = SharreM.weiboConfig.customClipsizeKey;
         this.nid = Utils.randomString(16);
         this.directorySymbol = "\uD83D\uDCC1";
         this.classifyMap = new Map();
@@ -52,26 +40,7 @@ export class Dispatcher {
 
     /** @private */
     genConfigProxy() {
-        const padding = { scheme: "2", clipsize: "1" };
-        const customConfig = {
-            scheme: localStorage.getItem(`${this.customConfigKey}.scheme`),
-            clipsize: localStorage.getItem(`${this.customConfigKey}.clipsize`),
-        };
-        const customClipsize = localStorage.getItem(this.customClipsizeKey);
-
-        if (typeof customClipsize === "string") {
-            this.external[4] = customClipsize;
-        }
-
-        if (customConfig) {
-            for (const name of Object.keys(padding)) {
-                if (typeof this.starter[name][customConfig[name]] === "string") {
-                    padding[name] = customConfig[name];
-                }
-            }
-        }
-
-        this.config = new Proxy(padding, {
+        this.config = new Proxy(SharreM.weiboConfig.padding, {
             get: (target, key, receiver) => {
                 return Reflect.get(target, key, receiver);
             },
