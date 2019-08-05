@@ -21,6 +21,7 @@ export class Dispatcher {
         this.error = false;
         this.ended = false;
         this.locked = false;
+        this.scheme = SharreM.weiboConfig.scheme;
         this.maxselected = 50;
         this.nid = Utils.randomString(16);
         this.head = document.querySelector("#head");
@@ -211,9 +212,10 @@ export class Dispatcher {
                     const imgLinker = section.querySelector(".image-linker");
                     const imgUpdate = section.querySelector(".image-update");
                     const imgSource = imgLinker.querySelector("img");
-                    imgSource.src = `${item.picHost}/thumb300/${item.picName}`;
-                    imgSource.srcset = `${item.picHost}/bmiddle/${item.picName} 2x`;
-                    imgLinker.href = `${item.picHost}/large/${item.picName}`;
+                    const urlOrigin = Utils.replaceUrlScheme(item.picHost, this.scheme);
+                    imgSource.src = `${urlOrigin}/thumb300/${item.picName}`;
+                    imgSource.srcset = `${urlOrigin}/bmiddle/${item.picName} 2x`;
+                    imgLinker.href = `${urlOrigin}/large/${item.picName}`;
                     imgUpdate.textContent = item.updated;
                     this.fragment.append(section);
                     this.sections.set(section, item);

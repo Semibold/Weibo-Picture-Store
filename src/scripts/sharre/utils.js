@@ -147,6 +147,21 @@ export class Utils {
     }
 
     /**
+     * @param {string} target
+     * @param {string} targetScheme
+     * @param {string[]} [variousScheme]
+     * @return string
+     */
+    static replaceUrlScheme(target, targetScheme, variousScheme = ["http://", "https://", "//"]) {
+        for (const s of variousScheme) {
+            if (target.startsWith(s)) {
+                return target.replace(s, targetScheme);
+            }
+        }
+        return target;
+    }
+
+    /**
      * @async
      * @param {RequestInfo} input
      * @param {RequestInit} [init]

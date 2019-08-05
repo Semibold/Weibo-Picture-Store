@@ -18,6 +18,7 @@ import { PConfig } from "../sharre/constant.js";
 import { WeiboUpload } from "./weibo-action.js";
 import { fetchBlob } from "./fetch-blob.js";
 import { Log } from "../sharre/log.js";
+import { weiboConfig } from "./weibo-config.js";
 
 const weiboUpload = new WeiboUpload();
 
@@ -34,7 +35,7 @@ function autoCopyUrlToClipboard(it) {
     if (it && !it.done && it.value) {
         const item = it.value;
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
-        const url = `https://${PConfig.randomImageHost}/large/${item.pid + suffix}`;
+        const url = `${weiboConfig.scheme + PConfig.randomImageHost}/large/${item.pid + suffix}`;
         const result = Utils.writeToClipboard(url);
         if (!result) {
             chrome.notifications.create("copy_url_to_clipboard_failure", {

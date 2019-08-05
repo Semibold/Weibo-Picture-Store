@@ -10,15 +10,15 @@ import { Utils } from "../sharre/utils.js";
 const headHTML = `
     <div class="head-setting">
         <div class="head-network-protocol">
-            <label title="使用http协议">
+            <label title="使用http协议(全局)">
                 <input type="radio" name="scheme" value="1">
                 <span>http</span>
             </label>
-            <label title="使用https协议">
+            <label title="使用https协议(全局)">
                 <input type="radio" name="scheme" value="2">
                 <span>https</span>
             </label>
-            <label title="使用相对协议">
+            <label title="使用相对协议(全局)">
                 <input type="radio" name="scheme" value="3">
                 <span>自适应</span>
             </label>
