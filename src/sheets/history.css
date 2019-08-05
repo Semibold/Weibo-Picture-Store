@@ -48,6 +48,7 @@ body {
     will-change: left, right;
 }
 
+.navi-poam,
 .navi-prev,
 .navi-next {
     display: inline-block;
@@ -55,19 +56,23 @@ body {
     height: 2em;
     line-height: 2em;
     text-align: center;
+    color: inherit;
     transition: color 0.2s;
 }
 
+.navi-poam[data-disabled="false"],
 .navi-prev[data-disabled="false"],
 .navi-next[data-disabled="false"] {
     cursor: pointer;
 }
 
+.navi-poam[data-disabled="false"]:hover,
 .navi-prev[data-disabled="false"]:hover,
 .navi-next[data-disabled="false"]:hover {
     color: #555;
 }
 
+.navi-poam[data-disabled="true"],
 .navi-prev[data-disabled="true"],
 .navi-next[data-disabled="true"] {
     color: #e9e9e9;

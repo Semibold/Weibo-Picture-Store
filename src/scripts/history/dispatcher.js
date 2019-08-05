@@ -29,6 +29,7 @@ export class Dispatcher {
         this.foot = document.querySelector("#foot");
         this.naviPrev = document.querySelector(".navi-prev");
         this.naviNext = document.querySelector(".navi-next");
+        this.naviPoam = document.querySelector(".navi-poam");
         this.progressbar = document.querySelector("#progress-bar");
         this.loading = document.createElement("div");
         this.exception = document.createElement("div");
@@ -94,6 +95,13 @@ export class Dispatcher {
     renderPaging() {
         this.naviPrev.dataset.disabled = !this.getPrevOrNextAlbumId(-1);
         this.naviNext.dataset.disabled = !this.getPrevOrNextAlbumId(1);
+        this.naviPoam.dataset.disabled = !this.checkout.albumId;
+
+        if (this.checkout.albumId) {
+            this.naviPoam.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
+        } else {
+            this.naviPoam.removeAttribute("href");
+        }
     }
 
     /**

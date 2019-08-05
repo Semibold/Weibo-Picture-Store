@@ -13,6 +13,9 @@ const headHTML = `
         <span>上传记录</span>
         <span>
             <a class="navi-prev" data-disabled="true" title="之前的相册"><i class="fa fa-chevron-left"></i></a>
+            <a class="navi-poam" data-disabled="true" title="前往微相册管理相册中的图片(外部链接)" target="_blank">
+                <i class="fa fa-picture-o"></i>
+            </a>
             <a class="navi-next" data-disabled="true" title="往后的相册"><i class="fa fa-chevron-right"></i></a>
         </span>
     </h1>`;
