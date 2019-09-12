@@ -199,6 +199,39 @@ export async function requestUserId() {
 /**
  * @export
  * @param {string} username
+ * @return {Promise<{showpin: number}>}
+ * @reject {Error}
+ */
+export async function requestUserCaptcha(username) {
+    const url = Utils.buildURL("http://login.sina.com.cn/sso/prelogin.php", {
+        checkpin: 1,
+        su: btoa(encodeURIComponent(username)),
+        entry: "weibo",
+        __rnd: Date.now(),
+    });
+    return Utils.fetch(url)
+        .then(response => response.json())
+        .then(json => {
+            if (json && json["retcode"] === 0 && json["showpin"] != null) {
+                Log.d({
+                    module: "requestUserCaptcha",
+                    message: "获取用户信息成功",
+                });
+                return { showpin: json["showpin"] };
+            } else {
+                Log.w({
+                    module: "requestUserCaptcha",
+                    message: "获取用户信息失败",
+                    remark: "请求异常或输入的用户名可能不正确",
+                });
+                throw new Error(E_MISS_WEIBO_USER_ID);
+            }
+        });
+}
+
+/**
+ * @export
+ * @param {string} username
  * @param {string} password
  * @return {Promise<void>}
  * @reject {Error}
@@ -244,13 +277,34 @@ export async function signInByUserAccount(username, password) {
                 });
                 return Utils.fetch(json["data"]["loginresulturl"]);
             } else {
-                const msg = (json && json["msg"]) || E_INVALID_PARSED_DATA;
-                Log.w({
-                    module: "signInByUserAccount",
-                    message: "Invalid Data",
-                    remark: json,
-                });
-                throw new Error(msg);
+                return requestUserCaptcha(username)
+                    .then(json => {
+                        if (json.showpin) {
+                            return json;
+                        } else {
+                            // Catch this error in next `catch` microtask and raise real exception
+                            throw new Error();
+                        }
+                    })
+                    .catch(reason => {
+                        const msg = (json && json["msg"]) || E_INVALID_PARSED_DATA;
+                        Log.w({
+                            module: "signInByUserAccount",
+                            message: "Invalid Data",
+                            remark: json,
+                        });
+                        throw new Error(msg);
+                    })
+                    .then(json => {
+                        // You don't have to validate `showpin` repeatedly
+                        const obj = {
+                            module: "signInByUserAccount",
+                            message: "由于登录此账户需要验证码，因此无法使用自动登录功能",
+                            remark: json,
+                        };
+                        Log.w(obj);
+                        throw new Error(obj.message);
+                    });
             }
         })
         .then(response => response.text())
