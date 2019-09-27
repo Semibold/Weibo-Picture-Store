@@ -149,12 +149,12 @@ export class Utils {
     /**
      * @param {string} target
      * @param {string} targetScheme
-     * @param {string[]} [variousScheme]
+     * @param {RegExp[]} [variousScheme]
      * @return string
      */
-    static replaceUrlScheme(target, targetScheme, variousScheme = ["http://", "https://", "//"]) {
+    static replaceUrlScheme(target, targetScheme, variousScheme = [/^http:\/\//i, /^https:\/\//i, /^\/\//i]) {
         for (const s of variousScheme) {
-            if (target.startsWith(s)) {
+            if (s.test(target)) {
                 return target.replace(s, targetScheme);
             }
         }

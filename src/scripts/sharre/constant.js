@@ -129,14 +129,20 @@ export class PConfig {
     }
 
     /**
+     * @desc 随机微博图片的域名前缀
+     */
+    static get randomImagePrefix() {
+        // const urlPrefix = ["ws1", "ws2", "ws3", "ws4", "wx1", "wx2", "wx3", "wx4"];
+        const urlPrefix = ["tva1", "tva2", "tva3", "tva4", "tvax1", "tvax2", "tvax3", "tvax4"];
+        return urlPrefix[Math.floor(Math.random() * urlPrefix.length)];
+    }
+
+    /**
      * @desc 随机微博图片的 Host
      */
     static get randomImageHost() {
         const rootZone = ".sinaimg.cn";
-        // const urlPrefix = ["ws1", "ws2", "ws3", "ws4", "wx1", "wx2", "wx3", "wx4"];
-        const urlPrefix = ["tva1", "tva2", "tva3", "tva4", "tvax1", "tvax2", "tvax3", "tvax4"];
-        const prefix = urlPrefix[Math.floor(Math.random() * urlPrefix.length)];
-        return prefix + rootZone;
+        return PConfig.randomImagePrefix + rootZone;
     }
 
     /**

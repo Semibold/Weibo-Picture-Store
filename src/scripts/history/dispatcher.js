@@ -7,6 +7,7 @@
 import { Utils } from "../sharre/utils.js";
 import { SharreM } from "../sharre/alphabet.js";
 import { Log } from "../sharre/log.js";
+import { PConfig } from "../sharre/constant.js";
 
 export class Dispatcher {
     constructor() {
@@ -220,7 +221,11 @@ export class Dispatcher {
                     const imgLinker = section.querySelector(".image-linker");
                     const imgUpdate = section.querySelector(".image-update");
                     const imgSource = imgLinker.querySelector("img");
-                    const urlOrigin = Utils.replaceUrlScheme(item.picHost, this.scheme);
+                    const urlOrigin = Utils.replaceUrlScheme(item.picHost, this.scheme + PConfig.randomImagePrefix, [
+                        /^http:\/\/\w+(?=\.)/i,
+                        /^https:\/\/\w+(?=\.)/i,
+                        /^\/\/\w+(?=\.)/i,
+                    ]);
                     imgSource.src = `${urlOrigin}/thumb300/${item.picName}`;
                     imgSource.srcset = `${urlOrigin}/bmiddle/${item.picName} 2x`;
                     imgLinker.href = `${urlOrigin}/large/${item.picName}`;
