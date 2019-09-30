@@ -134,14 +134,18 @@ export class Log {
      */
     static download() {
         const blobUrl = URL.createObjectURL(new Blob([Log.serialize()], { type: "text/plain" }));
-        chrome.downloads.download(
-            {
-                url: blobUrl,
-                filename: "Weibo-Picture-Store_logs.txt",
-            },
-            downloadId => {
+        const destroy = downloadDelta => {
+            if (downloadDelta.endTime || downloadDelta.error) {
                 URL.revokeObjectURL(blobUrl);
-            },
-        );
+                if (chrome.downloads.onChanged.hasListener(destroy)) {
+                    chrome.downloads.onChanged.removeListener(destroy);
+                }
+            }
+        };
+        chrome.downloads.onChanged.addListener(destroy);
+        chrome.downloads.download({
+            url: blobUrl,
+            filename: "Weibo-Picture-Store_logs.txt",
+        });
     }
 }
