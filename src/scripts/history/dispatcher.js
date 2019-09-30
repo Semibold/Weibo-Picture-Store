@@ -22,6 +22,7 @@ export class Dispatcher {
         this.error = false;
         this.ended = false;
         this.locked = false;
+        this.platformOs = null;
         this.scheme = SharreM.weiboConfig.scheme;
         this.maxselected = 50;
         this.nid = Utils.randomString(16);
@@ -50,11 +51,21 @@ export class Dispatcher {
      * @public
      */
     init() {
+        this.parsePlatformOs();
         this.createStructure();
         this.parseQueryString();
         this.registerObserver();
         this.registerListener();
         return this;
+    }
+
+    /**
+     * @private
+     */
+    parsePlatformOs() {
+        chrome.runtime.getPlatformInfo(platformInfo => {
+            this.platformOs = platformInfo.os;
+        });
     }
 
     /**
@@ -255,7 +266,8 @@ export class Dispatcher {
             this.observerCallback();
         });
         document.addEventListener("click", e => {
-            if (e.ctrlKey) {
+            const cond = this.platformOs === chrome.runtime.PlatformOs["MAC"] ? e.metaKey : e.ctrlKey;
+            if (cond) {
                 const section = e.target.closest("section");
                 if (section) {
                     e.preventDefault();
