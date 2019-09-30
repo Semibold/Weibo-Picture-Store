@@ -20,11 +20,6 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-
 # Matches the exact files
 [*.{json,yml}]
-indent_size = 2
-
-# Configration files
-[.*]
 indent_size = 2

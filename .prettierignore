@@ -1,8 +1,8 @@
-demo/**/*
-dist/**/*
-coverage/**/*
-node_modules/**/*
+**/dist
+**/release
+**/coverage
+**/node_modules
 
-# ignore root configration files
+# ignore root configuration files
 *.json
 *.yml
