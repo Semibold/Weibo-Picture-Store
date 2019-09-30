@@ -26,7 +26,6 @@ chrome.browserAction.onClicked.addListener(tab => {
             chrome.windows.create(
                 {
                     ...result,
-                    focused: true,
                     incognito: false,
                     type: "popup",
                     url: "popup.html",

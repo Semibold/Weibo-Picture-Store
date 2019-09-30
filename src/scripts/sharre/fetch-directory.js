@@ -78,10 +78,7 @@ export function hasDirectoryUpload() {
         return hasDirectoryUpload.value;
     }
     try {
-        if (
-            typeof self.webkitRequestFileSystem === "function" &&
-            typeof self.DataTransferItem.prototype.webkitGetAsEntry === "function"
-        ) {
+        if (typeof self.DataTransferItem.prototype.webkitGetAsEntry === "function") {
             return (hasDirectoryUpload.value = true);
         }
     } catch (e) {

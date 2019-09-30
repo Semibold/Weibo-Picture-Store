@@ -42,7 +42,8 @@ async function getUserStatus(notify) {
                         title: chrome.i18n.getMessage("warn_title"),
                         message: "当前微博处于登出状态，请登录微博后再次尝试其他操作",
                         contextMessage: "单击转到微博的登录页面进行登录操作",
-                        requireInteraction: true,
+                        // Web extension does not support this flag
+                        // requireInteraction: true,
                     });
                 Log.w({
                     module: "getUserStatus",
@@ -59,7 +60,8 @@ async function getUserStatus(notify) {
                     title: chrome.i18n.getMessage("warn_title"),
                     message: "微博登录信息校验失败，请确认微博登录后再次尝试其他操作",
                     contextMessage: "单击转到微博的登录页面进行登录操作",
-                    requireInteraction: true,
+                    // Web extension does not support this flag
+                    // requireInteraction: true,
                 });
             Log.e({
                 module: "getUserStatus",

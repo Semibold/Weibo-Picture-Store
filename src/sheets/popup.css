@@ -52,7 +52,7 @@
 
 .head-network-protocol > label > input,
 .head-clipsize > label > input {
-    margin-right: 2px;
+    margin-right: 4px;
     cursor: default;
 }
 

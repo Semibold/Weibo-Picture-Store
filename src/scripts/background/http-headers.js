@@ -97,7 +97,7 @@ export class HttpHeaders {
          *      - Cookie
          */
         if (CONTEXT_OPTIONS["EXTRA_HEADERS"]) {
-            extraInfoSpec.push("extraHeaders");
+            extraInfoSpec.push(CONTEXT_OPTIONS["EXTRA_HEADERS"]);
         }
         chrome.webRequest.onBeforeSendHeaders.addListener(handler, filter, extraInfoSpec);
         return () => {
@@ -123,7 +123,7 @@ export class HttpHeaders {
          * removed without specifying 'extraHeaders' in opt_extraInfoSpec.
          */
         if (CONTEXT_OPTIONS["EXTRA_HEADERS"]) {
-            extraInfoSpec.push("extraHeaders");
+            extraInfoSpec.push(CONTEXT_OPTIONS["EXTRA_HEADERS"]);
         }
         chrome.webRequest.onHeadersReceived.addListener(handler, filter, extraInfoSpec);
         return () => {
