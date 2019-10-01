@@ -2,9 +2,14 @@
   "name": "weibo-picture-store",
   "version": "5.11.0",
   "private": true,
-  "description": "Chrome Extension",
+  "description": "Web Extension",
   "scripts": {
-    "bundle": "rimraf dist && gulp bundle"
+    "webext:lint": "web-ext lint",
+    "webext:run": "web-ext run",
+    "bundle": "rimraf dist && gulp bundle:chrome && gulp bundle:firefox"
+  },
+  "webExt": {
+    "sourceDir": "src/"
   },
   "repository": {
     "type": "git",

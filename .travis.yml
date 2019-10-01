@@ -8,7 +8,9 @@ node_js:
 
 env:
   global:
-    - SOURCE=dist/bundle.zip
+    # WEB_EXT_API_KEY
+    # WEB_EXT_API_SECRET
+    - SOURCE=dist/chrome/bundle.zip
     - EXTENSION_ID=pinjkilghdfhnkibhcangnpmcpdpmehk
     - CLIENT_ID=$WS_CLIENT_ID
     - CLIENT_SECRET=$WS_CLIENT_SECRET

@@ -3,5 +3,7 @@
 
 node_modules
 dist
+web-ext-artifacts
+tmp
 
 npm-debug.log*
