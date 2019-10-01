@@ -1,10 +1,14 @@
 # Weibo-Picture-Store
 
-[更新日志(CHANGELOG)](changelog.md)
+-   [更新日志(CHANGELOG)](changelog.md)
+-   [前往 Chrome 网上应用商店下载](https://chrome.google.com/webstore/detail/pinjkilghdfhnkibhcangnpmcpdpmehk)
+-   [前往 Firefox 附加组件商店下载](https://addons.mozilla.org/en-US/firefox/addon/weibo-picture-store/)
 
 ## Introduction
 
 上传图片到微博并生成外链的 Chrome 浏览器扩展
+
+注意：虽然现在支持了 Firefox 浏览器，但是相关文档的描述部分仍然保持不变，用词以 Chrome 为主。
 
 ## Feature
 
@@ -65,7 +69,7 @@
 
 1. 从微相册中移除这张图片
 2. 在图片上右击可以复制图片地址
-3. 批量删除选中的文件（按住 Ctrl 键可以多选）
+3. 批量删除选中的文件（按住 Ctrl/Command 键可以多选）
 4. 图片最近的修改时间
 5. 切换相册（不可用状态）
 6. 切换相册（可用状态）
@@ -118,6 +122,10 @@
     -   前往[微相册](http://photo.weibo.com)清理陈旧的相册即可
 -   为什么通过复制粘贴的方式上传 GIF 会变成静态图片？
     -   在浏览器或操作系统中复制 GIF 时，只有其中一帧被复制到了剪切板，因此上传后会变成静态图片
+
+## Privacy Policy
+
+[隐私权和条款](docs/privacy-policy.md)
 
 ## Thanks
 
