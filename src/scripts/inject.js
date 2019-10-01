@@ -4,20 +4,37 @@
  * found in the LICENSE file.
  */
 
-import(chrome.runtime.getURL("scripts/inject/pointer-event.js")).catch(e => {
-    console.warn("[Weibo-Picture-Store]:", e);
+// import(chrome.runtime.getURL("scripts/inject/pointer-event.js")).catch(e => {
+//     console.warn("[Weibo-Picture-Store]:", e);
+// });
 
-    /**
-     * Firefox workaround
-     * Content of `pointer-event.js` file
-     */
+/**
+ * Firefox workaround
+ * Content of `pointer-event.js` file
+ */
 
+async function getBrowserInternalUuid() {
+    const manifest = chrome.runtime.getManifest();
+    const settings = manifest.browser_specific_settings || {};
+    if (settings.gecko) {
+        const url = new URL(chrome.runtime.getURL("/"));
+        const uuid = url.hostname;
+        if (!/^[a-zA-Z0-9-]+$/.test(uuid)) {
+            console.warn(`[Weibo-Picture-Store]: "${uuid}" is an invalid string`);
+        }
+        return uuid;
+    }
+    return chrome.runtime.id;
+}
+
+async function installScripts() {
     const MAXIMUM_EDGE = 2 ** 15 - 1;
     const M_UPLOAD_FRAME = "menu_upload_frame";
     const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
     const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
 
-    const attribute = `data-${chrome.runtime.id}`;
+    const extensionId = await getBrowserInternalUuid();
+    const attribute = `data-${extensionId}`;
     const lightMark = document.createElement("mark");
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -27,7 +44,7 @@ import(chrome.runtime.getURL("scripts/inject/pointer-event.js")).catch(e => {
                 lightMark.remove();
             } else {
                 if (document.body) {
-                    lightMark.dataset.injector = chrome.runtime.id;
+                    lightMark.dataset.injector = extensionId;
                     document.documentElement.setAttribute(attribute, "");
                     document.body.append(lightMark);
                 }
@@ -78,4 +95,6 @@ import(chrome.runtime.getURL("scripts/inject/pointer-event.js")).catch(e => {
         },
         true,
     );
-});
+}
+
+installScripts().catch(e => console.warn("[Weibo-Picture-Store]:", e));
