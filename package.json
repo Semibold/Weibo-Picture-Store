@@ -1,6 +1,6 @@
 {
   "name": "weibo-picture-store",
-  "version": "5.11.0",
+  "version": "5.11.1",
   "private": true,
   "description": "Web Extension",
   "scripts": {
