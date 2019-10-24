@@ -34,7 +34,7 @@ gulp.task("bundle:firefox", function() {
                 value: {
                     gecko: {
                         id: "weibo-picture-store@ext.hub.moe",
-                        strict_min_version: "66.0",
+                        strict_min_version: "68.0",
                     },
                 },
             }),
