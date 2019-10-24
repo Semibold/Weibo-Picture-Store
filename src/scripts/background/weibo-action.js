@@ -142,7 +142,7 @@ export class WeiboUpload extends EventTarget {
                                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                                 title: chrome.i18n.getMessage("warn_title"),
                                 message: `成功：${succeed}，失败：${failure}，丢弃：${discard}`,
-                                contextMessage: "自动丢弃大小超过20MB及文件格式不受浏览器支持的文件",
+                                contextMessage: "自动丢弃大小超过20MB及格式不受浏览器支持的文件",
                             });
                         }
                     }
