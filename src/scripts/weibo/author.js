@@ -87,67 +87,68 @@ async function setUserStatus(notify) {
                 message: "检测到用户处于登录状态，中断激活用户登录状态的操作",
             });
             return Promise.reject(json);
-        } else {
-            if (weiboMap.get("allowUserAccount")) {
-                const username = weiboMap.get("username");
-                const password = weiboMap.get("password");
-                return signInByUserAccount(username, password)
-                    .catch(reason => {
-                        notify &&
-                            chrome.notifications.create(NID_SIGNIN_RESULT, {
-                                type: "basic",
-                                iconUrl: chrome.i18n.getMessage("notify_icon"),
-                                title: chrome.i18n.getMessage("fail_title"),
-                                message: "登录失败，请检查选项中的微博账户及密码是否正确",
-                                contextMessage: (reason && reason.message) || "未知错误",
-                            });
-                        return Promise.reject(reason);
-                    })
-                    .then(result => Promise.resolve(getUserStatus(notify)))
-                    .catch(reason => Promise.reject(getUserStatus(notify)));
-            }
-            return Utils.fetch("http://weibo.com/aj/onoff/setstatus", {
-                method: "POST",
-                body: Utils.createSearchParams({ sid: 0, state: 0 }),
-            })
-                .then(response => {
-                    if (response.redirected) {
-                        const iframe = document.getElementById(iframeId) || document.createElement("iframe");
-                        const promise = new Promise((resolve, reject) => {
-                            iframe.onload = e => {
-                                resolve();
-                                iframe.onload = null;
-                                iframe.onerror = null;
-                                iframe.remove();
-                            };
-                            // Useless
-                            iframe.onerror = e => {
-                                reject();
-                                iframe.onload = null;
-                                iframe.onerror = null;
-                                iframe.remove();
-                            };
+        }
+
+        if (weiboMap.get("allowUserAccount")) {
+            const username = weiboMap.get("username");
+            const password = weiboMap.get("password");
+            return signInByUserAccount(username, password)
+                .catch(reason => {
+                    notify &&
+                        chrome.notifications.create(NID_SIGNIN_RESULT, {
+                            type: "basic",
+                            iconUrl: chrome.i18n.getMessage("notify_icon"),
+                            title: chrome.i18n.getMessage("fail_title"),
+                            message: "登录失败，请检查选项中的微博账户及密码是否正确",
+                            contextMessage: (reason && reason.message) || "未知错误",
                         });
-                        iframe.id = iframeId;
-                        iframe.src = response.url;
-                        document.body.append(iframe);
-                        Log.d({
-                            module: "setUserStatus",
-                            message: "用户可能处于未激活的登录状态，尝试激活",
-                        });
-                        return promise;
-                    } else {
-                        Log.e({
-                            module: "setUserStatus",
-                            message: "没有检测到重定向链接",
-                            remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
-                        });
-                        throw new Error(`Redirected: ${response.url}`);
-                    }
+                    return Promise.reject(reason);
                 })
                 .then(result => Promise.resolve(getUserStatus(notify)))
                 .catch(reason => Promise.reject(getUserStatus(notify)));
         }
+
+        return Utils.fetch("http://weibo.com/aj/onoff/setstatus", {
+            method: "POST",
+            body: Utils.createSearchParams({ sid: 0, state: 0 }),
+        })
+            .then(response => {
+                if (response.redirected) {
+                    const iframe = document.getElementById(iframeId) || document.createElement("iframe");
+                    const promise = new Promise((resolve, reject) => {
+                        iframe.onload = e => {
+                            resolve();
+                            iframe.onload = null;
+                            iframe.onerror = null;
+                            iframe.remove();
+                        };
+                        // Useless
+                        iframe.onerror = e => {
+                            reject();
+                            iframe.onload = null;
+                            iframe.onerror = null;
+                            iframe.remove();
+                        };
+                    });
+                    iframe.id = iframeId;
+                    iframe.src = response.url;
+                    document.body.append(iframe);
+                    Log.d({
+                        module: "setUserStatus",
+                        message: "用户可能处于未激活的登录状态，尝试激活",
+                    });
+                    return promise;
+                } else {
+                    Log.e({
+                        module: "setUserStatus",
+                        message: "没有检测到重定向链接",
+                        remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
+                    });
+                    throw new Error(`Redirected: ${response.url}`);
+                }
+            })
+            .then(result => Promise.resolve(getUserStatus(notify)))
+            .catch(reason => Promise.reject(getUserStatus(notify)));
     });
 }
 
