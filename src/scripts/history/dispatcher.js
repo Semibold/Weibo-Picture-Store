@@ -110,7 +110,7 @@ export class Dispatcher {
         this.naviPoam.dataset.disabled = !this.checkout.albumId;
 
         if (this.checkout.albumId) {
-            this.naviPoam.href = `http://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
+            this.naviPoam.href = `https://photo.weibo.com/albums/detail/album_id/${this.checkout.albumId}/`;
         } else {
             this.naviPoam.removeAttribute("href");
         }
