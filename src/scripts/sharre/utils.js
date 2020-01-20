@@ -185,16 +185,16 @@ export class Utils {
         )
             .then(response => {
                 if (response.ok) {
-                    response
-                        .clone()
-                        .text()
-                        .then(text => {
-                            Log.d({
-                                module: "Utils.fetch",
-                                message: text,
-                                remark: input,
-                            });
-                        });
+                    // response
+                    //     .clone()
+                    //     .text()
+                    //     .then(text => {
+                    //         Log.d({
+                    //             module: "Utils.fetch",
+                    //             message: text,
+                    //             remark: input,
+                    //         });
+                    //     });
                     return response;
                 } else {
                     throw new Error(response.statusText);
