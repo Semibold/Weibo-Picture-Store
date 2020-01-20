@@ -22,28 +22,35 @@
   },
   "homepage": "https://github.com/Semibold/Weibo-Picture-Store#readme",
   "engines": {
-    "node": ">=8.9.0"
+    "node": ">=10.10.0"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "trailingComma": "all"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged"
+      "pre-commit": "pretty-quick --staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "devDependencies": {
-    "@types/chrome": "0.0.89",
+    "@commitlint/cli": "8.3.5",
+    "@commitlint/config-conventional": "8.3.4",
+    "@types/chrome": "latest",
     "@types/firefox-webext-browser": "67.0.2",
     "@types/gulp": "4.0.6",
     "@types/merge-stream": "1.1.2",
-    "@types/node": "8.9.5",
-    "chrome-webstore-upload-cli": "1.1.1",
+    "@types/node": "13.1.8",
+    "chrome-webstore-upload-cli": "1.2.0",
     "gulp": "4.0.2",
     "gulp-json-modify": "1.0.2",
-    "gulp-zip": "5.0.0",
-    "husky": "1.3.1",
+    "gulp-zip": "5.0.1",
+    "husky": "4.0.10",
     "merge-stream": "2.0.0",
-    "prettier": "1.18.2",
-    "pretty-quick": "1.11.1",
+    "prettier": "1.19.1",
+    "pretty-quick": "2.0.1",
     "rimraf": "3.0.0",
-    "web-ext": "3.2.0"
+    "web-ext": "4.0.0"
   }
 }
