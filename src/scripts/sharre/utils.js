@@ -162,6 +162,36 @@ export class Utils {
     }
 
     /**
+     * @typedef {Object} ClientSize
+     * @property {number} width
+     * @property {number} height
+     *
+     * @param {ClientSize} clientSize
+     * @param {int} [maxClientSize = 16 * 1024]
+     * @return {ClientSize}
+     */
+    static clampClientSize(clientSize, maxClientSize = 16 * 1024) {
+        const dpr = self.devicePixelRatio || 1;
+        const result = Object.assign({}, clientSize);
+
+        const width = Math.ceil(result.width * dpr);
+        if (width > maxClientSize) {
+            const ratio = width / maxClientSize;
+            result.width = result.width / ratio;
+            result.height = result.height / ratio;
+        }
+
+        const height = Math.ceil(result.height * dpr);
+        if (height > maxClientSize) {
+            const ratio = height / maxClientSize;
+            result.width = result.width / ratio;
+            result.height = result.height / ratio;
+        }
+
+        return result;
+    }
+
+    /**
      * @async
      * @param {RequestInfo} input
      * @param {RequestInit} [init]
@@ -215,7 +245,7 @@ export class Utils {
      * @param {string} [mimeType = "image/png"]
      * @param {number} [quality = 0.9]
      * @return {Promise<Blob>}
-     * @reject {Error}
+     * @reject {Promise<Error>}
      */
     static async remuxImage(blob, mimeType = "image/png", quality = 0.9) {
         const objectURL = URL.createObjectURL(blob);
@@ -226,29 +256,52 @@ export class Utils {
             image.onerror = e => reject(e);
             image.src = objectURL;
         })
-            .then(image => {
+            .then(async image => {
                 if (blob.type === "image/svg+xml") {
-                    let maxScale = 2;
-                    let minPixel = 420;
-                    let maxPixel = 840;
-                    if (image.naturalWidth / image.naturalHeight > 16 / 10) {
-                        const scale = Math.min(maxScale, Math.sqrt(image.naturalWidth / image.naturalHeight));
-                        minPixel = Math.floor(minPixel * scale);
-                        maxPixel = Math.floor(maxPixel * scale);
-                    }
+                    try {
+                        const text = await Utils.readAsChannelType(blob);
+                        const node = Utils.parseHTML(text);
+                        const svg = node.firstElementChild;
+                        image.width = svg.width.baseVal.value;
+                        image.height = svg.height.baseVal.value;
+                    } catch (e) {
+                        Log.w({
+                            module: "Utils.remuxImage",
+                            message: e,
+                        });
 
-                    // Preserve aspect ratio
-                    image.width = Math.min(maxPixel, Math.max(minPixel, Math.floor(screen.width * 0.5)));
-                    image.height = Math.round((image.naturalHeight / image.naturalWidth) * image.width);
+                        let maxScale = 4;
+                        let minPixel = 480;
+                        let maxPixel = 1920;
+                        if (image.naturalWidth / image.naturalHeight > 16 / 10) {
+                            const scale = Math.min(maxScale, Math.sqrt(image.naturalWidth / image.naturalHeight));
+                            minPixel = Math.floor(minPixel * scale);
+                            maxPixel = Math.floor(maxPixel * scale);
+                        }
+
+                        // Preserve aspect ratio
+                        image.width = Math.min(maxPixel, Math.max(minPixel, Math.floor(screen.width * 0.8)));
+                        image.height = Math.round((image.naturalHeight / image.naturalWidth) * image.width);
+                    }
                 }
+
+                const size = Utils.clampClientSize({
+                    width: image.width,
+                    height: image.height,
+                });
+
+                image.width = size.width;
+                image.height = size.height;
 
                 const width = image.width;
                 const height = image.height;
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
+                const dpr = self.devicePixelRatio || 1;
 
-                canvas.width = width;
-                canvas.height = height;
+                canvas.width = Math.ceil(width * dpr);
+                canvas.height = Math.ceil(height * dpr);
+                context.scale(dpr, dpr);
                 context.drawImage(image, 0, 0, width, height);
 
                 return new Promise((resolve, reject) => canvas.toBlob(resolve, mimeType, quality));
@@ -256,6 +309,49 @@ export class Utils {
             .finally(() => {
                 URL.revokeObjectURL(objectURL);
             });
+    }
+
+    /**
+     * @param {Blob|File} blob
+     * @param {"arrayBuffer"|"binaryString"|"dataURL"|"text"} channelType
+     * @return {Promise<*>}
+     * @reject {Promise<Error>}
+     */
+    static async readAsChannelType(blob, channelType = "text") {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            let readType = "readAsText";
+
+            switch (channelType) {
+                case "arrayBuffer":
+                    readType = "readAsArrayBuffer";
+                    break;
+                case "binaryString":
+                    readType = "readAsBinaryString";
+                    break;
+                case "dataURL":
+                    readType = "readAsDataURL";
+                    break;
+                case "text":
+                    readType = "readAsText";
+                    break;
+                default:
+                    throw new Error("Invalid `channelType`");
+            }
+
+            reader.onloadend = e => {
+                if (reader.readyState === reader.DONE) {
+                    resolve(reader.result);
+                } else {
+                    Log.w({
+                        module: "Utils.readAsChannelType",
+                        message: reader.error || "Unknown error",
+                    });
+                    reject(reader.error || new Error("Unknown error"));
+                }
+            };
+            reader[readType](blob);
+        });
     }
 
     /**
