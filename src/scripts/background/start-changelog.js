@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener(details => {
     if (details.reason === "update") {
         const [prevMajor, prevMinor] = details.previousVersion.split(".", 2);
         const [major, minor] = chrome.runtime.getManifest().version.split(".", 2);
-        // Not display changelog if major and minor has not changed
+        // ignore changelog if major and minor have been not changed
         if (prevMajor === major) {
             if (prevMinor || minor) {
                 if (prevMinor === minor) return;
