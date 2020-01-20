@@ -21,27 +21,6 @@ import { requestSignIn } from "./author.js";
 import { Log } from "../sharre/log.js";
 
 /**
- * @param {Blob|File} blob
- * @param {"arrayBuffer"|"dataURL"} channelType
- * @return {Promise<*>}
- * @reject {Promise<void>}
- */
-async function readAsChannelType(blob, channelType) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        const oneline = channel[channelType];
-        reader.onloadend = e => {
-            if (reader.readyState === reader.DONE) {
-                resolve(reader.result);
-            } else {
-                reject();
-            }
-        };
-        reader[oneline.readType](blob);
-    });
-}
-
-/**
  * @typedef {Object} PackedItem
  * @property {Blob|File} blob
  * @property {ArrayBuffer|string} result
@@ -61,7 +40,7 @@ async function readAsChannelType(blob, channelType) {
 async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     const data = {};
     const oneline = channel[channelType];
-    const result = await readAsChannelType(blob, channelType);
+    const result = await Utils.readAsChannelType(blob, channelType);
     const mime = oneline.mimeType(result, blob);
     const chromeSupportedTypes = new Set(PConfig.chromeSupportedTypes);
     if (chromeSupportedTypes.has(mime) && !PConfig.weiboSupportedTypes[mime] && !_replay) {
