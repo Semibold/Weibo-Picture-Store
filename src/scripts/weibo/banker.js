@@ -16,9 +16,9 @@ const USER_INFO_CACHE = new Map();
 const USER_INFO_EXPIRED = 24 * 60 * 60 * 1000; // 单位：ms，有效时间：24小时
 
 /**
- * @param {Function} func - MUST be a parameterless function
- * @return {Promise<*>}
- * @reject {Promise<*>}
+ * @param {Function} func - MUST be a parameter-free async function
+ * @return {*}
+ * @reject {*}
  */
 export function singleton(func) {
     if (!SINGLETON_CACHE.has(func)) {
@@ -44,7 +44,7 @@ export function setUserInfoCache(albumInfo) {
 }
 
 /**
- * @param {string} cacheId
+ * @param {string} cacheId - uid
  * @return {AlbumInfo|void}
  */
 export function getUserInfoCache(cacheId) {
@@ -64,7 +64,7 @@ export function getUserInfoCache(cacheId) {
 }
 
 /**
- * @param {string} cacheId
+ * @param {string} cacheId - uid
  * @return {boolean}
  */
 export function delUserInfoCache(cacheId) {

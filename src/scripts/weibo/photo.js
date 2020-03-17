@@ -20,12 +20,12 @@ import { E_INVALID_PARSED_DATA } from "../sharre/constant.js";
  * @reject {Error}
  */
 export async function attachPhotoToSpecialAlbum(pid, uid, _replay = false) {
-    const overflow = 1000; // 相册的最大存储量
+    const overflow = 1000; // 单个相册的最大存储量
     const overflowCode = 11112; // 相册存储量溢出时的返回码
     const promise = requestSpecialAlbumId(uid, _replay);
     return promise
         .then(albumInfo => {
-            return Utils.fetch("http://photo.weibo.com/upload/photo", {
+            return Utils.fetch("https://photo.weibo.com/upload/photo", {
                 method: "POST",
                 body: Utils.createSearchParams({
                     pid: pid,
@@ -60,7 +60,7 @@ export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = f
     const promise = requestSpecialAlbumId();
     return promise
         .then(albumInfo => {
-            return Utils.fetch("http://photo.weibo.com/albums/delete_batch", {
+            return Utils.fetch("https://photo.weibo.com/albums/delete_batch", {
                 method: "POST",
                 body: Utils.createSearchParams({
                     album_id: albumId || albumInfo.albumId,
@@ -93,7 +93,6 @@ export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = f
 }
 
 /**
- * @export
  * @typedef {Object} AlbumContents
  * @property {number} total
  * @property {string} albumId
@@ -104,6 +103,10 @@ export async function detachPhotoFromSpecialAlbum(photoIds, albumId, _replay = f
  * @property {string} photos.picHost
  * @property {string} photos.picName
  * @property {string} photos.updated
+ */
+
+/**
+ * @export
  *
  * @param {number} page
  * @param {number} count
@@ -121,7 +124,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                 albumList.push(...albumInfo.albumList);
             }
             return Utils.fetch(
-                Utils.buildURL("http://photo.weibo.com/photos/get_all", {
+                Utils.buildURL("https://photo.weibo.com/photos/get_all", {
                     page: page,
                     count: count,
                     album_id: albumId || albumInfo.albumId,
@@ -146,14 +149,14 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                 }
                 Log.d({
                     module: "requestPhotosFromSpecialAlbum",
-                    message: "获取微相册的全部图片成功",
+                    remark: "获取微相册的全部图片成功",
                 });
                 return { albumList, total, albumId, photos };
             } else {
                 Log.w({
                     module: "requestPhotosFromSpecialAlbum",
-                    message: "获取微相册的全部图片失败，数据异常",
-                    remark: json,
+                    error: json,
+                    remark: "获取微相册的全部图片失败，数据异常",
                 });
                 throw new Error(E_INVALID_PARSED_DATA);
             }
@@ -163,8 +166,7 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                 promise.then(albumInfo => delUserInfoCache(albumInfo.uid));
                 Log.w({
                     module: "requestPhotosFromSpecialAlbum",
-                    message: reason,
-                    remark: "已经重试过了，这里直接抛出错误",
+                    error: reason,
                 });
                 return Promise.reject(reason);
             } else {
@@ -172,14 +174,14 @@ export async function requestPhotosFromSpecialAlbum(page, count, albumId, _repla
                     if (json.login) {
                         Log.d({
                             module: "requestPhotosFromSpecialAlbum",
-                            message: "用户登录状态已被激活，重新尝试获取微相册的全部图片",
+                            remark: "用户登录状态已被激活，重新尝试获取微相册的全部图片",
                         });
                         return requestPhotosFromSpecialAlbum(page, count, albumId, true);
                     } else {
                         Log.w({
                             module: "requestPhotosFromSpecialAlbum",
-                            message: "用户处于登出状态，中止重试操作",
-                            remark: json,
+                            error: json,
+                            remark: "用户处于登出状态，中止重试操作",
                         });
                         return Promise.reject(reason);
                     }

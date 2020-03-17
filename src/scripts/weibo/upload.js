@@ -30,7 +30,9 @@ import { Log } from "../sharre/log.js";
  * @property {number} [size]
  * @property {number} [width]
  * @property {number} [height]
- *
+ */
+
+/**
  * @param {Blob|File} blob
  * @param {"arrayBuffer"|"dataURL"} [channelType="arrayBuffer"]
  * @param {boolean} [_replay=false]
@@ -39,9 +41,9 @@ import { Log } from "../sharre/log.js";
  */
 async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     const data = {};
-    const oneline = channel[channelType];
+    const pipeline = channel[channelType];
     const result = await Utils.readAsChannelType(blob, channelType);
-    const mime = oneline.mimeType(result, blob);
+    const mime = pipeline.mimeType(result, blob);
     const chromeSupportedTypes = new Set(PConfig.chromeSupportedTypes);
     if (chromeSupportedTypes.has(mime) && !PConfig.weiboSupportedTypes[mime] && !_replay) {
         const b = await Utils.remuxImage(blob);
@@ -51,7 +53,7 @@ async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     }
     data.blob = blob;
     data.channelType = channelType;
-    data.mimeType = oneline.mimeType(data.result);
+    data.mimeType = pipeline.mimeType(data.result);
     return data;
 }
 
@@ -78,13 +80,13 @@ async function purifier(item) {
  * @reject {Error|{login: boolean, terminable: boolean}}
  */
 async function uploader(item, watermark = null, _replay = false) {
-    const oneline = channel[item.channelType];
+    const pipeline = channel[item.channelType];
     const method = "POST";
-    const body = oneline.body(item.result);
-    const param = oneline.param({ mime: item.mimeType }, watermark);
+    const body = pipeline.body(item.result);
+    const param = pipeline.param({ mime: item.mimeType }, watermark);
     const url = "https://picupload.weibo.com/interface/pic_upload.php";
 
-    return Utils.fetch(Utils.buildURL(url, param), { method, body })
+    return /** @type {Promise<PackedItem>} */ Utils.fetch(Utils.buildURL(url, param), { method, body })
         .then(response => response.text())
         .then(text => {
             if (text) {
@@ -107,19 +109,20 @@ async function uploader(item, watermark = null, _replay = false) {
                         const uid = JSON.parse(atob(data)).uid.toString();
                         Log.d({
                             module: "uploader",
-                            message: "用户信息解析成功",
+                            remark: "用户信息解析成功",
                         });
                         attachPhotoToSpecialAlbum(pid, uid);
                     } catch (e) {
                         Log.w({
                             module: "uploader",
-                            message: "用户信息解析失败",
+                            error: e,
+                            remark: "用户信息解析失败",
                         });
                         attachPhotoToSpecialAlbum(pid);
                     }
                     Log.d({
                         module: "uploader",
-                        message: "上传图片成功",
+                        remark: "上传图片成功",
                     });
                     return Object.assign(item, {
                         pid,
@@ -130,16 +133,16 @@ async function uploader(item, watermark = null, _replay = false) {
                 } else {
                     Log.e({
                         module: "uploader",
-                        message: "上传图片失败，数据异常",
-                        remark: text,
+                        error: text,
+                        remark: "上传图片失败，数据异常",
                     });
                     throw new Error(E_INVALID_PARSED_DATA);
                 }
             } else {
                 Log.e({
                     module: "uploader",
-                    message: "上传图片失败，数据异常",
-                    remark: text,
+                    error: text,
+                    remark: "上传图片失败，数据异常",
                 });
                 throw new Error(E_INVALID_PARSED_DATA);
             }
@@ -157,8 +160,8 @@ async function uploader(item, watermark = null, _replay = false) {
                             });
                         Log.w({
                             module: "uploader",
-                            message: "请求用户登录状态时，捕获到异常",
-                            remark: reason,
+                            error: reason,
+                            remark: "请求用户登录状态时，捕获到异常",
                         });
                         return Promise.reject({
                             login: reason.login,
@@ -169,14 +172,14 @@ async function uploader(item, watermark = null, _replay = false) {
                         if (json.login) {
                             Log.d({
                                 module: "uploader",
-                                message: "用户登录状态已被激活，重新尝试上传图片",
+                                remark: "用户登录状态已被激活，重新尝试上传图片",
                             });
                             return uploader(item, watermark, true);
                         } else {
                             Log.w({
                                 module: "uploader",
-                                message: "用户处于登出状态，中止重试操作",
-                                remark: json,
+                                error: json,
+                                remark: "用户处于登出状态，中止重试操作",
                             });
                             return Promise.reject({
                                 login: reason.login,
@@ -187,8 +190,7 @@ async function uploader(item, watermark = null, _replay = false) {
             } else {
                 Log.w({
                     module: "uploader",
-                    message: reason,
-                    remark: "已经重试过了，这里直接抛出错误",
+                    error: reason,
                 });
                 return Promise.reject({
                     login: true,

@@ -7,19 +7,19 @@
 /**
  * @desc 日志数据
  */
-export const logSet = new Set();
+export const LogStore = new Set();
 
 /**
  * @desc 通用信息
  */
-export const genericMap = new Map();
+export const ShareStore = new Map();
 
 /**
  * @desc 微博信息
  */
-export const weiboMap = new Map();
+export const WeiboStore = new Map();
 
 /**
  * @desc 弹窗数据
  */
-export const popupMap = new Map();
+export const PopupStore = new Map();

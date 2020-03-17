@@ -26,8 +26,8 @@ document.addEventListener(
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === M_BATCH_DELETE) {
-        chrome.tabs.getCurrent(ctab => {
-            if (tab.id === ctab.id) {
+        chrome.tabs.getCurrent(currentTab => {
+            if (tab.id === currentTab.id) {
                 dispatcher.detachSelectedPhoto();
             }
         });

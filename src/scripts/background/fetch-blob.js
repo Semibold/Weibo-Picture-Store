@@ -26,12 +26,6 @@ export async function fetchBlob(srcUrl, pageUrl) {
 
     progress.padding(1);
 
-    Log.d({
-        module: "FetchBlob",
-        message: "开始读取远程文件",
-        remark: "大部分情况下都是从缓存中直接读取，因此不再提供下载进度提示",
-    });
-
     return Utils.fetch(srcUrl, { credentials: "omit" })
         .then(response => response.blob())
         .then(blob => {
@@ -47,8 +41,8 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 message: "无法读取远程文件",
             });
             Log.w({
-                module: "FetchBlob",
-                message: reason,
+                module: "fetchBlob",
+                error: reason,
                 remark: `读取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
             });
             return Promise.reject(reason);

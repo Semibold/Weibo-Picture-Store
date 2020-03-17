@@ -8,7 +8,6 @@ import { Log } from "./log.js";
 
 /**
  * @static
- * @typedef {Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Uint8ClampedArray|Float32Array|Float64Array} TypedArray
  */
 export class Utils {
     /**
@@ -43,7 +42,7 @@ export class Utils {
 
     /**
      * @param {Object} [param]
-     * @param {string|URLSearchParams} [init]
+     * @param {string|URLSearchParams|string[][]|Object<string,string>} [init]
      * @return {URLSearchParams}
      */
     static createSearchParams(param, init) {
@@ -57,12 +56,13 @@ export class Utils {
     }
 
     /**
-     * @param {string} html
+     * @param {string} text
+     * @param {SupportedType} [mimeType="text/html"]
      * @return {DocumentFragment}
      */
-    static parseHTML(html) {
+    static parseHTML(text, mimeType = "text/html") {
         const parser = new DOMParser();
-        const context = parser.parseFromString(html, "text/html");
+        const context = parser.parseFromString(text, mimeType);
         const children = context.body.children;
         const fragment = new DocumentFragment();
         fragment.append(...children);
@@ -97,7 +97,7 @@ export class Utils {
 
     /**
      * @desc Be Careful: It's not equal to TextDecoder.decode();
-     * @param {ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
+     * @param {number|ArrayBufferLike|ArrayLike<number>|TypedArray} buffer
      * @return {string}
      */
     static textFromBuffer(buffer) {
@@ -114,8 +114,10 @@ export class Utils {
      * @return {boolean}
      */
     static writeToClipboard(content) {
+        /** @type Range */
         const range = document.createRange();
         const selection = document.getSelection();
+        /** @type HTMLPreElement */
         const container = document.createElement("pre");
         container.textContent = content;
         document.body.append(container);
@@ -139,7 +141,7 @@ export class Utils {
             if (segments.length > 1) {
                 return segments.slice(0, -1).join(".") || filename;
             } else {
-                return filename;
+                return filename || defFilename;
             }
         } else {
             return defFilename;
@@ -165,7 +167,9 @@ export class Utils {
      * @typedef {Object} ClientSize
      * @property {number} width
      * @property {number} height
-     *
+     */
+
+    /**
      * @param {ClientSize} clientSize
      * @param {int} [maxClientSize = 16 * 1024]
      * @return {ClientSize}
@@ -221,8 +225,7 @@ export class Utils {
                     //     .then(text => {
                     //         Log.d({
                     //             module: "Utils.fetch",
-                    //             message: text,
-                    //             remark: input,
+                    //             error: `input: ${input}; response: ${text}`,
                     //         });
                     //     });
                     return response;
@@ -233,14 +236,14 @@ export class Utils {
             .catch(reason => {
                 Log.w({
                     module: "Utils.fetch",
-                    message: reason,
-                    remark: input,
+                    error: `input: ${input}; reason: ${reason}`,
                 });
                 return Promise.reject(reason);
             });
     }
 
     /**
+     * @async
      * @param {Blob|File} blob
      * @param {string} [mimeType = "image/png"]
      * @param {number} [quality = 0.9]
@@ -257,17 +260,19 @@ export class Utils {
             image.src = objectURL;
         })
             .then(async image => {
+                // Set svg image width and height correctly.
                 if (blob.type === "image/svg+xml") {
                     try {
                         const text = await Utils.readAsChannelType(blob);
                         const node = Utils.parseHTML(text);
                         const svg = node.firstElementChild;
+
                         image.width = svg.width.baseVal.value;
                         image.height = svg.height.baseVal.value;
                     } catch (e) {
                         Log.w({
                             module: "Utils.remuxImage",
-                            message: e,
+                            error: e,
                         });
 
                         let maxScale = 4;
@@ -312,9 +317,10 @@ export class Utils {
     }
 
     /**
+     * @async
      * @param {Blob|File} blob
      * @param {"arrayBuffer"|"binaryString"|"dataURL"|"text"} channelType
-     * @return {Promise<*>}
+     * @return {Promise<string|ArrayBuffer>}
      * @reject {Promise<Error>}
      */
     static async readAsChannelType(blob, channelType = "text") {
@@ -345,7 +351,7 @@ export class Utils {
                 } else {
                     Log.w({
                         module: "Utils.readAsChannelType",
-                        message: reader.error || "Unknown error",
+                        error: reader.error || "Unknown error",
                     });
                     reject(reader.error || new Error("Unknown error"));
                 }
@@ -355,8 +361,9 @@ export class Utils {
     }
 
     /**
+     * @async
      * @param {Iterable} iterable
-     * @return {Promise<{error: boolean, value: *}>}
+     * @return {Promise<{error: boolean, value: *}[]>}
      * @no-reject
      */
     static async settled(iterable) {

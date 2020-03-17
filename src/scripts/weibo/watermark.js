@@ -9,13 +9,15 @@ import { E_INVALID_PARSED_DATA } from "../sharre/constant.js";
 import { Log } from "../sharre/log.js";
 
 /**
- * @export
  * @typedef {Object} Watermark
  * @property {string} nick
  * @property {string} url
  * @property {string|number} logo
  * @property {string|number} markpos
- *
+ */
+
+/**
+ * @export
  * @param {boolean} [isInherited = false]
  * @return {Promise<Watermark|null>}
  * @no-reject
@@ -25,7 +27,9 @@ export async function requestWeiboWatermark(isInherited = false) {
         return null;
     }
 
-    return Utils.fetch(Utils.buildURL("http://photo.weibo.com/users/get_watermark", { __rnd: Date.now() }))
+    return /** @type Promise<Watermark|null> */ Utils.fetch(
+        Utils.buildURL("https://photo.weibo.com/users/get_watermark", { __rnd: Date.now() }),
+    )
         .then(response => response.json())
         .then(json => {
             if (json && json["code"] === 0 && json["result"]) {
@@ -44,7 +48,7 @@ export async function requestWeiboWatermark(isInherited = false) {
         .catch(reason => {
             Log.w({
                 module: "requestWeiboWatermark",
-                message: reason,
+                error: reason,
             });
             return null;
         });

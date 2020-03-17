@@ -11,6 +11,7 @@ import {
     M_OPEN_HISTORY,
     M_DOWNLOAD_LOG,
     ET_UPLOAD_MUTATION,
+    NID_COPY_URL_FAIL,
 } from "../sharre/constant.js";
 import { Utils } from "../sharre/utils.js";
 import { Base64 } from "../sharre/base64.js";
@@ -20,16 +21,16 @@ import { fetchBlob } from "./fetch-blob.js";
 import { Log } from "../sharre/log.js";
 import { weiboConfig } from "./weibo-config.js";
 
-const weiboUpload = new WeiboUpload();
+const contentScriptUploader = new WeiboUpload();
 
-weiboUpload.addEventListener(ET_UPLOAD_MUTATION, e => {
+contentScriptUploader.addEventListener(ET_UPLOAD_MUTATION, e => {
     chrome.browserAction.setBadgeBackgroundColor({ color: "#8E7467" }, () => {
         chrome.browserAction.setBadgeText({ text: String(e.detail.size || "") });
     });
 });
 
 /**
- * @param {{done: boolean, value: PackedItem}} it
+ * @param {{done: boolean, value: PackedItem|null}} [it]
  */
 function autoCopyUrlToClipboard(it) {
     if (it && !it.done && it.value) {
@@ -38,7 +39,7 @@ function autoCopyUrlToClipboard(it) {
         const url = `${weiboConfig.scheme + PConfig.randomImageHost}/large/${item.pid + suffix}`;
         const result = Utils.writeToClipboard(url);
         if (!result) {
-            chrome.notifications.create("copy_url_to_clipboard_failure", {
+            chrome.notifications.create(NID_COPY_URL_FAIL, {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                 title: chrome.i18n.getMessage("info_title"),
@@ -108,8 +109,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             break;
         case M_UPLOAD_IMAGE:
             fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
-                weiboUpload.addQueues([blob]);
-                weiboUpload.triggerIteration(autoCopyUrlToClipboard);
+                contentScriptUploader.addQueues([blob]);
+                contentScriptUploader.triggerIteration(autoCopyUrlToClipboard);
             });
             break;
         case M_UPLOAD_FRAME:
@@ -119,14 +120,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 { frameId: info.frameId },
                 response => {
                     /**
-                     * @var {{dataurl: string}} response
+                     * @var {{dataURL: string}} response
                      */
                     if (response) {
-                        const [t, b64] = response.dataurl.split(",");
+                        const [t, b64] = response.dataURL.split(",");
                         if (b64) {
                             const blob = new Blob([Base64.toBuffer(b64)]);
-                            weiboUpload.addQueues([blob]);
-                            weiboUpload.triggerIteration(autoCopyUrlToClipboard);
+                            contentScriptUploader.addQueues([blob]);
+                            contentScriptUploader.triggerIteration(autoCopyUrlToClipboard);
                         }
                     }
                 },

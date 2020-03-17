@@ -36,3 +36,13 @@ fieldset {
 fieldset > div {
     margin-top: 0.3em;
 }
+
+.weibo-watermark > label,
+.weibo-watermark > a {
+    vertical-align: middle;
+}
+
+.weibo-watermark-help {
+    font-size: 14px;
+    text-decoration: none;
+}

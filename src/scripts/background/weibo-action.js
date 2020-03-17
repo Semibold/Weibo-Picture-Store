@@ -12,6 +12,7 @@ import {
     ET_UPLOAD_MUTATION,
     FP_TYPE_UPLOAD,
     K_WEIBO_INHERITED_WATERMARK,
+    NID_UPLOAD_RESULT,
 } from "../sharre/constant.js";
 
 import { requestUpload } from "../weibo/upload.js";
@@ -19,7 +20,7 @@ import { detachPhotoFromSpecialAlbum, requestPhotosFromSpecialAlbum } from "../w
 import { Log } from "../sharre/log.js";
 import { signInByUserAccount } from "../weibo/author.js";
 import { requestWeiboWatermark } from "../weibo/watermark.js";
-import { genericMap } from "./persist-store.js";
+import { ShareStore } from "./persist-store.js";
 
 /**
  * @static
@@ -78,42 +79,41 @@ export class WeiboUpload extends EventTarget {
     addQueues(blobs) {
         this.queues.push(...blobs);
         this.tailer.progress.padding(blobs.length);
-        // this.triggerQueuesViewChanged();
     }
 
     /**
      * @public
      * @desc 如果当前迭代没有结束，此时再次调用没有任何效果
-     * @param {Function} [cb] - 因为此函数只有在第一次运行时传入一次，所以这个函数**不属于**回调函数。
+     * @param {Function} [cb] - 因为此参数只在第一次运行时传入有效，所以这个函数**不属于**回调函数。
      *                          因此它不应该依赖闭包中的变量或函数，应该依赖 Context 中的变量或方法。
-     *                          虽然大部分情况下程序能够正常运行，但是这种行为依然属于设计上的失误/错误。
+     * @return {boolean}
      */
     triggerIteration(cb) {
         if (this.tailer.done && this.queues.length) {
             this.tailer.done = !this.queues.length;
-            this.triggerQueuesViewChanged(true);
             this.startPrivateIteration(cb);
+            return true;
+        } else {
+            return false;
         }
     }
 
     /**
      * @private
-     * @param {boolean} [immediately = false]
      */
-    triggerQueuesViewChanged(immediately = false) {
-        const currentQueuesLength = this.queues.length;
+    triggerUploadMutation() {
         const debounceHandler = () => {
-            if (!this.tailer.done || immediately) {
-                this.dispatchEvent(
-                    new CustomEvent(ET_UPLOAD_MUTATION, {
-                        detail: { size: currentQueuesLength },
-                    }),
-                );
-            }
+            // 迭代器未结束时，上传正在进行，因此要+1
+            const size = this.tailer.done ? 0 : this.queues.length + 1;
+            this.dispatchEvent(
+                new CustomEvent(ET_UPLOAD_MUTATION, {
+                    detail: { size: size },
+                }),
+            );
             clearTimeout(this.queuesChangedTimer);
             this.queuesChangedTimer = null;
         };
-        if (immediately) {
+        if (this.tailer.done) {
             return debounceHandler();
         }
         if (this.queuesChangedTimer == null) {
@@ -128,7 +128,6 @@ export class WeiboUpload extends EventTarget {
     startPrivateIteration(cb) {
         this.tailer.iterator
             .next()
-            .finally(() => this.triggerQueuesViewChanged())
             .then(it => {
                 if (it.done) {
                     typeof cb === "function" && cb(it);
@@ -137,16 +136,16 @@ export class WeiboUpload extends EventTarget {
                     if (this.notifyStats) {
                         const { succeed, failure, discard } = this.tailer.progress.previousStatus;
                         if (failure || discard) {
-                            chrome.notifications.create("upload_stats", {
+                            chrome.notifications.create(NID_UPLOAD_RESULT, {
                                 type: "basic",
                                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                                 title: chrome.i18n.getMessage("warn_title"),
                                 message: `成功：${succeed}，失败：${failure}，丢弃：${discard}`,
-                                contextMessage: "自动丢弃大小超过20MB及格式不受浏览器支持的文件",
+                                contextMessage: "丢弃：超过20MB的文件或浏览器不支持的文件类型",
                             });
                         }
                     }
-                    this.triggerQueuesViewChanged(true);
+                    this.triggerUploadMutation();
                 } else {
                     typeof cb === "function" && cb(it);
                     this.tailer.done = it.done;
@@ -168,11 +167,12 @@ export class WeiboUpload extends EventTarget {
      * @desc 迭代器迭代过程中遇到 Promise.reject，会造成迭代器提前结束
      *        为避免非致命性错误造成迭代器提前结束，异步生成器中需要处理这类错误
      * @return {Promise<PackedItem|null>}
-     * @reject {{login: boolean, terminable: boolean}}
+     * @reject {Error|{login: boolean, terminable: boolean}}
      */
     async *genUploadQueues() {
-        const watermark = await requestWeiboWatermark(genericMap.get(K_WEIBO_INHERITED_WATERMARK));
+        const watermark = await requestWeiboWatermark(ShareStore.get(K_WEIBO_INHERITED_WATERMARK));
         while (this.queues.length) {
+            this.triggerUploadMutation();
             yield await requestUpload(this.queues.shift(), watermark)
                 .then(item => {
                     this.tailer.progress.succeed();
@@ -212,8 +212,8 @@ export class WeiboUpload extends EventTarget {
                         if (this.queues.length) {
                             Log.w({
                                 module: "WeiboUpload",
-                                message: "迭代队列异常，中止后续操作",
-                                remark: `剩余的迭代队列数量为：${this.queues.length}`,
+                                error: reason,
+                                remark: `迭代队列异常，中止后续操作。剩余的迭代队列数量为：${this.queues.length}`,
                             });
                             this.tailer.progress.discard(this.queues.length);
                             this.queues.length = 0;

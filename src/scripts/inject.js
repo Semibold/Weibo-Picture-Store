@@ -76,8 +76,8 @@ async function installScripts() {
                 canvas.height = height;
                 context.drawImage(videoRef, 0, 0, width, height);
                 try {
-                    const dataurl = canvas.toDataURL("image/jpeg", 0.9);
-                    sendResponse({ dataurl: dataurl });
+                    const dataURL = canvas.toDataURL("image/jpeg", 0.9);
+                    sendResponse({ dataURL: dataURL });
                 } catch (e) {
                     chrome.runtime.sendMessage({ type: S_WITHOUT_CORS_MODE });
                 }

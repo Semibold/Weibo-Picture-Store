@@ -4,39 +4,42 @@
  * found in the LICENSE file.
  */
 
-import { S_WITHOUT_CORS_MODE, S_COMMAND_POINTER_EVENTS, NID_REMAIN_LOGOUT } from "../sharre/constant.js";
+import {
+    S_WITHOUT_CORS_MODE,
+    S_COMMAND_POINTER_EVENTS,
+    NID_REMAIN_LOGOUT,
+    NID_MISMATCH_CORS,
+} from "../sharre/constant.js";
 
 chrome.notifications.onClicked.addListener(notificationId => {
     if (notificationId === NID_REMAIN_LOGOUT) {
-        const url = `http://weibo.com/login.php?url=${encodeURIComponent("http://weibo.com")}`;
+        const url = `https://weibo.com/login.php?url=${encodeURIComponent("https://weibo.com")}`;
         chrome.tabs.create({ url }, tab => chrome.notifications.clear(NID_REMAIN_LOGOUT));
     }
 });
 
 chrome.commands.onCommand.addListener(command => {
-    switch (command) {
-        case "pointer-events-of-current-tab":
-            chrome.tabs.query(
-                {
-                    active: true,
-                    currentWindow: true,
-                },
-                tabs => {
-                    for (const tab of tabs) {
-                        chrome.tabs.sendMessage(tab.id, {
-                            type: S_COMMAND_POINTER_EVENTS,
-                            command: command,
-                        });
-                    }
-                },
-            );
-            break;
+    if (command === "execute_pointer_events") {
+        chrome.tabs.query(
+            {
+                active: true,
+                currentWindow: true,
+            },
+            tabs => {
+                for (const tab of tabs) {
+                    chrome.tabs.sendMessage(tab.id, {
+                        type: S_COMMAND_POINTER_EVENTS,
+                        command: command,
+                    });
+                }
+            },
+        );
     }
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === S_WITHOUT_CORS_MODE) {
-        chrome.notifications.create("mismatch_cors_spec", {
+        chrome.notifications.create(NID_MISMATCH_CORS, {
             type: "basic",
             iconUrl: chrome.i18n.getMessage("notify_icon"),
             title: chrome.i18n.getMessage("warn_title"),

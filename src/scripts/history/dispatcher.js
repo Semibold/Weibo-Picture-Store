@@ -5,7 +5,7 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { SharreM } from "../sharre/alphabet.js";
+import { coreAPIs } from "../sharre/alphabet.js";
 import { Log } from "../sharre/log.js";
 import { PConfig } from "../sharre/constant.js";
 
@@ -23,7 +23,7 @@ export class Dispatcher {
         this.ended = false;
         this.locked = false;
         this.platformOs = null;
-        this.scheme = SharreM.weiboConfig.scheme;
+        this.scheme = coreAPIs.weiboConfig.scheme;
         this.maxselected = 50;
         this.nid = Utils.randomString(16);
         this.head = document.querySelector("#head");
@@ -95,10 +95,9 @@ export class Dispatcher {
             this.searchParams.set("album_id", albumId);
             location.search = this.searchParams.toString();
         } else {
-            console.warn("输入的 albumId 不是有效的相册ID");
             Log.w({
-                module: "HistoryDispatcher",
-                message: "输入的 albumId 不是有效的相册ID",
+                module: "History:Dispatcher",
+                remark: "输入的 albumId 不是有效的相册ID",
             });
         }
     }
@@ -214,7 +213,7 @@ export class Dispatcher {
         const start = -prevdel % count; // 微相册返回的分页数据可能不等于 count 值，因此 start 应取 <=0 的值。
         this.checkout.page -= forward;
 
-        return SharreM.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count, this.checkout.albumId)
+        return coreAPIs.WeiboStatic.requestPhotos(this.checkout.page, this.checkout.count, this.checkout.albumId)
             .then(json => {
                 this.checkout.prevdel -= prevdel;
                 if (this.checkout.prevdel < 0) {
@@ -324,7 +323,7 @@ export class Dispatcher {
             n.dataset.selected = false;
         });
 
-        SharreM.WeiboStatic.detachPhoto(photoIds, this.checkout.albumId)
+        coreAPIs.WeiboStatic.detachPhoto(photoIds, this.checkout.albumId)
             .then(json => {
                 this.checkout.prevdel += photoIds.length;
             })

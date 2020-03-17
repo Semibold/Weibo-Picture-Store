@@ -5,7 +5,7 @@
  */
 
 import { K_AUTO_DISPLAY_CHANGELOG, K_WEIBO_ACCOUNT_DETAILS, K_WEIBO_INHERITED_WATERMARK } from "./sharre/constant.js";
-import { SharreM } from "./sharre/alphabet.js";
+import { coreAPIs } from "./sharre/alphabet.js";
 
 const displayChangelog = document.querySelector(`input[value="auto_display_changelog"]`);
 const inheritedWatermark = document.querySelector(`input[value="weibo_inherited_watermark"]`);
@@ -27,16 +27,16 @@ function registerInputClickEventWithSyncStorage(input, key) {
     });
 }
 
-displayChangelog.checked = Boolean(SharreM.genericMap.get(K_AUTO_DISPLAY_CHANGELOG));
-inheritedWatermark.checked = Boolean(SharreM.genericMap.get(K_WEIBO_INHERITED_WATERMARK));
+displayChangelog.checked = Boolean(coreAPIs.ShareStore.get(K_AUTO_DISPLAY_CHANGELOG));
+inheritedWatermark.checked = Boolean(coreAPIs.ShareStore.get(K_WEIBO_INHERITED_WATERMARK));
 
 registerInputClickEventWithSyncStorage(displayChangelog, K_AUTO_DISPLAY_CHANGELOG);
 registerInputClickEventWithSyncStorage(inheritedWatermark, K_WEIBO_INHERITED_WATERMARK);
 
-username.value = SharreM.weiboMap.get("username");
-password.value = SharreM.weiboMap.get("password");
+username.value = coreAPIs.WeiboStore.get("username");
+password.value = coreAPIs.WeiboStore.get("password");
 
-if (SharreM.weiboMap.get("allowUserAccount")) {
+if (coreAPIs.WeiboStore.get("allowUserAccount")) {
     allowUserAccount.checked = true;
     fieldset.disabled = false;
 }
@@ -79,7 +79,7 @@ confirm.addEventListener("click", e => {
 });
 
 function checkoutWeiboAccount(details) {
-    SharreM.WeiboStatic.signInByUserAccount(details.username, details.password)
+    coreAPIs.WeiboStatic.signInByUserAccount(details.username, details.password)
         .then(() => {
             chrome.notifications.create({
                 type: "basic",

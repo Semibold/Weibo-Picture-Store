@@ -6,7 +6,7 @@
 
 import { Utils } from "../sharre/utils.js";
 import { Log } from "../sharre/log.js";
-import { weiboMap } from "../background/persist-store.js";
+import { WeiboStore } from "../background/persist-store.js";
 import { singleton } from "./banker.js";
 import {
     E_CANT_TRANSIT_REGEXP,
@@ -25,13 +25,15 @@ const iframeId = `iframe-${Utils.randomString(6)}`;
  * @no-reject
  */
 async function getUserStatus(notify) {
-    return Utils.fetch(Utils.buildURL("http://weibo.com/aj/onoff/getstatus", { sid: 0 }))
+    return /** @type {Promise<{login: boolean}>} */ Utils.fetch(
+        Utils.buildURL("https://weibo.com/aj/onoff/getstatus", { sid: 0 }),
+    )
         .then(response => response.json())
         .then(json => {
             if (json && json["code"] === "100000") {
                 Log.d({
                     module: "getUserStatus",
-                    message: "用户处于登录状态",
+                    remark: "用户处于登录状态",
                 });
                 return { login: true };
             } else {
@@ -42,12 +44,12 @@ async function getUserStatus(notify) {
                         title: chrome.i18n.getMessage("warn_title"),
                         message: "当前微博处于登出状态，请登录微博后再次尝试其他操作",
                         contextMessage: "单击转到微博的登录页面进行登录操作",
-                        // Web extension does not support this flag
+                        // Firefox does not support this property.
                         // requireInteraction: true,
                     });
                 Log.w({
                     module: "getUserStatus",
-                    message: "用户处于登出状态",
+                    remark: "用户处于登出状态",
                 });
                 return { login: false };
             }
@@ -60,12 +62,12 @@ async function getUserStatus(notify) {
                     title: chrome.i18n.getMessage("warn_title"),
                     message: "微博登录信息校验失败，请确认微博登录后再次尝试其他操作",
                     contextMessage: "单击转到微博的登录页面进行登录操作",
-                    // Web extension does not support this flag
+                    // Firefox does not support this property.
                     // requireInteraction: true,
                 });
             Log.e({
                 module: "getUserStatus",
-                message: reason,
+                error: reason,
                 remark: "请求发生错误，假设用户处于登出状态，可能会导致实际的用户状态和获得的用户状态结果不一致",
             });
             return { login: false };
@@ -77,21 +79,21 @@ async function getUserStatus(notify) {
  *
  * @param {boolean} notify
  * @return {Promise<{login: boolean}>}
- * @reject {Promise<{login: boolean}>}
+ * @reject {Promise<{login: boolean}>} - 用户已登录或者网络请求错误
  */
 async function setUserStatus(notify) {
     return getUserStatus(false).then(json => {
         if (json.login) {
             Log.w({
                 module: "setUserStatus",
-                message: "检测到用户处于登录状态，中断激活用户登录状态的操作",
+                remark: "检测到用户处于登录状态，中断激活用户登录状态的操作",
             });
             return Promise.reject(json);
         }
 
-        if (weiboMap.get("allowUserAccount")) {
-            const username = weiboMap.get("username");
-            const password = weiboMap.get("password");
+        if (WeiboStore.get("allowUserAccount")) {
+            const username = WeiboStore.get("username");
+            const password = WeiboStore.get("password");
             return signInByUserAccount(username, password)
                 .catch(reason => {
                     notify &&
@@ -104,11 +106,11 @@ async function setUserStatus(notify) {
                         });
                     return Promise.reject(reason);
                 })
-                .then(result => Promise.resolve(getUserStatus(notify)))
-                .catch(reason => Promise.reject(getUserStatus(notify)));
+                .then(result => Promise.resolve(getUserStatus(false)))
+                .catch(reason => Promise.reject(getUserStatus(false)));
         }
 
-        return Utils.fetch("http://weibo.com/aj/onoff/setstatus", {
+        return Utils.fetch("https://weibo.com/aj/onoff/setstatus", {
             method: "POST",
             body: Utils.createSearchParams({ sid: 0, state: 0 }),
         })
@@ -135,16 +137,15 @@ async function setUserStatus(notify) {
                     document.body.append(iframe);
                     Log.d({
                         module: "setUserStatus",
-                        message: "用户可能处于未激活的登录状态，尝试激活",
+                        remark: "用户可能处于未激活的登录状态，尝试激活",
                     });
                     return promise;
                 } else {
                     Log.e({
                         module: "setUserStatus",
-                        message: "没有检测到重定向链接",
-                        remark: "可能会导致实际的用户状态和获得的用户状态结果不一致",
+                        remark: "没有检测到重定向链接，可能会导致实际的用户状态和获得的用户状态结果不一致",
                     });
-                    throw new Error(`Redirected: ${response.url}`);
+                    throw new Error(`Redirect link: ${response.url}`);
                 }
             })
             .then(result => Promise.resolve(getUserStatus(notify)))
@@ -178,21 +179,20 @@ export async function requestSignIn(notify = false) {
  * @reject {Error}
  */
 export async function requestUserId() {
-    const url = Utils.buildURL("http://login.sina.com.cn/sso/prelogin.php", { entry: "weibo", __rnd: Date.now() });
+    const url = Utils.buildURL("https://login.sina.com.cn/sso/prelogin.php", { entry: "weibo", __rnd: Date.now() });
     return Utils.fetch(url)
         .then(response => response.json())
         .then(json => {
             if (json && json["retcode"] === 0 && json["uid"]) {
                 Log.d({
                     module: "requestUserId",
-                    message: "获取用户信息成功",
+                    remark: "获取用户信息成功",
                 });
                 return { uid: json["uid"] };
             } else {
                 Log.w({
                     module: "requestUserId",
-                    message: "获取用户信息失败",
-                    remark: "这种情况下无法命中缓存，没有其他影响",
+                    remark: "获取用户信息失败，这种情况下无法命中缓存",
                 });
                 throw new Error(E_MISS_WEIBO_USER_ID);
             }
@@ -206,7 +206,7 @@ export async function requestUserId() {
  * @reject {Error}
  */
 export async function requestUserCaptcha(username) {
-    const url = Utils.buildURL("http://login.sina.com.cn/sso/prelogin.php", {
+    const url = Utils.buildURL("https://login.sina.com.cn/sso/prelogin.php", {
         checkpin: 1,
         su: btoa(encodeURIComponent(username)),
         entry: "weibo",
@@ -218,14 +218,13 @@ export async function requestUserCaptcha(username) {
             if (json && json["retcode"] === 0 && json["showpin"] != null) {
                 Log.d({
                     module: "requestUserCaptcha",
-                    message: "获取用户信息成功",
+                    remark: "获取用户信息成功",
                 });
                 return { showpin: json["showpin"] };
             } else {
                 Log.w({
                     module: "requestUserCaptcha",
-                    message: "获取用户信息失败",
-                    remark: "请求异常或输入的用户名可能不正确",
+                    remark: "获取用户信息失败，请求异常或输入的用户名不正确",
                 });
                 throw new Error(E_MISS_WEIBO_USER_ID);
             }
@@ -243,7 +242,7 @@ export async function signInByUserAccount(username, password) {
     if (!username || !password) {
         Log.w({
             module: "signInByUserAccount",
-            message: "Not found weibo username and password",
+            remark: "缺少微博账户信息",
         });
         throw new Error(E_MISS_WEIBO_ACCOUNT);
     }
@@ -275,26 +274,28 @@ export async function signInByUserAccount(username, password) {
             if (json && json["retcode"] === doneCode) {
                 Log.d({
                     module: "signInByUserAccount",
-                    message: "Start request login url",
                     remark: `UserId: ${json["data"]["uid"]}`,
                 });
                 return Utils.fetch(json["data"]["loginresulturl"]);
             } else {
+                /**
+                 * @return {Promise<Error>}
+                 * @no-resolve
+                 */
                 return requestUserCaptcha(username)
                     .then(json => {
                         if (json.showpin) {
                             return json;
                         } else {
                             // Catch this error in next `catch` microtask and raise real exception
-                            throw new Error();
+                            throw new Error(`needCaptcha: ${json.showpin}`);
                         }
                     })
                     .catch(reason => {
                         const msg = (json && json["msg"]) || E_INVALID_PARSED_DATA;
                         Log.w({
                             module: "signInByUserAccount",
-                            message: "Invalid Data",
-                            remark: json,
+                            error: `json: ${json}; reason: ${reason}`,
                         });
                         throw new Error(msg);
                     })
@@ -302,11 +303,11 @@ export async function signInByUserAccount(username, password) {
                         // You don't have to validate `showpin` repeatedly
                         const obj = {
                             module: "signInByUserAccount",
-                            message: "由于登录此账户需要验证码，因此无法使用自动登录功能",
-                            remark: json,
+                            error: json,
+                            remark: "由于登录此账户需要验证码，因此无法使用自动登录功能",
                         };
                         Log.w(obj);
-                        throw new Error(obj.message);
+                        throw new Error(obj.remark);
                     });
             }
         })
@@ -317,14 +318,14 @@ export async function signInByUserAccount(username, password) {
                 if (/"retcode":20000000,/.test(text.replace(/\s+/g, ""))) return;
                 Log.w({
                     module: "signInByUserAccount:requestLoginUrl",
-                    message: "Failed the regex test",
-                    remark: text,
+                    error: text,
+                    remark: "未能通过正则表达式测试",
                 });
                 throw new Error(E_CANT_TRANSIT_REGEXP);
             } else {
                 Log.w({
                     module: "signInByUserAccount:requestLoginUrl",
-                    message: "Invalid Data",
+                    remark: "无效数据",
                 });
                 throw new Error(E_INVALID_PARSED_DATA);
             }

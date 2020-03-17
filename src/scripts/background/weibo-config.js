@@ -4,9 +4,11 @@
  * found in the LICENSE file.
  */
 
+import { K_WEIBO_SCHEME_TYPE, K_WEIBO_CLIPSIZE_TYPE, K_USER_CLIPSIZE_VALUE } from "../sharre/constant.js";
+
 class WeiboConfig {
     /**
-     * @returns {string}
+     * @return {string}
      */
     get scheme() {
         const urlScheme = this.starter.scheme[this.padding.scheme];
@@ -34,28 +36,26 @@ class WeiboConfig {
             },
         };
         this.external = this.starter.clipsize;
-        this.customConfigKey = "custom_config";
-        this.customClipsizeKey = "custom_clipsize";
         this.padding = { scheme: "2", clipsize: "1" };
         this.init();
     }
 
     /** @private */
     init() {
-        const customConfig = {
-            scheme: localStorage.getItem(`${this.customConfigKey}.scheme`),
-            clipsize: localStorage.getItem(`${this.customConfigKey}.clipsize`),
+        const config = {
+            scheme: localStorage.getItem(K_WEIBO_SCHEME_TYPE),
+            clipsize: localStorage.getItem(K_WEIBO_CLIPSIZE_TYPE),
         };
-        const customClipsize = localStorage.getItem(this.customClipsizeKey);
+        const clipsize = localStorage.getItem(K_USER_CLIPSIZE_VALUE);
 
-        if (typeof customClipsize === "string") {
-            this.external[4] = customClipsize;
+        if (typeof clipsize === "string") {
+            this.external[4] = clipsize;
         }
 
-        if (customConfig) {
+        if (config) {
             for (const name of Object.keys(this.padding)) {
-                if (typeof this.starter[name][customConfig[name]] === "string") {
-                    this.padding[name] = customConfig[name];
+                if (typeof this.starter[name][config[name]] === "string") {
+                    this.padding[name] = config[name];
                 }
             }
         }

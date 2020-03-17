@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import { genericMap, weiboMap, popupMap } from "./persist-store.js";
+import { ShareStore, WeiboStore, PopupStore } from "./persist-store.js";
 import {
     PConfig,
     K_WEIBO_ACCOUNT_DETAILS,
@@ -13,27 +13,38 @@ import {
     K_WEIBO_INHERITED_WATERMARK,
 } from "../sharre/constant.js";
 
-function setGenericMapStore(items) {
+/**
+ * @param {Object} [items]
+ */
+function setShareStore(items) {
     if (items) {
         if (items[K_AUTO_DISPLAY_CHANGELOG] != null) {
-            genericMap.set(K_AUTO_DISPLAY_CHANGELOG, items[K_AUTO_DISPLAY_CHANGELOG]);
+            ShareStore.set(K_AUTO_DISPLAY_CHANGELOG, items[K_AUTO_DISPLAY_CHANGELOG]);
         }
         if (items[K_WEIBO_INHERITED_WATERMARK] != null) {
-            genericMap.set(K_WEIBO_INHERITED_WATERMARK, items[K_WEIBO_INHERITED_WATERMARK]);
+            ShareStore.set(K_WEIBO_INHERITED_WATERMARK, items[K_WEIBO_INHERITED_WATERMARK]);
         }
     }
 }
 
-function setWeiboMapStore(details) {
-    if (details.username != null) weiboMap.set("username", details.username);
-    if (details.password != null) weiboMap.set("password", details.password);
-    if (details.allowUserAccount != null) weiboMap.set("allowUserAccount", details.allowUserAccount);
+/**
+ * @param {Object} [details]
+ */
+function setWeiboStore(details) {
+    if (details) {
+        if (details.username != null) WeiboStore.set("username", details.username);
+        if (details.password != null) WeiboStore.set("password", details.password);
+        if (details.allowUserAccount != null) WeiboStore.set("allowUserAccount", details.allowUserAccount);
+    }
 }
 
-function setPopupMapStore(details) {
+/**
+ * @param {Object} [details]
+ */
+function setPopupStore(details) {
     if (details) {
         if (Number.isSafeInteger(details.width) && Number.isSafeInteger(details.height)) {
-            popupMap.set("dimension", { width: details.width, height: details.height });
+            PopupStore.set("dimension", { width: details.width, height: details.height });
         }
     }
 }
@@ -45,7 +56,7 @@ chrome.storage.sync.get(
     },
     items => {
         if (chrome.runtime.lastError) return;
-        setGenericMapStore(items);
+        setShareStore(items);
     },
 );
 
@@ -56,8 +67,8 @@ chrome.storage.local.get(
     },
     items => {
         if (chrome.runtime.lastError) return;
-        setWeiboMapStore(items[K_WEIBO_ACCOUNT_DETAILS]);
-        setPopupMapStore(items[K_POPUP_VIEWPORT_DIMENSION]);
+        setWeiboStore(items[K_WEIBO_ACCOUNT_DETAILS]);
+        setPopupStore(items[K_POPUP_VIEWPORT_DIMENSION]);
     },
 );
 
@@ -65,8 +76,8 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local") {
         const weiboAccount = changes[K_WEIBO_ACCOUNT_DETAILS];
         const popupDimension = changes[K_POPUP_VIEWPORT_DIMENSION];
-        if (weiboAccount && weiboAccount.newValue) setWeiboMapStore(weiboAccount.newValue);
-        if (popupDimension && popupDimension.newValue) setPopupMapStore(popupDimension.newValue);
+        if (weiboAccount && weiboAccount.newValue) setWeiboStore(weiboAccount.newValue);
+        if (popupDimension && popupDimension.newValue) setPopupStore(popupDimension.newValue);
     }
     if (areaName === "sync") {
         const items = {};
@@ -76,6 +87,6 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
         if (changes[K_WEIBO_INHERITED_WATERMARK]) {
             items[K_WEIBO_INHERITED_WATERMARK] = changes[K_WEIBO_INHERITED_WATERMARK].newValue;
         }
-        setGenericMapStore(items);
+        setShareStore(items);
     }
 });

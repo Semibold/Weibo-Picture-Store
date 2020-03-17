@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-import { logSet } from "../background/persist-store.js";
+import { LogStore } from "../background/persist-store.js";
 
 const MAXIMUM_LOGS = 2000;
 const backWindow = chrome.extension.getBackgroundPage();
@@ -19,9 +19,9 @@ export class Log {
      */
     static get store() {
         if (backWindow === self) {
-            return logSet;
+            return LogStore;
         } else {
-            return backWindow.SharreM.logSet;
+            return backWindow.coreAPIs.LogStore;
         }
     }
 
@@ -33,19 +33,21 @@ export class Log {
     }
 
     /**
-     * @private
      * @typedef {Object} ErrObject
      * @property {string} module                                    - 所属模块
-     * @property {string|Error|DOMError|DOMException} message       - 抛出的信息
-     * @property {string|Object} [remark]                           - 备注信息
-     *
+     * @property {string|Error|DOMError|DOMException} [error]       - 抛出的信息
+     * @property {string|Object} [remark]                           - 可读的信息
+     */
+
+    /**
+     * @private
      * @param {ErrObject} obj                      - 注意：此对象的内容会被更改
      * @param {string} [type]                      - keyof Log.LEVEL
      * @return {boolean}
      */
     static add(obj, type = Log.LEVEL.debug) {
         const types = Object.keys(Log.LEVEL);
-        const info = { message: "N/A", remark: "N/A" };
+        const info = { error: "", remark: "" };
 
         if (!types.includes(type)) {
             console.warn("Invalid `type` parameter");
@@ -67,16 +69,22 @@ export class Log {
             }
         }
 
-        if (typeof obj.message === "string") {
-            info.message = obj.message;
-        } else {
-            const error = obj.message;
+        if (typeof obj.error === "string") {
+            info.error = obj.error;
+        } else if (obj.error) {
+            const error = obj.error;
             if (error && typeof error.message === "string") {
-                info.message = error.message;
+                info.error = error.message;
             }
         }
 
-        Log.store.add(Object.assign(obj, info, { type, timestamp: Date.now() }));
+        const fd = Object.assign(obj, info, { type, timestamp: Date.now() });
+
+        Log.store.add(fd);
+
+        if (DEBUG && typeof console[type] === "function") {
+            console[type](`[${fd.module}]`, fd.remark || fd.error);
+        }
 
         return true;
     }
@@ -119,11 +127,8 @@ export class Log {
         caches.push("------------------ Metadata Finished ------------------");
         Log.store.forEach((k, v) => {
             if (types.includes(v.type)) {
-                caches.push(
-                    `[${v.type.toUpperCase().padEnd(padNum, ".")}]-[${new Date(v.timestamp).toISOString()}]-[${
-                        v.module
-                    }]-[${v.message}]-[${v.remark}]`,
-                );
+                // prettier-ignore
+                caches.push(`[${v.type.toUpperCase().padEnd(padNum, ".")}]-[${new Date(v.timestamp).toISOString()}]-[${v.module}]-[${v.error}]-[${v.remark}]`);
             }
         });
         return caches.join("\r\n");

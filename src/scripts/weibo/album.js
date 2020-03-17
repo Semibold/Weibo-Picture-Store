@@ -11,19 +11,21 @@ import { requestUserId } from "./author.js";
 import { Log } from "../sharre/log.js";
 
 /**
- * Singleton
- *
  * @typedef {Object} AlbumInfo
  * @property {string} uid
  * @property {string} albumId
  * @property {*[]} albumList
+ */
+
+/**
+ * Singleton
  *
  * @return {Promise<AlbumInfo>}
  * @reject {{canCreateNewAlbum: boolean}|Error}
  */
 async function tryCheckoutSpecialAlbumId() {
     const overflow = 100;
-    const url = Utils.buildURL("http://photo.weibo.com/albums/get_all", {
+    const url = Utils.buildURL("https://photo.weibo.com/albums/get_all", {
         page: 1,
         count: overflow,
         __rnd: Date.now(),
@@ -50,23 +52,22 @@ async function tryCheckoutSpecialAlbumId() {
                 if (albumInfo.albumId) {
                     Log.d({
                         module: "CheckoutSpecialAlbumId",
-                        message: "检出指定的微相册成功",
+                        remark: "检出指定的微相册成功",
                     });
                     return Object.assign({ albumList }, albumInfo);
                 } else {
                     const canCreateNewAlbum = total < overflow;
                     Log.w({
                         module: "CheckoutSpecialAlbumId",
-                        message: "没有检测到指定的微相册",
-                        remark: `能否创建新的微相册：${canCreateNewAlbum}，当前相册总数：${total}`,
+                        remark: `没有检测到指定的微相册，能否创建新的微相册：${canCreateNewAlbum}，当前相册总数：${total}`,
                     });
                     return Promise.reject({ canCreateNewAlbum });
                 }
             } else {
                 Log.e({
                     module: "CheckoutSpecialAlbumId",
-                    message: "检出指定的微相册失败，数据异常",
-                    remark: json,
+                    error: json,
+                    remark: "检出指定的微相册失败，数据异常",
                 });
                 throw new Error(E_INVALID_PARSED_DATA);
             }
@@ -91,13 +92,13 @@ async function tryCreateNewAlbum() {
         question: "",
         album_id: "",
     });
-    return Utils.fetch("http://photo.weibo.com/albums/create", { method, body })
+    return Utils.fetch("https://photo.weibo.com/albums/create", { method, body })
         .then(response => response.json())
         .then(json => {
             if (json && json["result"]) {
                 Log.d({
                     module: "CreateNewAlbum",
-                    message: "创建微相册成功",
+                    remark: "创建微相册成功",
                 });
                 return {
                     uid: json["data"]["uid"].toString(),
@@ -106,10 +107,26 @@ async function tryCreateNewAlbum() {
             } else {
                 Log.e({
                     module: "CreateNewAlbum",
-                    message: "创建微相册失败，数据异常",
-                    remark: json,
+                    error: json,
+                    remark: "创建微相册失败，数据异常",
                 });
                 throw new Error(E_INVALID_PARSED_DATA);
+            }
+        });
+}
+
+/**
+ * @return {Promise<AlbumInfo>}
+ * @reject {Error}
+ */
+async function createNewAlbumThenCheckoutSpecialAlbumId() {
+    return /** @type {Promise<AlbumInfo>} */ singleton(tryCreateNewAlbum)
+        .then(tinyAlbumInfo => singleton(tryCheckoutSpecialAlbumId))
+        .catch(reason => {
+            if (reason && reason.canCreateNewAlbum != null) {
+                throw new Error(JSON.stringify(reason));
+            } else {
+                Promise.reject(reason);
             }
         });
 }
@@ -123,9 +140,7 @@ async function tryCreateNewAlbum() {
  */
 export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
     if (forceCreateNewAlbum) {
-        return singleton(tryCreateNewAlbum)
-            .then(tinyAlbumInfo => singleton(tryCheckoutSpecialAlbumId))
-            .then(setUserInfoCache);
+        return createNewAlbumThenCheckoutSpecialAlbumId().then(setUserInfoCache);
     }
     const cacheId =
         uid ||
@@ -141,7 +156,7 @@ export async function requestSpecialAlbumId(uid, forceCreateNewAlbum) {
             if (reason && reason.canCreateNewAlbum != null) {
                 if (reason.canCreateNewAlbum) {
                     // Always return tryCheckoutSpecialAlbumId result.
-                    return singleton(tryCreateNewAlbum).then(tinyAlbumInfo => singleton(tryCheckoutSpecialAlbumId));
+                    return createNewAlbumThenCheckoutSpecialAlbumId();
                 } else {
                     throw new Error(E_CANT_CREATE_PALBUM);
                 }

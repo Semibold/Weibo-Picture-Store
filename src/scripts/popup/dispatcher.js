@@ -5,28 +5,27 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { SharreM } from "../sharre/alphabet.js";
+import { coreAPIs } from "../sharre/alphabet.js";
 import { PConfig } from "../sharre/constant.js";
 import { SectionTable } from "./section-table.js";
+import { K_WEIBO_SCHEME_TYPE, K_WEIBO_CLIPSIZE_TYPE, K_USER_CLIPSIZE_VALUE } from "../sharre/constant.js";
 
 export class Dispatcher {
     constructor() {
         this.config = null;
-        this.starter = SharreM.weiboConfig.starter;
+        this.starter = coreAPIs.weiboConfig.starter;
         this.batch = false;
         this.list = new Map();
         this.main = document.querySelector("#main");
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clipsize");
-        this.external = SharreM.weiboConfig.external;
+        this.external = coreAPIs.weiboConfig.external;
         this.checkout = { clear: true };
-        this.customConfigKey = SharreM.weiboConfig.customConfigKey;
-        this.customClipsizeKey = SharreM.weiboConfig.customClipsizeKey;
         this.nid = Utils.randomString(16);
-        this.directorySymbol = "\uD83D\uDCC1";
+        this.directorySymbol = "\ud83d\udcc1";
         this.classifyMap = new Map();
         this.prestoreMap = new Map();
-        this.weiboUpload = new SharreM.WeiboUpload(true);
+        this.weiboUpload = new coreAPIs.WeiboUpload(true);
     }
 
     /** @public */
@@ -40,7 +39,7 @@ export class Dispatcher {
 
     /** @private */
     genConfigProxy() {
-        this.config = new Proxy(SharreM.weiboConfig.padding, {
+        this.config = new Proxy(coreAPIs.weiboConfig.padding, {
             get: (target, key, receiver) => {
                 return Reflect.get(target, key, receiver);
             },
@@ -50,11 +49,11 @@ export class Dispatcher {
                     switch (key) {
                         case "scheme":
                             this.renderScheme();
-                            localStorage.setItem(`${this.customConfigKey}.scheme`, this.config.scheme);
+                            localStorage.setItem(K_WEIBO_SCHEME_TYPE, this.config.scheme);
                             break;
                         case "clipsize":
                             this.renderClipsize();
-                            localStorage.setItem(`${this.customConfigKey}.clipsize`, this.config.clipsize);
+                            localStorage.setItem(K_WEIBO_CLIPSIZE_TYPE, this.config.clipsize);
                             break;
                     }
                 }
@@ -85,7 +84,7 @@ export class Dispatcher {
         this.linker.addEventListener("input", e => {
             this.external[4] = e.target.value;
             this.renderClipsize();
-            localStorage.setItem(this.customClipsizeKey, e.target.value);
+            localStorage.setItem(K_USER_CLIPSIZE_VALUE, e.target.value);
         });
 
         this.linker.addEventListener("focus", e => {
@@ -124,20 +123,20 @@ export class Dispatcher {
 
                 if (this.batch) {
                     for (const hybrid of this.list.values()) {
-                        const tdata = this.transformer(hybrid.data);
-                        if (Array.isArray(tdata)) {
-                            tdata.forEach(td => buffer.push(td[type]));
+                        const d = this.transformer(hybrid.data);
+                        if (Array.isArray(d)) {
+                            d.forEach(item => buffer.push(item[type]));
                         } else {
-                            buffer.push(tdata[type]);
+                            buffer.push(d[type]);
                         }
                     }
                 } else {
                     const section = buttonCopy.closest("section");
-                    const tdata = this.transformer(this.list.get(section).data);
-                    if (Array.isArray(tdata)) {
-                        tdata.forEach(td => buffer.push(td[type]));
+                    const d = this.transformer(this.list.get(section).data);
+                    if (Array.isArray(d)) {
+                        d.forEach(item => buffer.push(item[type]));
                     } else {
-                        buffer.push(tdata[type]);
+                        buffer.push(d[type]);
                     }
                 }
 
@@ -165,7 +164,9 @@ export class Dispatcher {
                 }
 
                 this.copier.blur();
-                prev.focus();
+                if (prev) {
+                    prev.focus();
+                }
             }
         });
     }
@@ -197,7 +198,8 @@ export class Dispatcher {
                                         const url = multiple.shift();
                                         if (Utils.isValidURL(url)) {
                                             multipleBuffer.push(
-                                                SharreM.fetchBlob(url)
+                                                coreAPIs
+                                                    .fetchBlob(url)
                                                     .then(blob => buffer.push(blob))
                                                     .catch(Utils.noop),
                                             );
@@ -279,7 +281,9 @@ export class Dispatcher {
      * @property {string} UBB
      * @property {string} Markdown
      * @property {string} [fullDirectoryPath]
-     *
+     */
+
+    /**
      * @private
      * @param {PackedItem[]|PackedItem|Object} item
      * @return {*|AssignedPackedItem}
@@ -303,9 +307,8 @@ export class Dispatcher {
             Markdown: `![${filename}](${url})`,
         });
         if (item.width && item.height && clipsize === this.starter.clipsize[1]) {
-            assignedPackedItem.HTML = `<img src="${url}" alt="${filename}" width="${item.width}" data-width="${
-                item.width
-            }" data-height="${item.height}">`;
+            // prettier-ignore
+            assignedPackedItem.HTML = `<img src="${url}" alt="${filename}" width="${item.width}" data-width="${item.width}" data-height="${item.height}">`;
         }
         return assignedPackedItem;
     }

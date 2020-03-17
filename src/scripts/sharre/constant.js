@@ -9,7 +9,7 @@
  */
 export const FEATURE_ID = "ImUfrNWhuFTTOXASFgdCVVv2ZUIquXrKjqiey2r95Kqudh6sjaBUWFdcwtlGEX2w";
 export const PSEUDO_MOBILE_UA =
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
 
 /**
  * @desc Canvas 画布宽或高的最大值
@@ -32,7 +32,7 @@ export const FPC_DISCARD = 2;
 export const FPC_FAILURE = 3;
 
 /**
- * @desc menu
+ * @desc Menu
  */
 export const M_BATCH_DELETE = "menu_batch_delete";
 export const M_OPEN_HISTORY = "menu_open_history";
@@ -41,10 +41,17 @@ export const M_UPLOAD_FRAME = "menu_upload_frame";
 export const M_DOWNLOAD_LOG = "menu_download_log";
 
 /**
- * @desc signal
+ * @desc Signal
  */
 export const S_WITHOUT_CORS_MODE = "signal_without_cors_mode";
 export const S_COMMAND_POINTER_EVENTS = "signal_command_pointer_events";
+
+/**
+ * @desc localStorage
+ */
+export const K_WEIBO_SCHEME_TYPE = "custom_config.scheme";
+export const K_WEIBO_CLIPSIZE_TYPE = "custom_config.clipsize";
+export const K_USER_CLIPSIZE_VALUE = "custom_clipsize";
 
 /**
  * @desc chrome.StorageArea.sync
@@ -59,26 +66,29 @@ export const K_WEIBO_ACCOUNT_DETAILS = "weibo_account_details"; // 存在本地�
 export const K_POPUP_VIEWPORT_DIMENSION = "popup_viewport_dimension";
 
 /**
- * @desc error messages
+ * @desc Error messages
  */
-export const E_INVALID_PARSED_DATA = "E2001: invalid parsed data";
-export const E_CANT_TRANSIT_REGEXP = "E2002: can not transit regexp";
-export const E_MISS_WEIBO_USER_ID = "E4001: miss weibo user id";
-export const E_CANT_CREATE_PALBUM = "E4002: can not create photo album";
-export const E_FILE_SIZE_RESTRICT = "E5001: file size restrict";
-export const E_FILE_SIZE_OVERFLOW = "E5002: file size overflow";
-export const E_FILE_TYPE_RESTRICT = "E5003: file type restrict";
-export const E_MISS_WEIBO_ACCOUNT = "E5004: miss weibo account";
+export const E_INVALID_PARSED_DATA = "E2001: 解析后的数据无效";
+export const E_CANT_TRANSIT_REGEXP = "E2002: 未能通过正则表达式测试";
+export const E_MISS_WEIBO_USER_ID = "E4001: 缺少微博的用户ID";
+export const E_CANT_CREATE_PALBUM = "E4002: 不能创建微相册";
+export const E_FILE_SIZE_RESTRICT = "E5001: 文件大小超出约束范围";
+export const E_FILE_SIZE_OVERFLOW = "E5002: 文件大小过载";
+export const E_FILE_TYPE_RESTRICT = "E5003: 文件类型超出约束范围";
+export const E_MISS_WEIBO_ACCOUNT = "E5004: 缺少微博账户信息";
 
 /**
- * @desc notification id
+ * @desc Notification ID
  */
 export const NID_SIGNIN_RESULT = "nid_signin_result";
 export const NID_REMAIN_LOGOUT = "nid_remain_logout";
 export const NID_GRAB_RESOURCE = "nid_grab_resource";
+export const NID_MISMATCH_CORS = "nid_mismatch_cors";
+export const NID_UPLOAD_RESULT = "nid_upload_result";
+export const NID_COPY_URL_FAIL = "nid_copy_url_fail";
 
 /**
- * @desc event type
+ * @desc Event type
  */
 export const ET_UPLOAD_MUTATION = "et_upload_mutation";
 

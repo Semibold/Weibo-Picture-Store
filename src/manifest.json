@@ -32,7 +32,7 @@
         "default": "Shift+Alt+W"
       }
     },
-    "pointer-events-of-current-tab": {
+    "execute_pointer_events": {
       "suggested_key": {
         "default": "Shift+Alt+T"
       },
