@@ -108,7 +108,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             chrome.tabs.create({ url: "history.html" });
             break;
         case M_UPLOAD_IMAGE:
-            fetchBlob(info.srcUrl, info.pageUrl).then(blob => {
+            fetchBlob(info.srcUrl, info.frameUrl || info.pageUrl).then(blob => {
                 contentScriptUploader.addQueues([blob]);
                 contentScriptUploader.triggerIteration(autoCopyUrlToClipboard);
             });
