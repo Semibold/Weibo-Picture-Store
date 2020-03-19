@@ -70,7 +70,7 @@ export const K_POPUP_VIEWPORT_DIMENSION = "popup_viewport_dimension";
  */
 export const E_INVALID_PARSED_DATA = "E2001: 解析后的数据无效";
 export const E_CANT_TRANSIT_REGEXP = "E2002: 未能通过正则表达式测试";
-export const E_MISS_WEIBO_USER_ID = "E4001: 缺少微博的用户ID";
+export const E_WEIBO_USER_ID_SLIP = "E4001: 微博用户名不正确";
 export const E_CANT_CREATE_PALBUM = "E4002: 不能创建微相册";
 export const E_FILE_SIZE_RESTRICT = "E5001: 文件大小超出约束范围";
 export const E_FILE_SIZE_OVERFLOW = "E5002: 文件大小过载";

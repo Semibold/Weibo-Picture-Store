@@ -12,7 +12,7 @@ import {
     E_CANT_TRANSIT_REGEXP,
     E_INVALID_PARSED_DATA,
     E_MISS_WEIBO_ACCOUNT,
-    E_MISS_WEIBO_USER_ID,
+    E_WEIBO_USER_ID_SLIP,
     NID_REMAIN_LOGOUT,
     NID_SIGNIN_RESULT,
 } from "../sharre/constant.js";
@@ -194,7 +194,7 @@ export async function requestUserId() {
                     module: "requestUserId",
                     remark: "获取用户信息失败，这种情况下无法命中缓存",
                 });
-                throw new Error(E_MISS_WEIBO_USER_ID);
+                throw new Error(E_WEIBO_USER_ID_SLIP);
             }
         });
 }
@@ -226,7 +226,7 @@ export async function requestUserCaptcha(username) {
                     module: "requestUserCaptcha",
                     remark: "获取用户信息失败，请求异常或输入的用户名不正确",
                 });
-                throw new Error(E_MISS_WEIBO_USER_ID);
+                throw new Error(E_WEIBO_USER_ID_SLIP);
             }
         });
 }
