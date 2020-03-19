@@ -7,4 +7,4 @@
 /**
  * @typedef {boolean} DEBUG
  */
-self.DEBUG = !chrome.runtime.getManifest().key;
+self.DEBUG = !chrome.runtime.getManifest().key || !chrome.runtime.getManifest().browser_specific_settings;
