@@ -52,11 +52,12 @@
     "contextMenus",
     "notifications",
     "storage",
-    "tabs",
     "webRequest",
     "webRequestBlocking",
-    "<all_urls>"
+    "*://*.weibo.cn/*",
+    "*://*.weibo.com/*"
   ],
+  "optional_permissions": ["*://*/*"],
   "web_accessible_resources": [
     "scripts/*"
   ]

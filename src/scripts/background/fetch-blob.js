@@ -11,6 +11,19 @@ import { Log } from "../sharre/log.js";
 import { HttpHeaders } from "./http-headers.js";
 
 /**
+ * @param {chrome.permissions.Permissions} permissions
+ * @return {Promise<boolean>}
+ * @no-reject
+ */
+async function hasOptionalPermission(permissions) {
+    return new Promise((resolve, reject) => {
+        chrome.permissions.contains(permissions, result => {
+            resolve(result);
+        });
+    });
+}
+
+/**
  * @async
  * @param {string} srcUrl
  * @param {string} [pageUrl]
@@ -19,7 +32,9 @@ import { HttpHeaders } from "./http-headers.js";
  */
 export async function fetchBlob(srcUrl, pageUrl) {
     const progress = new FileProgress(FP_TYPE_DOWNLOAD);
+    const granted = await hasOptionalPermission({ origins: ["*://*/*"] });
     const killer =
+        granted &&
         Utils.isValidURL(srcUrl) &&
         Utils.isValidURL(pageUrl) &&
         HttpHeaders.rewriteRequest({ Referer: pageUrl }, { urls: [srcUrl] });
@@ -39,6 +54,7 @@ export async function fetchBlob(srcUrl, pageUrl) {
                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                 title: chrome.i18n.getMessage("warn_title"),
                 message: "无法读取远程文件",
+                contextMessage: "请尝试在选项中开启伪造 HTTP Referer",
             });
             Log.w({
                 module: "fetchBlob",

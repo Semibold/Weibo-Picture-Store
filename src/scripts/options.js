@@ -10,6 +10,7 @@ import { coreAPIs } from "./sharre/alphabet.js";
 const displayChangelog = document.querySelector(`input[value="auto_display_changelog"]`);
 const inheritedWatermark = document.querySelector(`input[value="weibo_inherited_watermark"]`);
 const allowUserAccount = document.querySelector(`input[value="allow_user_account"]`);
+const httpRefererForge = document.querySelector(`input[value="http_referer_forge"]`);
 
 const fieldset = document.querySelector("fieldset");
 const confirm = document.getElementById("confirm");
@@ -98,3 +99,37 @@ function checkoutWeiboAccount(details) {
             });
         });
 }
+
+chrome.permissions.contains(
+    {
+        origins: ["*://*/*"],
+    },
+    result => {
+        httpRefererForge.checked = result;
+        httpRefererForge.disabled = result;
+    },
+);
+
+httpRefererForge.addEventListener("click", e => {
+    const oldValue = !e.target.checked;
+    chrome.permissions.request(
+        {
+            origins: ["*://*/*"],
+        },
+        granted => {
+            if (chrome.runtime.lastError) {
+                chrome.notifications.create({
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("notify_icon"),
+                    title: chrome.i18n.getMessage("warn_title"),
+                    message: chrome.runtime.lastError || "未知错误",
+                });
+                e.target.checked = oldValue;
+                e.target.disabled = oldValue;
+                return;
+            }
+            e.target.checked = granted;
+            e.target.disabled = granted;
+        },
+    );
+});

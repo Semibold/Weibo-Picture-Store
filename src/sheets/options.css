@@ -42,7 +42,7 @@ fieldset > div {
     vertical-align: middle;
 }
 
-.weibo-watermark-help {
+.weibo-watermark > a {
     font-size: 14px;
     text-decoration: none;
 }
