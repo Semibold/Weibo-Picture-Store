@@ -46,8 +46,6 @@
     "chrome_style": true
   },
   "permissions": [
-    "clipboardWrite",
-    "clipboardRead",
     "downloads",
     "contextMenus",
     "notifications",
