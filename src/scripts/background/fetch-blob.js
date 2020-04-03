@@ -27,14 +27,16 @@ async function hasOptionalPermission(permissions) {
  * @async
  * @param {string} srcUrl
  * @param {string} [pageUrl]
+ * @param {boolean} [_replay = false]
  * @return {Promise<Blob>}
  * @reject {Error}
  */
-export async function fetchBlob(srcUrl, pageUrl) {
+export async function fetchBlob(srcUrl, pageUrl, _replay = false) {
     const progress = new FileProgress(FP_TYPE_DOWNLOAD);
     const granted = await hasOptionalPermission({ origins: ["*://*/*"] });
     const killer =
         granted &&
+        !_replay &&
         Utils.isValidURL(srcUrl) &&
         Utils.isValidURL(pageUrl) &&
         HttpHeaders.rewriteRequest({ Referer: pageUrl }, { urls: [srcUrl] });
@@ -47,25 +49,35 @@ export async function fetchBlob(srcUrl, pageUrl) {
             progress.succeed();
             return blob;
         })
-        .catch(reason => {
-            progress.failure();
-            chrome.notifications.create(NID_GRAB_RESOURCE, {
-                type: "basic",
-                iconUrl: chrome.i18n.getMessage("notify_icon"),
-                title: chrome.i18n.getMessage("warn_title"),
-                message: "无法读取远程文件",
-                contextMessage: "请尝试在选项中开启伪造 HTTP Referer",
-            });
-            Log.w({
-                module: "fetchBlob",
-                error: reason,
-                remark: `读取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
-            });
-            return Promise.reject(reason);
-        })
         .finally(() => {
             if (killer) {
                 killer();
+            }
+        })
+        .catch(reason => {
+            const notGranted = !granted;
+            const grantedAndReplayError = granted && _replay;
+
+            if (notGranted || grantedAndReplayError) {
+                progress.failure();
+                chrome.notifications.create(NID_GRAB_RESOURCE, {
+                    type: "basic",
+                    iconUrl: chrome.i18n.getMessage("notify_icon"),
+                    title: chrome.i18n.getMessage("warn_title"),
+                    message: "无法读取远程文件",
+                    contextMessage: "请尝试在选项中开启伪造 HTTP Referer",
+                });
+                Log.w({
+                    module: "fetchBlob",
+                    error: reason,
+                    remark: `读取远程文件失败。srcUrl：${srcUrl}，pageSrc：${pageUrl || "N/A"}`,
+                });
+                return Promise.reject(reason);
+            } else {
+                /**
+                 * Special Situation: The Referer(Referrer) is fantastic if website request hot-linking.
+                 */
+                return fetchBlob(srcUrl, pageUrl, true);
             }
         });
 }
