@@ -94,8 +94,7 @@ function checkoutWeiboAccount(details) {
                 type: "basic",
                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                 title: chrome.i18n.getMessage("info_title"),
-                message: "配置失败，请检查账号和密码是否正确",
-                contextMessage: (reason && reason.message) || "未知错误",
+                message: "配置失败，请检查微博账户信息",
             });
         });
 }

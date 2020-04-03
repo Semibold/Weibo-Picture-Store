@@ -42,10 +42,7 @@ async function getUserStatus(notify) {
                         type: "basic",
                         iconUrl: chrome.i18n.getMessage("notify_icon"),
                         title: chrome.i18n.getMessage("warn_title"),
-                        message: "当前微博处于登出状态，请登录微博后再次尝试其他操作",
-                        contextMessage: "单击转到微博的登录页面进行登录操作",
-                        // Firefox does not support this property.
-                        // requireInteraction: true,
+                        message: "微博处于登出状态，单击转到微博的登录页面",
                     });
                 Log.w({
                     module: "getUserStatus",
@@ -60,10 +57,7 @@ async function getUserStatus(notify) {
                     type: "basic",
                     iconUrl: chrome.i18n.getMessage("notify_icon"),
                     title: chrome.i18n.getMessage("warn_title"),
-                    message: "微博登录信息校验失败，请确认微博登录后再次尝试其他操作",
-                    contextMessage: "单击转到微博的登录页面进行登录操作",
-                    // Firefox does not support this property.
-                    // requireInteraction: true,
+                    message: "微博登录信息校验失败，单击转到微博的登录页面",
                 });
             Log.e({
                 module: "getUserStatus",
@@ -101,8 +95,7 @@ async function setUserStatus(notify) {
                             type: "basic",
                             iconUrl: chrome.i18n.getMessage("notify_icon"),
                             title: chrome.i18n.getMessage("fail_title"),
-                            message: "登录失败，请检查选项中的微博账户及密码是否正确",
-                            contextMessage: (reason && reason.message) || "未知错误",
+                            message: "登录失败，请检查微博账户信息及网络情况",
                         });
                     return Promise.reject(reason);
                 })

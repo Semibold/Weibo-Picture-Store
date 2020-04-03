@@ -64,8 +64,7 @@ export async function fetchBlob(srcUrl, pageUrl, _replay = false) {
                     type: "basic",
                     iconUrl: chrome.i18n.getMessage("notify_icon"),
                     title: chrome.i18n.getMessage("warn_title"),
-                    message: "无法读取远程文件",
-                    contextMessage: "请尝试在选项中开启伪造 HTTP Referer",
+                    message: "无法读取远程文件，请开启选项中的伪造 HTTP Referer 功能",
                 });
                 Log.w({
                     module: "fetchBlob",
