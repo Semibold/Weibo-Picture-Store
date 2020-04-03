@@ -36,11 +36,14 @@ fieldset > div {
 }
 
 .weibo-watermark > label,
-.weibo-watermark > a {
+.weibo-watermark > a,
+.http-referer > label,
+.http-referer > a {
     vertical-align: middle;
 }
 
-.weibo-watermark > a {
+.weibo-watermark > a,
+.http-referer > a {
     font-size: 14px;
     text-decoration: none;
 }
