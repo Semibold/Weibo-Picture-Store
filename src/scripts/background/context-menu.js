@@ -116,7 +116,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         case M_UPLOAD_FRAME:
             chrome.tabs.sendMessage(
                 tab.id,
-                { type: M_UPLOAD_FRAME, srcUrl: info.srcUrl },
+                { type: M_UPLOAD_FRAME, srcUrl: info.srcUrl, info: info },
                 { frameId: info.frameId },
                 response => {
                     /**

@@ -51,17 +51,7 @@ async function installScripts() {
             }
         }
         if (message.type === M_UPLOAD_FRAME) {
-            const videoRefs = document.querySelectorAll("video");
-            for (const videoRef of videoRefs) {
-                /**
-                 * @desc 为什么不用 video.src 的写法？
-                 *          <video><source src="..."></video> 这种写法不存在 video.src
-                 *          但是 chrome 可以捕获 source 中的 src 值
-                 * @todo 如果视频的URL经过了重定向，这里的判断是否正确呢？
-                 */
-                if (videoRef.currentSrc !== message.srcUrl) {
-                    continue;
-                }
+            const videoHandler = videoRef => {
                 const width = videoRef.videoWidth;
                 const height = videoRef.videoHeight;
                 if (width === 0 || height === 0) {
@@ -81,7 +71,38 @@ async function installScripts() {
                 } catch (e) {
                     chrome.runtime.sendMessage({ type: S_WITHOUT_CORS_MODE });
                 }
-                break;
+            };
+
+            if (
+                message.info &&
+                message.info.targetElementId != null &&
+                self.browser &&
+                self.browser.menus &&
+                typeof self.browser.menus.getTargetElement === "function"
+            ) {
+                /**
+                 * @desc Firefox only. chrome.contextMenus.onClick can handle the events.
+                 * @desc Need `menus` permission
+                 */
+                const videoRef = self.browser.menus.getTargetElement(message.info.targetElementId);
+                if (videoRef && videoRef.tagName && videoRef.tagName.toLowerCase() === "video") {
+                    videoHandler(videoRef);
+                }
+            } else {
+                const videoRefs = document.querySelectorAll("video");
+                for (const videoRef of videoRefs) {
+                    /**
+                     * @desc 为什么不用 video.src 的写法？
+                     *          <video><source src="..."></video> 这种写法不存在 video.src
+                     *          但是 chrome 可以捕获 source 中的 src 值
+                     * @todo 如果视频的URL经过了重定向，这里的判断是否正确呢？
+                     */
+                    if (videoRef.currentSrc !== message.srcUrl) {
+                        continue;
+                    }
+                    videoHandler(videoRef);
+                    break;
+                }
             }
         }
     });

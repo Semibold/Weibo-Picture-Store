@@ -3,6 +3,7 @@ const gulp_zip = require("gulp-zip");
 const gulp_json_modify = require("gulp-json-modify");
 const merge_stream = require("merge-stream");
 const pkg = require("./package.json");
+const mft = require("./src/manifest.json");
 
 gulp.task("bundle:chrome", function() {
     const others = gulp.src(["src/**", "!src/manifest.json"]);
@@ -26,6 +27,12 @@ gulp.task("bundle:firefox", function() {
             gulp_json_modify({
                 key: "version",
                 value: pkg.version,
+            }),
+        )
+        .pipe(
+            gulp_json_modify({
+                key: "permissions",
+                value: ["menus"].concat(mft.permissions),
             }),
         )
         .pipe(
