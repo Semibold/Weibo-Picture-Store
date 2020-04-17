@@ -76,15 +76,14 @@ async function installScripts() {
             if (
                 message.info &&
                 message.info.targetElementId != null &&
-                self.browser &&
-                self.browser.menus &&
-                typeof self.browser.menus.getTargetElement === "function"
+                chrome.menus &&
+                typeof chrome.menus.getTargetElement === "function"
             ) {
                 /**
                  * @desc Firefox only. chrome.contextMenus.onClick can handle the events.
                  * @desc Need `menus` permission
                  */
-                const videoRef = self.browser.menus.getTargetElement(message.info.targetElementId);
+                const videoRef = chrome.menus.getTargetElement(message.info.targetElementId);
                 if (videoRef && videoRef.tagName && videoRef.tagName.toLowerCase() === "video") {
                     videoHandler(videoRef);
                 }
