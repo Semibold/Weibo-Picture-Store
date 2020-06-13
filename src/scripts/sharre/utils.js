@@ -251,17 +251,32 @@ export class Utils {
      * @reject {Promise<Error>}
      */
     static async remuxImage(blob, mimeType = "image/png", quality = 0.9) {
+        const svgType = blob.type === "image/svg+xml";
         const objectURL = URL.createObjectURL(blob);
+        const dataURL = svgType ? await Utils.readAsChannelType(blob, "dataURL") : null;
 
         return new Promise((resolve, reject) => {
             const image = new Image();
             image.onload = e => resolve(image);
             image.onerror = e => reject(e);
-            image.src = objectURL;
+
+            /**
+             * @bug Canvas is tainted on WebKit Rendering Engine after drawing binary SVGImage including <foreignObject>
+             * @see TestCase - http://jsfiddle.net/KUH89/1/
+             *
+             * @desc A canvas should not be tainted if it draws a dataURL SVGImage with a <foreignObject>
+             * @see https://bugs.webkit.org/show_bug.cgi?id=180301
+             * @see https://bugs.chromium.org/p/chromium/issues/detail?id=294129
+             */
+            if (svgType && dataURL) {
+                image.src = dataURL;
+            } else {
+                image.src = objectURL;
+            }
         })
             .then(async image => {
                 // Set svg image width and height correctly.
-                if (blob.type === "image/svg+xml") {
+                if (svgType) {
                     try {
                         const text = await Utils.readAsChannelType(blob);
                         const node = Utils.parseHTML(text);
