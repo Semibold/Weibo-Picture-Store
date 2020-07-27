@@ -110,6 +110,44 @@ export class Utils {
     }
 
     /**
+     * @param {TemplateStringsArray} literals
+     * @param {string|Error|DOMError|DOMException|Object} placeholders
+     * @return {string}
+     */
+    static safeMixinError(literals, ...placeholders) {
+        let result = "";
+
+        // interleave the literals with the placeholders
+        for (let i = 0; i < placeholders.length; i++) {
+            let item = placeholders[i];
+            let segment = "";
+
+            if (item) {
+                if (typeof item === "string") {
+                    segment = item;
+                } else {
+                    if (typeof item.message === "string") {
+                        segment = item.message;
+                    } else {
+                        try {
+                            segment = JSON.stringify(item);
+                        } catch (e) {
+                            console.warn(e);
+                        }
+                    }
+                }
+            }
+
+            result += literals[i];
+            result += segment;
+        }
+
+        // add the last literal
+        result += literals[literals.length - 1];
+        return result;
+    }
+
+    /**
      * @param {string} content
      * @return {boolean}
      */
@@ -225,7 +263,7 @@ export class Utils {
                     //     .then(text => {
                     //         Log.d({
                     //             module: "Utils.fetch",
-                    //             error: `input: ${input}; response: ${text}`,
+                    //             error: Utils.safeMixinError`input: ${input}; response: ${text}`,
                     //         });
                     //     });
                     return response;
@@ -236,7 +274,7 @@ export class Utils {
             .catch(reason => {
                 Log.w({
                     module: "Utils.fetch",
-                    error: `input: ${input}; reason: ${reason}`,
+                    error: Utils.safeMixinError`input: ${input}; reason: ${reason}`,
                 });
                 return Promise.reject(reason);
             });

@@ -288,7 +288,7 @@ export async function signInByUserAccount(username, password) {
                         const msg = (json && json["msg"]) || E_INVALID_PARSED_DATA;
                         Log.w({
                             module: "signInByUserAccount",
-                            error: `json: ${json}; reason: ${reason}`,
+                            error: Utils.safeMixinError`json: ${json}; reason: ${reason}`,
                         });
                         throw new Error(msg);
                     })

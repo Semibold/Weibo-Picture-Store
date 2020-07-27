@@ -34,9 +34,9 @@ export class Log {
 
     /**
      * @typedef {Object} ErrObject
-     * @property {string} module                                    - 所属模块
-     * @property {string|Error|DOMError|DOMException} [error]       - 抛出的信息
-     * @property {string|Object} [remark]                           - 可读的信息
+     * @property {string} module                                        - 所属模块
+     * @property {string|Error|DOMError|DOMException|Object} [error]    - 抛出的信息
+     * @property {string|Object} [remark]                               - 可读的信息
      */
 
     /**
@@ -69,12 +69,19 @@ export class Log {
             }
         }
 
-        if (typeof obj.error === "string") {
-            info.error = obj.error;
-        } else if (obj.error) {
-            const error = obj.error;
-            if (error && typeof error.message === "string") {
-                info.error = error.message;
+        if (obj.error) {
+            if (typeof obj.error === "string") {
+                info.error = obj.error;
+            } else {
+                if (obj.error && typeof obj.error.message === "string") {
+                    info.error = obj.error.message;
+                } else {
+                    try {
+                        info.error = JSON.stringify(obj.error);
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                }
             }
         }
 
