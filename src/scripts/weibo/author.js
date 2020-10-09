@@ -202,7 +202,7 @@ export async function requestUserCaptcha(username) {
     const url = Utils.buildURL("https://login.sina.com.cn/sso/prelogin.php", {
         checkpin: 1,
         su: btoa(encodeURIComponent(username)),
-        entry: "weibo",
+        entry: "mweibo",
         __rnd: Date.now(),
     });
     return Utils.fetch(url)
@@ -247,9 +247,9 @@ export async function signInByUserAccount(username, password) {
         username: username,
         password: password,
         savestate: "1",
-        r: "https://weibo.cn/",
+        r: "https://m.weibo.cn/",
         ec: "0",
-        pagerefer: "https://weibo.cn/pub/",
+        pagerefer: "https://m.weibo.cn/",
         entry: "mweibo",
         wentry: "",
         loginfrom: "",
@@ -261,6 +261,7 @@ export async function signInByUserAccount(username, password) {
         hfp: "",
     });
     const doneCode = 20000000;
+    const secondVerifyCode = 50050011;
     return Utils.fetch(url, { method, body })
         .then(response => response.json())
         .then(json => {
@@ -271,6 +272,17 @@ export async function signInByUserAccount(username, password) {
                 });
                 return Utils.fetch(json["data"]["loginresulturl"]);
             } else {
+                if (json && json["retcode"] === secondVerifyCode) {
+                    const error = new Error("由于登录此账户需要两步验证，因此无法使用自动登录功能");
+
+                    Log.w({
+                        module: "signInByUserAccount",
+                        error: json,
+                        remark: error.message,
+                    });
+
+                    throw error;
+                }
                 /**
                  * @return {Promise<Error>}
                  * @no-resolve

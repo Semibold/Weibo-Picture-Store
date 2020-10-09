@@ -63,8 +63,28 @@ HttpHeaders.rewriteRequest(
 
 HttpHeaders.rewriteRequest(
     {
+        Referer: "http://passport.weibo.cn/",
+    },
+    {
+        urls: ["http://login.sina.com.cn/sso/*"],
+        types: ["xmlhttprequest"],
+    },
+);
+
+HttpHeaders.rewriteRequest(
+    {
+        Referer: "https://passport.weibo.cn/",
+    },
+    {
+        urls: ["https://login.sina.com.cn/sso/*"],
+        types: ["xmlhttprequest"],
+    },
+);
+
+HttpHeaders.rewriteRequest(
+    {
         Origin: "https://passport.weibo.cn",
-        Referer: "https://passport.weibo.cn/sso/login",
+        Referer: "https://passport.weibo.cn/signin/login",
         "User-Agent": PSEUDO_MOBILE_UA,
     },
     {
