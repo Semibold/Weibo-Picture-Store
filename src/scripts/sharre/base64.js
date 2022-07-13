@@ -87,7 +87,7 @@ export class Base64 {
      * @return {string}
      */
     static decode(base64 = "") {
-        const bufferView = Base64.toBuffer(text);
+        const bufferView = Base64.toBuffer(base64);
         return Utils.textFromBuffer(bufferView);
     }
 
