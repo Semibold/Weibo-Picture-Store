@@ -55,7 +55,8 @@
     "webRequestBlocking",
     "*://*.weibo.cn/*",
     "*://*.weibo.com/*",
-    "*://*.sina.com.cn/*"
+    "*://*.sina.com.cn/*",
+    "*://*.sinaimg.cn/*"
   ],
   "optional_permissions": ["*://*/*"],
   "web_accessible_resources": [

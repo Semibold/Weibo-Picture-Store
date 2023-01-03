@@ -15,7 +15,7 @@
  */
 
 import { HttpHeaders } from "./http-headers.js";
-import { PSEUDO_MOBILE_UA } from "../sharre/constant.js";
+import { PConfig, PSEUDO_MOBILE_UA } from "../sharre/constant.js";
 
 // HttpHeaders.rewriteRequest(
 //     {
@@ -100,5 +100,16 @@ HttpHeaders.rewriteResponse(
     {
         urls: ["https://passport.weibo.cn/sso/login"],
         types: ["xmlhttprequest"],
+    },
+);
+
+HttpHeaders.rewriteRequest(
+    {
+        Referer: "https://photo.weibo.com/",
+        Origin: "https://photo.weibo.com",
+    },
+    {
+        urls: PConfig.urlPrefix.map(prefix => `https://${prefix}.sinaimg.cn/*`),
+        types: ["image", "main_frame", "xmlhttprequest"],
     },
 );

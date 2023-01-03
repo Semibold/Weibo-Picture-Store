@@ -138,12 +138,16 @@ export class PConfig {
         };
     }
 
+    static get urlPrefix() {
+        // return ["ws1", "ws2", "ws3", "ws4", "wx1", "wx2", "wx3", "wx4"];
+        return ["tva1", "tva2", "tva3", "tva4", "tvax1", "tvax2", "tvax3", "tvax4"];
+    }
+
     /**
      * @desc 随机微博图片的域名前缀
      */
     static get randomImagePrefix() {
-        // const urlPrefix = ["ws1", "ws2", "ws3", "ws4", "wx1", "wx2", "wx3", "wx4"];
-        const urlPrefix = ["tva1", "tva2", "tva3", "tva4", "tvax1", "tvax2", "tvax3", "tvax4"];
+        const urlPrefix = PConfig.urlPrefix;
         return urlPrefix[Math.floor(Math.random() * urlPrefix.length)];
     }
 
