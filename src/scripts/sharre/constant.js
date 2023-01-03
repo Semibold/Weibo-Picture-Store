@@ -99,6 +99,7 @@ export class PConfig {
     /**
      * @see https://support.google.com/webmasters/answer/2598805
      * @see https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+     * @see https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types#apng_animated_portable_network_graphics
      * @return {string[]}
      */
     static get chromeSupportedTypes() {
@@ -111,6 +112,7 @@ export class PConfig {
             "image/webp",
             "image/x-icon",
             "image/svg+xml",
+            "image/avif",
         ];
     }
 

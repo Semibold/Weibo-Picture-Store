@@ -44,8 +44,7 @@ async function reader(blob, channelType = "arrayBuffer", _replay = false) {
     const pipeline = channel[channelType];
     const result = await Utils.readAsChannelType(blob, channelType);
     const mime = pipeline.mimeType(result, blob);
-    const chromeSupportedTypes = new Set(PConfig.chromeSupportedTypes);
-    if (chromeSupportedTypes.has(mime) && !PConfig.weiboSupportedTypes[mime] && !_replay) {
+    if (!PConfig.weiboSupportedTypes[mime] && !_replay) {
         const b = await Utils.remuxImage(blob);
         return await reader(b, channelType, true);
     } else {
