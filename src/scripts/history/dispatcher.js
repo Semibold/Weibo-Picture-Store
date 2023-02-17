@@ -236,8 +236,7 @@ export class Dispatcher {
                         /^https:\/\/\w+(?=\.)/i,
                         /^\/\/\w+(?=\.)/i,
                     ]);
-                    imgSource.src = `${urlOrigin}/thumb300/${item.picName}`;
-                    imgSource.srcset = `${urlOrigin}/bmiddle/${item.picName} 2x`;
+                    imgSource.src = `${urlOrigin}/bmiddle/${item.picName}`;
                     imgLinker.href = `${urlOrigin}/large/${item.picName}`;
                     imgUpdate.textContent = item.updated;
                     this.fragment.append(section);
