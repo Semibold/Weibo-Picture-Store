@@ -72,8 +72,16 @@ export class HttpHeaders {
                     return false;
             }
         } else {
-            // Intercept non-tab request only if initiator property does not exist.
-            return details.tabId === chrome.tabs.TAB_ID_NONE;
+            // Detect Firefox Extension Page
+            const originUrl = details["originUrl"];
+            const isExtensionPage = originUrl && originUrl.startsWith(chrome.runtime.getURL(""));
+
+            if (isExtensionPage) {
+                return true;
+            } else {
+                // Intercept non-tab request only if initiator property does not exist.
+                return details.tabId === chrome.tabs.TAB_ID_NONE;
+            }
         }
     }
 
