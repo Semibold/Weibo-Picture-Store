@@ -29,12 +29,12 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Shift+Alt+W"
+        "default": "Alt+Shift+W"
       }
     },
     "execute_pointer_events": {
       "suggested_key": {
-        "default": "Shift+Alt+T"
+        "default": "Alt+Shift+T"
       },
       "description": "置顶页面中的视频和图片"
     }

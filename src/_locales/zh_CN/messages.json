@@ -6,10 +6,10 @@
     "message": "微博图床，支持选择、拖拽、粘贴、网页右键上传图片，并生成图片地址，支持浏览和删除历史记录，支持同步上传记录"
   },
   "notify_icon": {
-    "message": "assets/weibo.notify.svg"
+    "message": "/assets/weibo.notify.png"
   },
   "image_placeholder": {
-    "message": "assets/transparent.gif"
+    "message": "/assets/transparent.gif"
   },
   "info_title": {
     "message": "普通提示"
