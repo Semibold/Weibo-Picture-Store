@@ -1,0 +1,80 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_ext_name__",
+  "version": "1.0.0",
+  "default_locale": "zh_CN",
+  "description": "__MSG_ext_desc__",
+  "icons": {
+    "32": "icons/32.png",
+    "64": "icons/64.png",
+    "128": "icons/128.png"
+  },
+  "action": {
+    "default_title": "__MSG_ext_name__"
+  },
+  "background": {
+    "page": "background.html"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "match_about_blank": true,
+      "js": ["scripts/inject.js"],
+      "css": ["sheets/inject.css"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "weibo-picture-store@ext.hub.moe",
+      "strict_min_version": "110"
+    }
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+W"
+      }
+    },
+    "execute_pointer_events": {
+      "suggested_key": {
+        "default": "Alt+Shift+T"
+      },
+      "description": "置顶页面中的视频和图片"
+    }
+  },
+  "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
+  "minimum_chrome_version": "110",
+  "options_ui": {
+    "page": "options.html"
+  },
+  "permissions": [
+    "clipboardWrite",
+    "downloads",
+    "contextMenus",
+    "menus",
+    "notifications",
+    "storage",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback"
+  ],
+  "host_permissions": [
+    "*://*.weibo.cn/*",
+    "*://*.weibo.com/*",
+    "*://*.sina.com.cn/*",
+    "*://*.sinaimg.cn/*",
+    "*://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "scripts/*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ]
+}
