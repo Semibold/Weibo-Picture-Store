@@ -44,19 +44,19 @@
 }
 
 .head-network-protocol > label,
-.head-clipsize > label {
+.head-clip > label {
     display: inline-flex;
     align-items: center;
     margin-left: 0.8em;
 }
 
 .head-network-protocol > label > input,
-.head-clipsize > label > input {
+.head-clip > label > input {
     margin-right: 4px;
     cursor: default;
 }
 
-.custom-clipsize {
+.custom-clip {
     padding: 0 0.2em;
     width: 9em;
     border: 0;
@@ -66,7 +66,7 @@
     box-sizing: border-box;
 }
 
-.custom-clipsize:focus {
+.custom-clip:focus {
     border-bottom: 1px solid #21b3a3;
 }
 

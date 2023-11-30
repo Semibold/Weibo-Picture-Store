@@ -8,6 +8,10 @@
     "prepare": "node ./.husky/setup.js",
     "husky:pre-commit": "lint-staged",
     "husky:commit-msg": "commitlint --edit ${1}",
+    "test": "pnpm run tscheck",
+    "tscheck": "tsc --noEmit",
+    "watch": "tsc --watch",
+    "build": "tsc --sourceMap false",
     "webext:lint": "web-ext lint",
     "webext:run": "web-ext run",
     "bundle": "rimraf dist && gulp bundle:chrome && gulp bundle:firefox"

@@ -7,3 +7,6 @@ web-ext-artifacts
 tmp
 
 npm-debug.log*
+
+src/**/*.js
+src/**/*.js.map

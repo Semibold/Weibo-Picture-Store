@@ -48,7 +48,7 @@ body {
     will-change: left, right;
 }
 
-.navi-poam,
+.navi-lead,
 .navi-prev,
 .navi-next {
     display: inline-block;
@@ -60,19 +60,19 @@ body {
     transition: color 0.2s;
 }
 
-.navi-poam[data-disabled="false"],
+.navi-lead[data-disabled="false"],
 .navi-prev[data-disabled="false"],
 .navi-next[data-disabled="false"] {
     cursor: pointer;
 }
 
-.navi-poam[data-disabled="false"]:hover,
+.navi-lead[data-disabled="false"]:hover,
 .navi-prev[data-disabled="false"]:hover,
 .navi-next[data-disabled="false"]:hover {
     color: #555;
 }
 
-.navi-poam[data-disabled="true"],
+.navi-lead[data-disabled="true"],
 .navi-prev[data-disabled="true"],
 .navi-next[data-disabled="true"] {
     color: #e9e9e9;
