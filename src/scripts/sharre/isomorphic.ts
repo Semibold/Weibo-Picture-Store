@@ -30,10 +30,10 @@ export class Isomorphic {
     }
 
     static async convertImage(blob: Blob, mimeType = "image/png", quality = 0.9): Promise<Blob> {
-        if (Utils.isBackground) {
-            return Utils.convertBitmap(blob, mimeType, quality);
-        } else {
+        if (self.document && self.document.body) {
             return Utils.convertImage(blob, mimeType, quality);
+        } else {
+            return Utils.convertBitmap(blob, mimeType, quality);
         }
     }
 }
