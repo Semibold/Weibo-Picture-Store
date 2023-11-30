@@ -126,6 +126,9 @@
     -   在浏览器或操作系统中复制 GIF 时，只有其中一帧被复制到了剪切板，因此上传后会变成静态图片
 -   如何获取扩展日志？
     -   在扩展栏上的扩展图标上右击，点击【导出日志】选项。
+-   Firefox 浏览器无法拉取微博图片、上传图片失败如何处理？
+    -   在此扩展的选项中，打开【可选权限】即可，可参考下面的图示
+    ![firefox-permission](screenshot/firefox-permission.jpg)
 
 ## Privacy Policy
 
