@@ -146,7 +146,7 @@ export class Log {
 
     /**
      * @private
-     * @desc suitable for chrome service worker
+     * @desc suitable for chrome service worker (NOT work in firefox)
      */
     static downloadWithDataUrl() {
         const b64 = Base64.encode(Log.serialize());
