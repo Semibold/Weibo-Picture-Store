@@ -31,22 +31,25 @@ export async function fetchBlob(srcUrl: string, pageUrl?: string, _replay = fals
     progress.padding(1);
 
     if (granted && !_replay && Utils.isValidURL(srcUrl) && Utils.isValidURL(pageUrl)) {
+        const DNR_MODIFY_HEADERS = 'modifyHeaders' as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+        const DNR_SET = 'set' as chrome.declarativeNetRequest.HeaderOperation.SET;
+        const hostname = new URL(location.href).hostname;
         await chrome.declarativeNetRequest.updateSessionRules({
             addRules: [
                 {
                     id: ruleId,
                     action: {
-                        type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+                        type: DNR_MODIFY_HEADERS,
                         requestHeaders: [
                             {
-                                operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                                operation: DNR_SET,
                                 header: "Referer",
                                 value: pageUrl,
                             },
                         ],
                     },
                     condition: {
-                        initiatorDomains: [chrome.runtime.id],
+                        initiatorDomains: [hostname],
                         urlFilter: srcUrl,
                     },
                 },

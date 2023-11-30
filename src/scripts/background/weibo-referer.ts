@@ -17,26 +17,29 @@
 import { PSEUDO_MOBILE_UA } from "../sharre/constant.js";
 import { GUID } from "./guid.js";
 
+const hostname = new URL(location.href).hostname;
+const DNR_MODIFY_HEADERS = 'modifyHeaders' as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+const DNR_SET = 'set' as chrome.declarativeNetRequest.HeaderOperation.SET;
 const rules: chrome.declarativeNetRequest.Rule[] = [
     // {
     //     id: 1,
     //     action: {
-    //         type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+    //         type: DNR_MODIFY_HEADERS,
     //         requestHeaders: [
     //             {
-    //                 operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+    //                 operation: DNR_SET,
     //                 header: 'Referer',
     //                 value: 'http://photo.weibo.com/',
     //             },
     //             {
-    //                 operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+    //                 operation: DNR_SET,
     //                 header: 'Origin',
     //                 value: 'http://photo.weibo.com',
     //             },
     //         ]
     //     },
     //     condition: {
-    //         initiatorDomains: [chrome.runtime.id],
+    //         initiatorDomains: [hostname],
     //         urlFilter: "http://photo.weibo.com/*",
     //         resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST],
     //     }
@@ -44,17 +47,17 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     // {
     //     id: 1,
     //     action: {
-    //         type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+    //         type: DNR_MODIFY_HEADERS,
     //         requestHeaders: [
     //             {
-    //                 operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+    //                 operation: DNR_SET,
     //                 header: 'Referer',
     //                 value: 'http://passport.weibo.cn/',
     //             },
     //         ]
     //     },
     //     condition: {
-    //         initiatorDomains: [chrome.runtime.id],
+    //         initiatorDomains: [hostname],
     //         urlFilter: "http://login.sina.com.cn/sso/*",
     //         resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST]
     //     }
@@ -62,22 +65,22 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     {
         id: 1,
         action: {
-            type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+            type: DNR_MODIFY_HEADERS,
             requestHeaders: [
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Referer",
                     value: "https://photo.weibo.com/",
                 },
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Origin",
                     value: "https://photo.weibo.com",
                 },
             ],
         },
         condition: {
-            initiatorDomains: [chrome.runtime.id],
+            initiatorDomains: [hostname],
             urlFilter: "https://photo.weibo.com/*",
             resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST],
         },
@@ -85,17 +88,17 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     {
         id: 1,
         action: {
-            type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+            type: DNR_MODIFY_HEADERS,
             requestHeaders: [
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Referer",
                     value: "https://passport.weibo.cn/",
                 },
             ],
         },
         condition: {
-            initiatorDomains: [chrome.runtime.id],
+            initiatorDomains: [hostname],
             urlFilter: "https://login.sina.com.cn/sso/*",
             resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST],
         },
@@ -103,22 +106,22 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     {
         id: 1,
         action: {
-            type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+            type: DNR_MODIFY_HEADERS,
             requestHeaders: [
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Origin",
                     value: "https://photo.weibo.com",
                 },
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Referer",
                     value: "https://photo.weibo.com/",
                 },
             ],
         },
         condition: {
-            initiatorDomains: [chrome.runtime.id],
+            initiatorDomains: [hostname],
             requestDomains: ["sinaimg.cn"],
             resourceTypes: [
                 chrome.declarativeNetRequest.ResourceType.IMAGE,
@@ -130,27 +133,27 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     {
         id: 1,
         action: {
-            type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+            type: DNR_MODIFY_HEADERS,
             requestHeaders: [
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Origin",
                     value: "https://passport.weibo.cn",
                 },
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Referer",
                     value: "https://passport.weibo.cn/signin/login",
                 },
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "User-Agent",
                     value: PSEUDO_MOBILE_UA,
                 },
             ],
         },
         condition: {
-            initiatorDomains: [chrome.runtime.id],
+            initiatorDomains: [hostname],
             urlFilter: "https://passport.weibo.cn/sso/login",
             resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST],
         },
@@ -158,17 +161,17 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     {
         id: 1,
         action: {
-            type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
+            type: DNR_MODIFY_HEADERS,
             responseHeaders: [
                 {
-                    operation: chrome.declarativeNetRequest.HeaderOperation.SET,
+                    operation: DNR_SET,
                     header: "Access-Control-Allow-Origin",
                     value: self.location.origin,
                 },
             ],
         },
         condition: {
-            initiatorDomains: [chrome.runtime.id],
+            initiatorDomains: [hostname],
             urlFilter: "https://passport.weibo.cn/sso/login",
             resourceTypes: [chrome.declarativeNetRequest.ResourceType.XMLHTTPREQUEST],
         },
