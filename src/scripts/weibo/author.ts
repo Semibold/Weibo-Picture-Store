@@ -16,7 +16,7 @@ import {
     NID_REMAIN_LOGOUT,
 } from "../sharre/constant.js";
 import { tryActivateUserStatus } from "./activator.js";
-import { ChromeStorageLocal } from "../sharre/chrome-storage.js";
+import { chromeStorageLocal } from "../sharre/chrome-storage.js";
 
 /**
  * @no-reject
@@ -74,7 +74,7 @@ async function setUserStatus(notify: boolean): Promise<WB.LoginInfo> {
             return Promise.reject(json);
         }
 
-        const accountInfo = ChromeStorageLocal.info[K_WEIBO_ACCOUNT_DETAILS];
+        const accountInfo = chromeStorageLocal.get()[K_WEIBO_ACCOUNT_DETAILS];
 
         if (accountInfo.allowUserAccount) {
             return signInByUserAccount(accountInfo.username, accountInfo.password)

@@ -7,7 +7,7 @@
 import { K_AUTO_DISPLAY_CHANGELOG, K_WEIBO_ACCOUNT_DETAILS, K_WEIBO_INHERITED_WATERMARK } from "./sharre/constant.js";
 import { Utils } from "./sharre/utils.js";
 import { WeiboStatic } from "./sharre/weibo-action.js";
-import { ChromeStorageLocal, ChromeStorageSync } from "./sharre/chrome-storage.js";
+import { chromeStorageLocal, chromeStorageSync } from "./sharre/chrome-storage.js";
 
 const displayChangelog = document.querySelector<HTMLInputElement>(`input[value="auto_display_changelog"]`);
 const inheritedWatermark = document.querySelector<HTMLInputElement>(`input[value="weibo_inherited_watermark"]`);
@@ -30,7 +30,7 @@ function registerInputClickEventWithSyncStorage(input: HTMLInputElement, key: st
     });
 }
 
-ChromeStorageSync.promise.then((data) => {
+chromeStorageSync.promise.then((data) => {
     displayChangelog.checked = Boolean(data[K_AUTO_DISPLAY_CHANGELOG]);
     inheritedWatermark.checked = Boolean(data[K_WEIBO_INHERITED_WATERMARK]);
 });
@@ -38,7 +38,7 @@ ChromeStorageSync.promise.then((data) => {
 registerInputClickEventWithSyncStorage(displayChangelog, K_AUTO_DISPLAY_CHANGELOG);
 registerInputClickEventWithSyncStorage(inheritedWatermark, K_WEIBO_INHERITED_WATERMARK);
 
-ChromeStorageLocal.promise.then((json) => {
+chromeStorageLocal.promise.then((json) => {
     const data = json[K_WEIBO_ACCOUNT_DETAILS];
     username.value = data.username;
     password.value = data.password;

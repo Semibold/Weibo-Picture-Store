@@ -20,7 +20,7 @@ import { signInByUserAccount } from "../weibo/author.js";
 import { requestWeiboWatermark } from "../weibo/watermark.js";
 import { Utils } from "./utils.js";
 import { FileProgress } from "./file-progress.js";
-import { ChromeStorageSync } from "./chrome-storage.js";
+import { chromeStorageSync } from "./chrome-storage.js";
 
 /**
  * @static
@@ -181,7 +181,7 @@ export class WeiboUpload {
      * @reject {Error|{login: boolean, terminable: boolean}}
      */
     async *genUploadQueues(): AsyncGenerator<WB.PackedItem | null> {
-        const watermark = await requestWeiboWatermark(ChromeStorageSync.info[K_WEIBO_INHERITED_WATERMARK]);
+        const watermark = await requestWeiboWatermark(chromeStorageSync.get()[K_WEIBO_INHERITED_WATERMARK]);
         while (this.queues.length) {
             this.triggerUploadMutation();
             yield await requestUpload(this.queues.shift(), watermark)

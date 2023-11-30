@@ -55,51 +55,38 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     SADCache.set(areaName, data);
 });
 
-/**
- * @static
- */
-export class ChromeStorageLocal {
-    static __initPromise: Promise<IChromeStorageLocalInfo>;
-    static {
-        this.__initPromise = initializeStorageArea("local", {
-            [K_WEIBO_ACCOUNT_DETAILS]: PConfig.defaultOptions.weiboAccountDetails,
-        });
-    }
+class ChromeStorageArea<T extends object> {
+    readonly __initPromise: Promise<T>;
 
-    static get promise(): Promise<IChromeStorageLocalInfo> {
-        if (SADCache.has("local")) {
-            return Promise.resolve(SADCache.get("local"));
+    get promise(): Promise<T> {
+        if (SADCache.has(this.areaName)) {
+            return Promise.resolve(SADCache.get(this.areaName)) as Promise<T>;
         } else {
             return this.__initPromise;
         }
     }
 
-    static get info(): IChromeStorageLocalInfo {
-        return SADCache.get("local");
+    constructor(
+      readonly areaName: chrome.storage.AreaName,
+      keys?: Partial<T>,
+    ) {
+        this.__initPromise = initializeStorageArea<T>(this.areaName, keys);
+    }
+
+    get(): T {
+        return (SADCache.get(this.areaName) || Object.create(null)) as T;
+    }
+
+    set(items: Partial<T>): Promise<void> {
+        return chrome.storage[this.areaName].set(items);
     }
 }
 
-/**
- * @static
- */
-export class ChromeStorageSync {
-    static __initPromise: Promise<IChromeStorageSyncInfo>;
-    static {
-        this.__initPromise = initializeStorageArea("sync", {
-            [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
-            [K_WEIBO_INHERITED_WATERMARK]: PConfig.defaultOptions.inheritWeiboWatermark,
-        });
-    }
+export const chromeStorageLocal = new ChromeStorageArea<IChromeStorageLocalInfo>("local", {
+    [K_WEIBO_ACCOUNT_DETAILS]: PConfig.defaultOptions.weiboAccountDetails,
+});
 
-    static get promise(): Promise<IChromeStorageSyncInfo> {
-        if (SADCache.has("sync")) {
-            return Promise.resolve(SADCache.get("sync"));
-        } else {
-            return this.__initPromise;
-        }
-    }
-
-    static get info(): IChromeStorageSyncInfo {
-        return SADCache.get("sync");
-    }
-}
+export const chromeStorageSync = new ChromeStorageArea<IChromeStorageSyncInfo>("sync", {
+    [K_AUTO_DISPLAY_CHANGELOG]: PConfig.defaultOptions.autoDisplayChangelog,
+    [K_WEIBO_INHERITED_WATERMARK]: PConfig.defaultOptions.inheritWeiboWatermark,
+});
