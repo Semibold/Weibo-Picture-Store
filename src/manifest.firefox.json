@@ -28,7 +28,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "weibo-picture-store@ext.hub.moe",
-      "strict_min_version": "110"
+      "strict_min_version": "115"
     }
   },
   "commands": {
@@ -45,7 +45,6 @@
     }
   },
   "homepage_url": "https://github.com/Semibold/Weibo-Picture-Store",
-  "minimum_chrome_version": "110",
   "options_ui": {
     "page": "options.html"
   },
