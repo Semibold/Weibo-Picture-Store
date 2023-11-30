@@ -1,0 +1,28 @@
+name: CWS Publish
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+jobs:
+  Run-CWS-Publish:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE: dist/chrome/bundle.zip
+      EXTENSION_ID: pinjkilghdfhnkibhcangnpmcpdpmehk
+      CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+      REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: corepack enable
+      - run: pnpm i
+      - run: pnpm run bundle
+      - run: pnpm chrome-webstore-upload upload --source $SOURCE --extension-id $EXTENSION_ID --client-id $CLIENT_ID --client-secret $CLIENT_SECRET --refresh-token $REFRESH_TOKEN --auto-publish
