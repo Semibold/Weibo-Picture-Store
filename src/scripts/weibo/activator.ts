@@ -40,6 +40,7 @@ async function tryActivateUserStatusInDocument(srcUrl: string): Promise<void> {
             iframe.remove();
         };
     });
+    iframe.hidden = true;
     iframe.id = iframeId;
     iframe.src = srcUrl;
     document.body.append(iframe);
