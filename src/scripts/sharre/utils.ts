@@ -36,9 +36,14 @@ export class Utils {
 
     static get isBackground(): boolean {
         try {
-            return !(self.document && self.document.body);
+            const backWindow = chrome.extension.getBackgroundPage();
+            if (backWindow) {
+                return backWindow === self;
+            } else {
+                return !(self.document && self.document.body);
+            }
         } catch (e) {
-            return false;
+            return !(self.document && self.document.body);
         }
     }
 
