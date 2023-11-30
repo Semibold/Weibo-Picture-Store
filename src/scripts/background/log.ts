@@ -124,8 +124,8 @@ export class Log {
     }
 
     /**
-     * @public
-     * desc NOT suitable for service worker
+     * @private
+     * @desc suitable for background.html
      */
     static downloadWithObjectUrl() {
         const blobUrl = URL.createObjectURL(new Blob([Log.serialize()], { type: "text/plain" }));
@@ -145,14 +145,26 @@ export class Log {
     }
 
     /**
-     * @public
+     * @private
+     * @desc suitable for chrome service worker
      */
-    static download() {
+    static downloadWithDataUrl() {
         const b64 = Base64.encode(Log.serialize());
         const b64Url = `data:text/plain;base64,${b64}`;
         chrome.downloads.download({
             url: b64Url,
             filename: "Weibo-Picture-Store_logs.txt",
         });
+    }
+
+    /**
+     * @public
+     */
+    static download() {
+        if (self.URL && typeof self.URL.createObjectURL === "function") {
+            Log.downloadWithObjectUrl();
+        } else {
+            Log.downloadWithDataUrl();
+        }
     }
 }
