@@ -5,72 +5,97 @@
  *
  */
 
-import { K_WEIBO_SCHEME_TYPE, K_WEIBO_CLIP_TYPE, K_WEIBO_CLIP_VALUE } from "./constant.js";
+import { K_WEIBO_CLIP_TYPE, K_WEIBO_CLIP_VALUE, K_WEIBO_SCHEME_TYPE } from "./constant.js";
+import { chromeStorageLocal } from "./chrome-storage.js";
 
-export type WeiboConfigSchemeKey = "1" | "2" | "3";
-export type WeiboConfigClipKey = "1" | "2" | "3" | "4";
+export type WeiboSchemeKey = "1" | "2" | "3";
+export type WeiboClipKey = "1" | "2" | "3" | "4";
 
-export interface WeiboConfigMapping {
-    scheme: Record<WeiboConfigSchemeKey, string>;
-    clip: Record<WeiboConfigClipKey, string>;
+export interface WeiboConfigType {
+    scheme: WeiboSchemeKey;
+    clip: WeiboClipKey;
 }
 
-export interface WeiboConfigPadding {
-    scheme: WeiboConfigSchemeKey;
-    clip: WeiboConfigClipKey;
+export interface WeiboConfigValue {
+    scheme: string;
+    clip: string;
 }
 
-const starter: Readonly<WeiboConfigMapping> = {
-    scheme: {
+/**
+ * @static
+ */
+export class WeiboConfig {
+    static readonly schemeMapping: Record<string, string> = {
         1: "http://",
         2: "https://",
         3: "//",
-    },
-    clip: {
+    };
+
+    static readonly clipMapping: Record<string, string> = {
         1: "large",
         2: "mw690",
         3: "thumbnail",
         4: "",
-    },
-};
-
-const padding: WeiboConfigPadding = { scheme: "2", clip: "1" };
-const external = starter.clip;
-
-/**
- * @desc NOT sync with other context
- */
-chrome.storage.local.get([K_WEIBO_SCHEME_TYPE, K_WEIBO_CLIP_TYPE, K_WEIBO_CLIP_VALUE], (data) => {
-    const config: WeiboConfigPadding = {
-        scheme: data[K_WEIBO_SCHEME_TYPE],
-        clip: data[K_WEIBO_CLIP_TYPE],
     };
 
-    external[4] = data[K_WEIBO_CLIP_VALUE] || "";
+    static async getTypeMapping(): Promise<WeiboConfigType> {
+        const data = await chromeStorageLocal.promise;
+        const schemeType = data[K_WEIBO_SCHEME_TYPE] as WeiboSchemeKey;
+        const clipType = data[K_WEIBO_CLIP_TYPE] as WeiboClipKey;
+        const config: WeiboConfigType = { scheme: "2", clip: "1" };
 
-    if (typeof starter.scheme[config.scheme] === "string") {
-        padding.scheme = config.scheme;
-    }
-    if (typeof starter.clip[config.clip] === "string") {
-        padding.clip = config.clip;
-    }
-});
-
-/**
- * @desc NOT suitable for content script
- */
-export const weiboConfig = {
-    starter: starter,
-    external: external,
-    padding: padding,
-    get scheme() {
-        const urlScheme = starter.scheme[padding.scheme];
-        if (urlScheme === starter.scheme[1]) return urlScheme;
-        if (urlScheme === starter.scheme[2]) return urlScheme;
-        if (self.isSecureContext) {
-            return starter.scheme[2];
-        } else {
-            return starter.scheme[1];
+        switch (+schemeType) {
+            case 1:
+            case 2:
+            case 3:
+                config.scheme = schemeType;
+                break;
         }
-    },
-};
+
+        switch (+clipType) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                config.clip = clipType;
+                break;
+        }
+
+        return config;
+    }
+
+    static async getValueMapping(): Promise<WeiboConfigValue> {
+        const data = await chromeStorageLocal.promise;
+        const schemeType = data[K_WEIBO_SCHEME_TYPE];
+        const clipType = data[K_WEIBO_CLIP_TYPE];
+        WeiboConfig.clipMapping[4] = data[K_WEIBO_CLIP_VALUE] || "";
+
+        return {
+            scheme: WeiboConfig.getSchemeFromType(schemeType),
+            clip: WeiboConfig.getClipFromType(clipType),
+        };
+    }
+
+    static getSchemeFromType(schemeType: string): string {
+        switch (+schemeType) {
+            case 1:
+            case 2:
+            case 3:
+                return WeiboConfig.schemeMapping[schemeType];
+            default:
+                return WeiboConfig.schemeMapping[2];
+        }
+    }
+
+    static getClipFromType(clipType: string): string {
+        switch (+clipType) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                return WeiboConfig.clipMapping[clipType];
+            default:
+                return WeiboConfig.clipMapping[1];
+        }
+    }
+}

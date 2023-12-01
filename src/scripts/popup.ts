@@ -11,10 +11,11 @@ import { fetchDirectory, hasDirectoryUpload } from "./popup/fetch-directory.js";
 
 document.title = chrome.i18n.getMessage("ext_name");
 
-const dispatcher = new Dispatcher().init();
+const dispatcher = new Dispatcher();
 const fileInput = document.querySelector<HTMLInputElement>("#file-input");
 const browsingHistory = document.querySelector(".head-browsing-history");
 
+dispatcher.init();
 dispatcher.weiboUpload.addQueueMutationCallback((size) => {
     const originTitle = chrome.i18n.getMessage("ext_name");
     if (size) {

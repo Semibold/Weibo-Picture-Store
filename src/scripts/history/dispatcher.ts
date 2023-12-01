@@ -6,7 +6,6 @@
 
 import { Utils } from "../sharre/utils.js";
 import { PConfig } from "../sharre/constant.js";
-import { weiboConfig } from "../sharre/weibo-config.js";
 import { WeiboStatic } from "../sharre/weibo-action.js";
 
 interface ICheckoutInfo {
@@ -24,7 +23,6 @@ export class Dispatcher {
     ended: boolean;
     locked: boolean;
     platformOs: chrome.runtime.PlatformOs;
-    scheme: string;
     maxSelected: number;
     nid: string;
     head: HTMLElement;
@@ -55,7 +53,6 @@ export class Dispatcher {
         this.ended = false;
         this.locked = false;
         this.platformOs = null;
-        this.scheme = weiboConfig.scheme;
         this.maxSelected = 50;
         this.nid = Utils.randomString(16);
         this.head = document.querySelector("#head");
@@ -257,7 +254,7 @@ export class Dispatcher {
                     const imgLinker = section.querySelector<HTMLAnchorElement>(".image-linker");
                     const imgUpdate = section.querySelector<HTMLElement>(".image-update");
                     const imgSource = imgLinker.querySelector<HTMLImageElement>("img");
-                    const urlOrigin = Utils.replaceUrlScheme(item.picHost, this.scheme + PConfig.randomImagePrefix, [
+                    const urlOrigin = Utils.replaceUrlScheme(item.picHost, "https://" + PConfig.randomImagePrefix, [
                         /^http:\/\/\w+(?=\.)/i,
                         /^https:\/\/\w+(?=\.)/i,
                         /^\/\/\w+(?=\.)/i,

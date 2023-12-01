@@ -5,12 +5,12 @@
  */
 
 import { Utils } from "../sharre/utils.js";
-import { PConfig } from "../sharre/constant.js";
+import { K_WEIBO_CLIP_TYPE, K_WEIBO_CLIP_VALUE, K_WEIBO_SCHEME_TYPE, PConfig } from "../sharre/constant.js";
 import { SectionTable } from "./section-table.js";
-import { K_WEIBO_SCHEME_TYPE, K_WEIBO_CLIP_TYPE, K_WEIBO_CLIP_VALUE } from "../sharre/constant.js";
-import { weiboConfig, WeiboConfigMapping, WeiboConfigPadding, WeiboConfigClipKey } from "../sharre/weibo-config.js";
+import { WeiboClipKey, WeiboConfig, WeiboConfigType } from "../sharre/weibo-config.js";
 import { WeiboUpload } from "../sharre/weibo-action.js";
 import { fetchBlob } from "../sharre/fetch-blob.js";
+import { chromeStorageLocal } from "../sharre/chrome-storage.js";
 
 interface IHybridSectionData {
     sectionTable: SectionTable;
@@ -22,14 +22,12 @@ interface IPreStore extends WB.PackedItem {
 }
 
 export class Dispatcher {
-    config: WeiboConfigPadding;
-    starter: Readonly<WeiboConfigMapping>;
+    config: WeiboConfigType;
     batch: boolean;
     list: Map<HTMLElement, IHybridSectionData>;
     main: HTMLElement;
     copier: HTMLTextAreaElement;
     linker: HTMLInputElement;
-    external: Record<WeiboConfigClipKey, string>;
     checkout: { clear: boolean };
     nid: string;
     directorySymbol: string;
@@ -39,13 +37,11 @@ export class Dispatcher {
 
     constructor() {
         this.config = null;
-        this.starter = weiboConfig.starter;
         this.batch = false;
         this.list = new Map();
         this.main = document.querySelector("#main");
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clip");
-        this.external = weiboConfig.external;
         this.checkout = { clear: true };
         this.nid = Utils.randomString(16);
         this.directorySymbol = "\ud83d\udcc1";
@@ -55,17 +51,16 @@ export class Dispatcher {
     }
 
     /** @public */
-    init() {
-        this.genConfigProxy();
-        this.startFromBlank();
+    async init() {
+        await this.genConfigProxy();
+        await this.startFromBlank();
         this.registerEvents();
         this.renderSection({});
-        return this;
     }
 
     /** @private */
-    genConfigProxy() {
-        this.config = new Proxy(weiboConfig.padding, {
+    async genConfigProxy() {
+        this.config = new Proxy(await WeiboConfig.getTypeMapping(), {
             get: (target, key, receiver) => {
                 return Reflect.get(target, key, receiver);
             },
@@ -93,8 +88,9 @@ export class Dispatcher {
     }
 
     /** @private */
-    startFromBlank() {
-        this.linker.value = this.external[4];
+    async startFromBlank() {
+        const data = await chromeStorageLocal.promise;
+        this.linker.value = data[K_WEIBO_CLIP_VALUE] || "";
         for (const [name, value] of Object.entries(this.config)) {
             document.querySelector<HTMLInputElement>(`[name="${name}"][value="${value}"]`).checked = true;
         }
@@ -113,7 +109,7 @@ export class Dispatcher {
         });
 
         this.linker.addEventListener("input", (e) => {
-            this.external[4] = this.linker.value;
+            WeiboConfig.clipMapping[4] = this.linker.value;
             this.renderClipSize();
             localStorage.setItem(K_WEIBO_CLIP_VALUE, this.linker.value);
         });
@@ -123,17 +119,17 @@ export class Dispatcher {
                 link.checked = true;
             }
             if (this.config.clip !== link.value) {
-                this.config.clip = link.value as WeiboConfigClipKey;
+                this.config.clip = link.value as WeiboClipKey;
             }
         });
 
         for (const name of Object.keys(this.config)) {
             const nodeList = document.querySelectorAll(`[name="${name}"]`);
             for (const node of nodeList) {
-                node.addEventListener("change", <K extends keyof WeiboConfigPadding>(e: Event) => {
+                node.addEventListener("change", <K extends keyof WeiboConfigType>(e: Event) => {
                     const target = e.target as HTMLInputElement;
                     if (target.checked) {
-                        this.config[name as K] = target.value as WeiboConfigPadding[K];
+                        this.config[name as K] = target.value as WeiboConfigType[K];
                     }
                 });
             }
@@ -315,8 +311,8 @@ export class Dispatcher {
         if (!item || !item.pid) {
             return item as WB.AssignedPackedItem;
         }
-        const scheme = this.starter.scheme[this.config.scheme];
-        const clip = this.starter.clip[this.config.clip];
+        const scheme = WeiboConfig.schemeMapping[this.config.scheme];
+        const clip = WeiboConfig.clipMapping[this.config.clip];
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
         const url = Utils.genExternalUrl(scheme, clip, item.pid, suffix);
         const file = item.blob as File;
@@ -327,7 +323,7 @@ export class Dispatcher {
             UBB: `[IMG]${url}[/IMG]`,
             Markdown: `![${filename}](${url})`,
         });
-        if (item.width && item.height && clip === this.starter.clip[1]) {
+        if (item.width && item.height && clip === WeiboConfig.clipMapping[1]) {
             // prettier-ignore
             assignedPackedItem.HTML = `<img src="${url}" alt="${filename}" width="${item.width}" data-width="${item.width}" data-height="${item.height}">`;
         }

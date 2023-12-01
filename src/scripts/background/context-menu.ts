@@ -18,7 +18,7 @@ import { PConfig } from "../sharre/constant.js";
 import { WeiboUpload } from "../sharre/weibo-action.js";
 import { fetchBlob } from "../sharre/fetch-blob.js";
 import { Log } from "./log.js";
-import { weiboConfig } from "../sharre/weibo-config.js";
+import { WeiboConfig } from "../sharre/weibo-config.js";
 
 const contentScriptUploader = new WeiboUpload();
 
@@ -84,11 +84,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     /**
      * @param {{done: boolean, value: PackedItem|null}} [it]
      */
-    const autoCopyUrlToClipboard = (it?: IteratorResult<WB.PackedItem>) => {
+    const autoCopyUrlToClipboard = async (it?: IteratorResult<WB.PackedItem>) => {
         if (it && !it.done && it.value) {
             const item = it.value;
             const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
-            const url = `${weiboConfig.scheme + PConfig.randomImageHost}/large/${item.pid + suffix}`;
+            const { scheme, clip } = await WeiboConfig.getValueMapping();
+            const url = Utils.genExternalUrl(scheme, clip, item.pid, suffix);
 
             chrome.tabs.sendMessage<RSS.WriteToClipboard, RSS.WriteToClipboardRes>(
                 tab.id,
