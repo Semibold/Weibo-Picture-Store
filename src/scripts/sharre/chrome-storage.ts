@@ -29,7 +29,10 @@ interface IChromeStorageSyncInfo {
 
 const SADCache = new Map<chrome.storage.AreaName, unknown>();
 
-async function initializeStorageArea<T extends object>(areaName: chrome.storage.AreaName, keys?: unknown): Promise<T> {
+async function initializeStorageArea<T extends object>(
+    areaName: chrome.storage.AreaName,
+    keys?: Required<T>,
+): Promise<T> {
     if (self.__isDev && SADCache.has(areaName)) {
         console.warn("Redundant initialized");
     }
@@ -66,9 +69,12 @@ class ChromeStorageArea<T extends object> {
         }
     }
 
+    /**
+     * @desc 要么提供全部的 keys 参数, 要么不提供。
+     */
     constructor(
-      readonly areaName: chrome.storage.AreaName,
-      keys?: Partial<T>,
+        readonly areaName: chrome.storage.AreaName,
+        keys?: Required<T>,
     ) {
         this.__initPromise = initializeStorageArea<T>(this.areaName, keys);
     }
@@ -84,6 +90,9 @@ class ChromeStorageArea<T extends object> {
 
 export const chromeStorageLocal = new ChromeStorageArea<IChromeStorageLocalInfo>("local", {
     [K_WEIBO_ACCOUNT_DETAILS]: PConfig.defaultOptions.weiboAccountDetails,
+    [K_WEIBO_SCHEME_TYPE]: "",
+    [K_WEIBO_CLIP_TYPE]: "",
+    [K_WEIBO_CLIP_VALUE]: "",
 });
 
 export const chromeStorageSync = new ChromeStorageArea<IChromeStorageSyncInfo>("sync", {
