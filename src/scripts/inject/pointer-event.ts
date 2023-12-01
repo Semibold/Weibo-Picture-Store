@@ -7,7 +7,7 @@
 import { MAXIMUM_EDGE } from "../sharre/constant.js";
 import { Utils } from "../sharre/utils.js";
 
-async function getBrowserInternalUuid() {
+function getBrowserInternalUuid() {
     const manifest = chrome.runtime.getManifest();
     const settings: Record<string, unknown> = manifest.browser_specific_settings || {};
     if (settings.gecko) {
@@ -21,7 +21,7 @@ async function getBrowserInternalUuid() {
     return chrome.runtime.id;
 }
 
-const extensionId = await getBrowserInternalUuid();
+const extensionId = getBrowserInternalUuid();
 const attribute = `data-${extensionId}`;
 const lightMark = document.createElement("mark");
 
