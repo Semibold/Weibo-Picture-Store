@@ -10,6 +10,7 @@
  */
 
 import { Isomorphic } from "./isomorphic.js";
+import { PConfig } from "./constant.js";
 
 /**
  * @static
@@ -441,6 +442,30 @@ export class Utils {
 
     static async sleep(ms: number): Promise<void> {
         return new Promise((resolve) => setTimeout(() => resolve(), ms));
+    }
+
+    /**
+     * @desc Supported Placeholder
+     *      - {{pid}}       - "006G4xsfgy1h8pbgtnqirj30u01hlqv5"
+     *      - {{extname}}   - ".jpg"
+     *      - {{basename}}  - "006G4xsfgy1h8pbgtnqirj30u01hlqv5.jpg"
+     */
+    static genExternalUrl(scheme: string, clip: string, pid: string, suffix: string) {
+        const validPlaceholder = ["{{pid}}", "{{extname}}", "{{basename}}"];
+        const sterilizedClip = clip.trim();
+        const hasPlaceholder = validPlaceholder.some((placeholder) => sterilizedClip.includes(placeholder));
+
+        if (hasPlaceholder) {
+            const protocolStartIndex = sterilizedClip.search("//");
+            const urlWithoutProtocol =
+                protocolStartIndex < 0 ? sterilizedClip : sterilizedClip.slice(protocolStartIndex + 2);
+            const replacedPlaceholderUrl = urlWithoutProtocol
+                .replace("{{pid}}", pid)
+                .replace("{{extname}}", suffix)
+                .replace("{{basename}}", pid + suffix);
+            return scheme + replacedPlaceholderUrl;
+        }
+        return `${scheme + PConfig.randomImageHost}/${sterilizedClip}/${pid + suffix}`;
     }
 
     /**

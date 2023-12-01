@@ -39,7 +39,7 @@ const headHTML = `
             </label>
             <label title="自定义裁剪尺寸">
                 <input type="radio" name="clip" value="4">
-                <input list="custom-clip-list" type="text" placeholder="输入自定义尺寸" spellcheck="false" autocomplete="on" class="custom-clip">
+                <input list="custom-clip-list" type="text" placeholder="输入自定义尺寸或链接" spellcheck="false" autocomplete="on" class="custom-clip">
             </label>
             <datalist id="custom-clip-list">
                 <option value="wap800">800 像素宽度原比例缩放</option>

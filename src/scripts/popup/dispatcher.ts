@@ -318,7 +318,7 @@ export class Dispatcher {
         const scheme = this.starter.scheme[this.config.scheme];
         const clip = this.starter.clip[this.config.clip];
         const suffix = PConfig.weiboSupportedTypes[item.mimeType].typo;
-        const url = `${scheme + PConfig.randomImageHost}/${clip}/${item.pid + suffix}`;
+        const url = Utils.genExternalUrl(scheme, clip, item.pid, suffix);
         const file = item.blob as File;
         const filename = Utils.getFilenameWithoutSuffix(file && file.name);
         const assignedPackedItem = Object.assign(item, {
