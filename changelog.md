@@ -6,9 +6,20 @@
 
 公告：由于部分应用商店的发布策略变更，导致此扩展的发布周期延长。同时此扩展为非盈利性项目，本人并无太多时间去应对应用商店的要求。因此决定，此后的应用商店的发布计划**可能**无限期延期，若有需要，可自由使用源码。
 
+### 6.0.0
+
+-   新增：支持自定义链接，请查看[自定义剪裁格式或链接](docs/custom-clip.md)使用文档
+-   调整：最低版本提升：Chrome(66 -> 110)、Firefox(68 -> 115)
+-   调整：Popup 由弹窗改为 Tab 页（受限于 ServiceWorker）
+-   调整：Chrome 右键上传不再支持 SVG（受限于 ServiceWorker，弹窗模式仍然支持 SVG）
+-   更新：支持 Manifest V3
+    -   迁移至 TypeScript
+    -   使用 Chrome.storage 替代 WebStorage
+    -   简化 Chrome.storage 读取
+
 ### 5.12.10
 
-- 修复：Firefox 兼容性问题导致历史记录图片不显示
+-   修复：Firefox 兼容性问题导致历史记录图片不显示
 
 ### 5.12.9
 
