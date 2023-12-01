@@ -26,6 +26,7 @@
 -   支持三种固定裁剪尺寸和用户自定义尺寸
 -   支持使用微博账号和密码自动登录
 -   支持微博图片水印功能
+-   支持自定义生成的图片链接
 
 ## Instruction
 
@@ -87,7 +88,7 @@
 ## More
 
 -   [深入了解概念](docs/conception.md)
--   [自定义剪裁格式](docs/custom-clipsize.md)
+-   [自定义剪裁格式](docs/custom-clip.md)
 -   [获得/生成 CRX 文件](docs/get-crx-file.md)
 -   [已知问题](docs/known-issues.md)
 -   [项目结构预览(开发者文档)](docs/project-structure.md)
@@ -128,7 +129,7 @@
     -   在扩展栏上的扩展图标上右击，点击【导出日志】选项。
 -   Firefox 浏览器无法拉取微博图片、上传图片失败如何处理？
     -   在此扩展的选项中，打开【可选权限】即可，可参考下面的图示
-    ![firefox-permission](screenshot/firefox-permission.jpg)
+        ![firefox-permission](screenshot/firefox-permission.jpg)
 
 ## Privacy Policy
 

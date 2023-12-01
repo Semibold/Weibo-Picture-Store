@@ -40,6 +40,13 @@ const headHTML = `
             <label title="自定义裁剪尺寸">
                 <input type="radio" name="clip" value="4">
                 <input list="custom-clip-list" type="text" placeholder="输入自定义尺寸或链接" spellcheck="false" autocomplete="on" class="custom-clip">
+                <a
+                  title="如何设置自定义尺寸或链接"
+                  target="_blank"
+                  href="https://github.com/Semibold/Weibo-Picture-Store/blob/master/docs/custom-clip.md"
+                >
+                  <i class="fa fa-info-circle"></i>
+                </a>
             </label>
             <datalist id="custom-clip-list">
                 <option value="wap800">800 像素宽度原比例缩放</option>

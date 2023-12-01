@@ -1,4 +1,27 @@
-# Custom Clipsize
+# Custom Clip
+
+## 自定义链接说明
+
+| 支持的占位变量 | 描述                                                        |
+| -------------- | ----------------------------------------------------------- |
+| `{{pid}}`      | 图片的唯一标识。e.g: `006G4xsfgy1h8pbgtnqirj30u01hlqv5`     |
+| `{{extname}}`  | 图片的扩展名或后缀名。e.g: `.jpg`, `.gif`                   |
+| `{{basename}}` | 图片的基础名称。e.g: `006G4xsfgy1h8pbgtnqirj30u01hlqv5.jpg` |
+
+### 如何使用
+
+在弹窗的自定义输入框中输入`链接`+`占位变量`即可，占位变量最终会替换成相应的字符串。
+
+比如：
+
+-   `https://www.example.com/pathname/{{pid}}{{extname}}`
+-   `https://www.example.com/pathname/{{basename}}`
+-   `http://www.example.com/pathname/{{basename}}`
+-   `//www.example.com/pathname/{{basename}}`
+-   `www.example.com/pathname/{{basename}}`
+-   `www.example.com/pathname/api?basename={{basename}}`
+
+## 自定义微博剪裁
 
 已知微博图片的自定义裁剪格式：
 
