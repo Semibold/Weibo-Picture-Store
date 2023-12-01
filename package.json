@@ -8,13 +8,16 @@
     "prepare": "node ./.husky/setup.js",
     "husky:pre-commit": "lint-staged",
     "husky:commit-msg": "commitlint --edit ${1}",
-    "test": "pnpm run tscheck",
+    "test": "pnpm run tscheck && pnpm run build && pnpm run webext:lint",
     "tscheck": "tsc --noEmit",
     "watch": "tsc --watch",
     "build": "tsc --sourceMap false",
-    "webext:lint": "web-ext lint",
-    "webext:run": "web-ext run",
-    "bundle": "rimraf dist && gulp bundle:chrome && gulp bundle:firefox"
+    "webext:lint": "pnpm run apply:manifest:firefox && web-ext lint",
+    "webext:run": "pnpm run apply:manifest:firefox && web-ext run",
+    "apply:manifest:firefox": "gulp apply:manifest:firefox",
+    "bundle:chrome": "rimraf dist/chrome && pnpm run build && gulp bundle:chrome",
+    "bundle:firefox": "rimraf dist/firefox && pnpm run build && gulp bundle:firefox",
+    "bundle:all": "rimraf dist && pnpm run build && gulp bundle:chrome && gulp bundle:firefox"
   },
   "webExt": {
     "sourceDir": "src/"
@@ -48,6 +51,7 @@
     "ci-info": "^4.0.0",
     "gulp": "^4.0.2",
     "gulp-json-modify": "^1.0.2",
+    "gulp-rename": "^2.0.0",
     "gulp-zip": "^5.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^15.1.0",

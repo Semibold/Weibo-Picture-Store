@@ -28,7 +28,7 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "weibo-picture-store@ext.hub.moe",
-      "strict_min_version": "115"
+      "strict_min_version": "115.0"
     }
   },
   "commands": {

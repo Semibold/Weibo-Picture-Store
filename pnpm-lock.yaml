@@ -38,6 +38,9 @@ devDependencies:
   gulp-json-modify:
     specifier: ^1.0.2
     version: 1.0.2
+  gulp-rename:
+    specifier: ^2.0.0
+    version: 2.0.0
   gulp-zip:
     specifier: ^5.0.1
     version: 5.1.0(gulp@4.0.2)
@@ -3382,6 +3385,11 @@ packages:
       plugin-error: 0.1.2
       plugin-log: 0.1.0
       through2: 0.5.1
+    dev: true
+
+  /gulp-rename@2.0.0:
+    resolution: {integrity: sha512-97Vba4KBzbYmR5VBs9mWmK+HwIf5mj+/zioxfZhOKeXtx5ZjBk57KFlePf5nxq9QsTtFl0ejnHE3zTC9MHXqyQ==}
+    engines: {node: '>=4'}
     dev: true
 
   /gulp-zip@5.1.0(gulp@4.0.2):
