@@ -111,7 +111,9 @@ export class Dispatcher {
         this.linker.addEventListener("input", (e) => {
             WeiboConfig.clipMapping[4] = this.linker.value;
             this.renderClipSize();
-            localStorage.setItem(K_WEIBO_CLIP_VALUE, this.linker.value);
+            chrome.storage.local.set({
+                [K_WEIBO_CLIP_VALUE]: this.linker.value,
+            });
         });
 
         this.linker.addEventListener("focus", (e) => {

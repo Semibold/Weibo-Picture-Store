@@ -38,6 +38,12 @@ export class WeiboConfig {
         4: "",
     };
 
+    static {
+        chromeStorageLocal.promise.then((data) => {
+            this.clipMapping[4] = data[K_WEIBO_CLIP_VALUE] || "";
+        });
+    }
+
     static async getTypeMapping(): Promise<WeiboConfigType> {
         const data = await chromeStorageLocal.promise;
         const schemeType = data[K_WEIBO_SCHEME_TYPE] as WeiboSchemeKey;
