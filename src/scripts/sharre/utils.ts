@@ -379,10 +379,10 @@ export class Utils {
         width = Math.min(maxPixel, Math.max(minPixel, Math.floor(screenWidth * 0.8)));
         height = Math.round((naturalHeight / naturalWidth) * width);
 
-        // const size = Utils.clampClientSize({ width, height });
+        const size = Utils.clampClientSize({ width, height });
 
-        // width = size.width;
-        // height = size.height;
+        width = size.width;
+        height = size.height;
 
         const dpr = self.devicePixelRatio || 1;
         const offscreenCanvas = new OffscreenCanvas(Math.ceil(width * dpr), Math.ceil(height * dpr));
