@@ -31,7 +31,6 @@ h1 > span:first-of-type {
 }
 
 h1 > span:last-of-type {
-    font-weight: 300;
     color: #999;
 }
 
@@ -39,8 +38,7 @@ p {
     margin-left: 1em;
     margin-right: 1em;
     font-size: 1.125rem;
-    font-weight: 300;
-    line-height: 1.8;
+    line-height: 1.6;
 }
 
 figure {
@@ -62,4 +60,12 @@ figure > figcaption {
     font-size: 0.875rem;
     line-height: 2.4;
     color: #999;
+}
+
+a {
+    color: rgb(14, 165, 233);
+}
+
+a:hover {
+    color: rgb(2, 132, 199);
 }
