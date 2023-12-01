@@ -21,6 +21,8 @@
 -   `www.example.com/pathname/{{basename}}`
 -   `www.example.com/pathname/api?basename={{basename}}`
 
+上述均为示例链接，不可使用。请自行搭建代理服务或者使用公共服务。
+
 ## 自定义微博剪裁
 
 已知微博图片的自定义裁剪格式：
