@@ -55,9 +55,7 @@
     "menus",
     "notifications",
     "storage",
-    "declarativeNetRequest",
-    "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback"
+    "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": [
     "*://*.weibo.cn/*",
