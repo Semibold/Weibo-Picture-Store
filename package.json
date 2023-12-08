@@ -37,7 +37,7 @@
     "trailingComma": "all"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,md}": "prettier --write"
+    "**/*": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
