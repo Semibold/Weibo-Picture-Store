@@ -11,24 +11,32 @@ chrome.action.onClicked.addListener(async () => {
     const data = await chromeStorageLocal.promise;
     const popupWindowInfo = data[K_POPUP_WINDOW_INFO];
 
-    if (!popupWindowInfo.locked) {
-        if (!popupWindowInfo.id) {
-            popupWindowInfo.locked = true;
-            chrome.tabs.create(
-                {
-                    active: true,
-                    url: "popup.html",
-                },
-                (tab) => {
-                    popupWindowInfo.id = tab.id;
+    const createPopupWindow = () => {
+        if (!popupWindowInfo.locked) {
+            if (!popupWindowInfo.id) {
+                popupWindowInfo.locked = true;
+                chrome.tabs.create(
+                    {
+                        active: true,
+                        url: "popup.html",
+                    },
+                    (tab) => {
+                        popupWindowInfo.id = tab.id;
+                        popupWindowInfo.locked = false;
+                        chromeStorageLocal.set({ [K_POPUP_WINDOW_INFO]: popupWindowInfo });
+                    },
+                );
+            } else {
+                chrome.tabs.update(popupWindowInfo.id, { active: true }).catch(() => {
+                    popupWindowInfo.id = null;
                     popupWindowInfo.locked = false;
-                    chromeStorageLocal.set({ [K_POPUP_WINDOW_INFO]: popupWindowInfo });
-                },
-            );
-        } else {
-            chrome.tabs.update(popupWindowInfo.id, { active: true });
+                    createPopupWindow();
+                });
+            }
         }
-    }
+    };
+
+    createPopupWindow();
 });
 
 chrome.tabs.onRemoved.addListener(async (tabId) => {
