@@ -12,6 +12,7 @@ const LOG_STORE: Set<WB.LogStoreItem> = new Set();
 /**
  * @static
  * @desc Can NOT be used in content scripts.
+ * @desc It only records runtime logs. But when sw hangs, the runtime logs are lost.
  */
 export class Log {
     /**
