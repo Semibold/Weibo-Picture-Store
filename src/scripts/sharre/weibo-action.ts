@@ -181,7 +181,8 @@ export class WeiboUpload {
      * @reject {Error|{login: boolean, terminable: boolean}}
      */
     async *genUploadQueues(): AsyncGenerator<WB.PackedItem | null> {
-        const watermark = await requestWeiboWatermark(chromeStorageSync.get()[K_WEIBO_INHERITED_WATERMARK]);
+        const data = await chromeStorageSync.promise;
+        const watermark = await requestWeiboWatermark(data[K_WEIBO_INHERITED_WATERMARK]);
         while (this.queues.length) {
             this.triggerUploadMutation();
             yield await requestUpload(this.queues.shift(), watermark)

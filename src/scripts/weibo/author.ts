@@ -74,7 +74,8 @@ async function setUserStatus(notify: boolean): Promise<WB.LoginInfo> {
             return Promise.reject(json);
         }
 
-        const accountInfo = chromeStorageLocal.get()[K_WEIBO_ACCOUNT_DETAILS];
+        const data = await chromeStorageLocal.promise;
+        const accountInfo = data[K_WEIBO_ACCOUNT_DETAILS];
 
         if (accountInfo.allowUserAccount) {
             return signInByUserAccount(accountInfo.username, accountInfo.password)
