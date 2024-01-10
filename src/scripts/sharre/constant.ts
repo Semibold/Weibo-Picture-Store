@@ -59,6 +59,7 @@ export const K_WEIBO_SCHEME_TYPE = "custom_scheme_type";
 export const K_WEIBO_CLIP_TYPE = "custom_clip_type";
 export const K_WEIBO_CLIP_VALUE = "custom_clip_value";
 export const K_RULE_ID_POINTER = "rule_id_pointer";
+export const K_POPUP_WINDOW_INFO = "popup_window_info";
 
 /**
  * @desc Error messages

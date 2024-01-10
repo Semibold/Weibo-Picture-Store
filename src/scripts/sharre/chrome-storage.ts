@@ -7,6 +7,7 @@
 
 import {
     K_AUTO_DISPLAY_CHANGELOG,
+    K_POPUP_WINDOW_INFO,
     K_RULE_ID_POINTER,
     K_WEIBO_ACCOUNT_DETAILS,
     K_WEIBO_CLIP_TYPE,
@@ -16,12 +17,18 @@ import {
     PConfig,
 } from "./constant.js";
 
+interface IPopupWindowInfo {
+    id?: number;
+    locked?: boolean;
+}
+
 interface IChromeStorageLocalInfo {
     [K_WEIBO_ACCOUNT_DETAILS]?: WB.AccountInfo;
     [K_WEIBO_SCHEME_TYPE]?: string;
     [K_WEIBO_CLIP_TYPE]?: string;
     [K_WEIBO_CLIP_VALUE]?: string;
     [K_RULE_ID_POINTER]?: number;
+    [K_POPUP_WINDOW_INFO]?: IPopupWindowInfo;
 }
 
 interface IChromeStorageSyncInfo {
@@ -96,6 +103,7 @@ export const chromeStorageLocal = new ChromeStorageArea<IChromeStorageLocalInfo>
     [K_WEIBO_CLIP_TYPE]: "",
     [K_WEIBO_CLIP_VALUE]: "",
     [K_RULE_ID_POINTER]: 0,
+    [K_POPUP_WINDOW_INFO]: Object.create(null),
 });
 
 export const chromeStorageSync = new ChromeStorageArea<IChromeStorageSyncInfo>("sync", {

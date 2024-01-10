@@ -4,14 +4,13 @@
  * found in the LICENSE file.
  */
 
-interface IPopupWindowInfo {
-    id: number;
-    locked: boolean;
-}
+import { chromeStorageLocal } from "../sharre/chrome-storage.js";
+import { K_POPUP_WINDOW_INFO } from "../sharre/constant.js";
 
-const popupWindowInfo: IPopupWindowInfo = { id: null, locked: false };
+chrome.action.onClicked.addListener(async () => {
+    const data = await chromeStorageLocal.promise;
+    const popupWindowInfo = data[K_POPUP_WINDOW_INFO];
 
-chrome.action.onClicked.addListener(() => {
     if (!popupWindowInfo.locked) {
         if (!popupWindowInfo.id) {
             popupWindowInfo.locked = true;
@@ -23,6 +22,7 @@ chrome.action.onClicked.addListener(() => {
                 (tab) => {
                     popupWindowInfo.id = tab.id;
                     popupWindowInfo.locked = false;
+                    chromeStorageLocal.set({ [K_POPUP_WINDOW_INFO]: popupWindowInfo });
                 },
             );
         } else {
@@ -31,8 +31,13 @@ chrome.action.onClicked.addListener(() => {
     }
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => {
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+    const data = await chromeStorageLocal.promise;
+    const popupWindowInfo = data[K_POPUP_WINDOW_INFO];
+
     if (popupWindowInfo.id && popupWindowInfo.id === tabId) {
         popupWindowInfo.id = null;
+        popupWindowInfo.locked = false;
+        chromeStorageLocal.set({ [K_POPUP_WINDOW_INFO]: popupWindowInfo });
     }
 });
