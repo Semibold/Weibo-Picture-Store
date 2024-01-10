@@ -17,6 +17,11 @@ export const PSEUDO_MOBILE_UA =
 export const MAXIMUM_EDGE = 2 ** 15 - 1;
 
 /**
+ * @desc Preserve 1~10000
+ */
+export const MINIMUM_RULE_ID = 10001;
+
+/**
  * @desc 微博图片最大的文件大小
  */
 export const MAXIMUM_WEIBO_PICTURE_SIZE = 20 * 1024 * 1024 - 1;
@@ -53,6 +58,7 @@ export const K_WEIBO_ACCOUNT_DETAILS = "weibo_account_details"; // 存在本地�
 export const K_WEIBO_SCHEME_TYPE = "custom_scheme_type";
 export const K_WEIBO_CLIP_TYPE = "custom_clip_type";
 export const K_WEIBO_CLIP_VALUE = "custom_clip_value";
+export const K_RULE_ID_POINTER = "rule_id_pointer";
 
 /**
  * @desc Error messages

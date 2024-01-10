@@ -7,6 +7,7 @@
 
 import {
     K_AUTO_DISPLAY_CHANGELOG,
+    K_RULE_ID_POINTER,
     K_WEIBO_ACCOUNT_DETAILS,
     K_WEIBO_CLIP_TYPE,
     K_WEIBO_CLIP_VALUE,
@@ -20,6 +21,7 @@ interface IChromeStorageLocalInfo {
     [K_WEIBO_SCHEME_TYPE]?: string;
     [K_WEIBO_CLIP_TYPE]?: string;
     [K_WEIBO_CLIP_VALUE]?: string;
+    [K_RULE_ID_POINTER]?: number;
 }
 
 interface IChromeStorageSyncInfo {
@@ -93,6 +95,7 @@ export const chromeStorageLocal = new ChromeStorageArea<IChromeStorageLocalInfo>
     [K_WEIBO_SCHEME_TYPE]: "",
     [K_WEIBO_CLIP_TYPE]: "",
     [K_WEIBO_CLIP_VALUE]: "",
+    [K_RULE_ID_POINTER]: 0,
 });
 
 export const chromeStorageSync = new ChromeStorageArea<IChromeStorageSyncInfo>("sync", {

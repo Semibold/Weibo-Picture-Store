@@ -15,11 +15,10 @@
  */
 
 import { PSEUDO_MOBILE_UA } from "../sharre/constant.js";
-import { GUID } from "./guid.js";
 
 const hostname = new URL(location.href).hostname;
-const DNR_MODIFY_HEADERS = 'modifyHeaders' as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
-const DNR_SET = 'set' as chrome.declarativeNetRequest.HeaderOperation.SET;
+const DNR_MODIFY_HEADERS = "modifyHeaders" as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+const DNR_SET = "set" as chrome.declarativeNetRequest.HeaderOperation.SET;
 const rules: chrome.declarativeNetRequest.Rule[] = [
     // {
     //     id: 1,
@@ -178,8 +177,8 @@ const rules: chrome.declarativeNetRequest.Rule[] = [
     },
 ];
 
-rules.forEach((rule) => {
-    const id = GUID.generate();
+rules.forEach((rule, index) => {
+    const id = index + 1;
     chrome.declarativeNetRequest.updateDynamicRules({
         addRules: [
             {

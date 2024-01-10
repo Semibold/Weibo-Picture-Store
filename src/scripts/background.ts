@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
 
     switch (message.cmd) {
         case "GetRuleId": {
-            sendResponse(GUID.generate());
+            GUID.generate().then(sendResponse);
             return true;
         }
         case "AddLog": {
