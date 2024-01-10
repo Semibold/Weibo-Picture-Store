@@ -4,9 +4,6 @@
  * found in the LICENSE file.
  */
 
-import { MAXIMUM_EDGE } from "../sharre/constant.js";
-import { Utils } from "../sharre/utils.js";
-
 function getBrowserInternalUuid() {
     const manifest = chrome.runtime.getManifest();
     const settings: Record<string, unknown> = manifest.browser_specific_settings || {};
@@ -24,6 +21,7 @@ function getBrowserInternalUuid() {
 const extensionId = getBrowserInternalUuid();
 const attribute = `data-${extensionId}`;
 const lightMark = document.createElement("mark");
+const MAXIMUM_EDGE = 2 ** 15 - 1;
 
 chrome.runtime.onMessage.addListener((message: ContentScriptMessage, sender, sendResponse) => {
     if (!message) return;
@@ -44,8 +42,10 @@ chrome.runtime.onMessage.addListener((message: ContentScriptMessage, sender, sen
         }
         case "WriteToClipboard": {
             if (message.content && typeof message.content === "string") {
-                const done = Utils.writeToClipboard(message.content);
-                sendResponse({ valid: true, done });
+                navigator.clipboard.writeText(message.content).then(
+                    () => sendResponse({ valid: true, done: true }),
+                    () => sendResponse({ valid: true, done: false }),
+                );
                 return true;
             }
             sendResponse({ valid: false });
