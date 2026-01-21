@@ -24,7 +24,6 @@ export class Dispatcher {
     locked: boolean;
     platformOs: chrome.runtime.PlatformOs;
     maxSelected: number;
-    nid: string;
     head: HTMLElement;
     main: HTMLElement;
     foot: HTMLElement;
@@ -54,7 +53,6 @@ export class Dispatcher {
         this.locked = false;
         this.platformOs = null;
         this.maxSelected = 50;
-        this.nid = Utils.randomString(16);
         this.head = document.querySelector("#head");
         this.main = document.querySelector("#main");
         this.foot = document.querySelector("#foot");
@@ -300,7 +298,7 @@ export class Dispatcher {
                         this.selected.add(section);
                         section.dataset.selected = "true";
                     } else {
-                        Utils.notify(this.nid, { message: `选择失败：最多同时选中${this.maxSelected}个元素` });
+                        Utils.notify({ message: `选择失败：最多同时选中${this.maxSelected}个元素` });
                     }
                 }
             } else {
@@ -358,7 +356,7 @@ export class Dispatcher {
                 this.availableChecker();
             })
             .catch((reason) => {
-                Utils.notify(this.nid, { message: "操作失败：移除文件没有成功哈~" });
+                Utils.notify({ message: "操作失败：移除文件没有成功哈~" });
             });
     }
 

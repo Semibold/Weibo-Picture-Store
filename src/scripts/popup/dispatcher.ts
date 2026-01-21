@@ -29,7 +29,6 @@ export class Dispatcher {
     copier: HTMLTextAreaElement;
     linker: HTMLInputElement;
     checkout: { clear: boolean };
-    nid: string;
     directorySymbol: string;
     classifyMap: Map<Blob, string>;
     preStoreMap: Map<string, IPreStore[]>;
@@ -43,7 +42,6 @@ export class Dispatcher {
         this.copier = document.querySelector("#transfer-to-clipboard");
         this.linker = document.querySelector("input.custom-clip");
         this.checkout = { clear: true };
-        this.nid = Utils.randomString(16);
         this.directorySymbol = "\ud83d\udcc1";
         this.classifyMap = new Map();
         this.preStoreMap = new Map();
@@ -186,7 +184,7 @@ export class Dispatcher {
                         { duration: 500, easing: "ease", fill: "backwards" },
                     );
                 } else {
-                    chrome.notifications.create(this.nid, {
+                    chrome.notifications.create({
                         type: "basic",
                         iconUrl: chrome.i18n.getMessage("notify_icon"),
                         title: chrome.i18n.getMessage("warn_title"),

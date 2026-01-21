@@ -5,7 +5,7 @@
  */
 
 import { Utils } from "./utils.js";
-import { FP_TYPE_DOWNLOAD, NID_GRAB_RESOURCE } from "./constant.js";
+import { FP_TYPE_DOWNLOAD } from "./constant.js";
 import { Isomorphic } from "./isomorphic.js";
 import { FileProgress } from "./file-progress.js";
 
@@ -31,8 +31,8 @@ export async function fetchBlob(srcUrl: string, pageUrl?: string, _replay = fals
     progress.padding(1);
 
     if (granted && !_replay && Utils.isValidURL(srcUrl) && Utils.isValidURL(pageUrl)) {
-        const DNR_MODIFY_HEADERS = 'modifyHeaders' as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
-        const DNR_SET = 'set' as chrome.declarativeNetRequest.HeaderOperation.SET;
+        const DNR_MODIFY_HEADERS = "modifyHeaders" as chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS;
+        const DNR_SET = "set" as chrome.declarativeNetRequest.HeaderOperation.SET;
         const hostname = new URL(location.href).hostname;
         await chrome.declarativeNetRequest.updateSessionRules({
             addRules: [
@@ -77,7 +77,7 @@ export async function fetchBlob(srcUrl: string, pageUrl?: string, _replay = fals
 
             if (notGranted || grantedAndReplayError) {
                 progress.failure();
-                Utils.notify(NID_GRAB_RESOURCE, {
+                Utils.notify({
                     title: chrome.i18n.getMessage("warn_title"),
                     message: "无法读取远程文件，请开启选项中的伪造 HTTP Referer 功能",
                 });

@@ -14,7 +14,6 @@ import {
     E_FILE_SIZE_RESTRICT,
     E_FILE_SIZE_OVERFLOW,
     UNKNOWN_FILE_SIZE_RESTRICT,
-    NID_LOGIN_RESULT,
 } from "../sharre/constant.js";
 import { attachPhotoToSpecialAlbum } from "./photo.js";
 import { requestSignIn } from "./author.js";
@@ -135,7 +134,7 @@ async function uploader(item: WB.PackedItem, watermark?: WB.Watermark, _replay =
                 return requestSignIn(true)
                     .catch((reason) => {
                         reason.login &&
-                            Utils.notify(NID_LOGIN_RESULT, {
+                            Utils.notify({
                                 title: chrome.i18n.getMessage("fail_title"),
                                 message: "微博登录信息校验成功，可是。。。图片上传失败了呢",
                             });

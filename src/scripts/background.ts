@@ -17,7 +17,6 @@ import "./background/weibo-referer.js";
 import { Log } from "./background/log.js";
 import { Utils } from "./sharre/utils.js";
 import { GUID } from "./background/guid.js";
-import { NID_MISMATCH_CORS } from "./sharre/constant.js";
 
 chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sendResponse) => {
     if (!message) return;
@@ -32,7 +31,7 @@ chrome.runtime.onMessage.addListener((message: ServiceWorkerMessage, sender, sen
             break;
         }
         case "WithoutCorsMode": {
-            Utils.notify(NID_MISMATCH_CORS, {
+            Utils.notify({
                 title: chrome.i18n.getMessage("warn_title"),
                 message: "当前资源的网络请求不符合 CORS 规范，无法读取资源的数据",
             });

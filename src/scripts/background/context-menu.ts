@@ -4,14 +4,7 @@
  * found in the LICENSE file.
  */
 
-import {
-    M_UPLOAD_FRAME,
-    M_BATCH_DELETE,
-    M_UPLOAD_IMAGE,
-    M_OPEN_HISTORY,
-    M_DOWNLOAD_LOG,
-    NID_COPY_URL_FAIL,
-} from "../sharre/constant.js";
+import { M_UPLOAD_FRAME, M_BATCH_DELETE, M_UPLOAD_IMAGE, M_OPEN_HISTORY, M_DOWNLOAD_LOG } from "../sharre/constant.js";
 import { Utils } from "../sharre/utils.js";
 import { Base64 } from "../sharre/base64.js";
 import { PConfig } from "../sharre/constant.js";
@@ -102,7 +95,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 },
                 (response) => {
                     if (response && response.valid && !response.done) {
-                        Utils.notify(NID_COPY_URL_FAIL, { message: "操作失败：链接没有复制到剪切板中(lll￢ω￢)" });
+                        Utils.notify({ message: "操作失败：链接没有复制到剪切板中(lll￢ω￢)" });
                     }
                 },
             );

@@ -12,7 +12,6 @@ import {
     E_MISS_WEIBO_ACCOUNT,
     E_WEIBO_USER_ID_SLIP,
     K_WEIBO_ACCOUNT_DETAILS,
-    NID_LOGIN_RESULT,
     NID_REMAIN_LOGOUT,
 } from "../sharre/constant.js";
 import { tryActivateUserStatus } from "./activator.js";
@@ -81,7 +80,7 @@ async function setUserStatus(notify: boolean): Promise<WB.LoginInfo> {
             return signInByUserAccount(accountInfo.username, accountInfo.password)
                 .catch((reason) => {
                     notify &&
-                        Utils.notify(NID_LOGIN_RESULT, {
+                        Utils.notify({
                             title: chrome.i18n.getMessage("fail_title"),
                             message: "登录失败，请检查微博账户信息及网络情况",
                         });

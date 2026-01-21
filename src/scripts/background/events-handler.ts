@@ -7,9 +7,9 @@
 import { NID_REMAIN_LOGOUT } from "../sharre/constant.js";
 
 chrome.notifications.onClicked.addListener((notificationId) => {
-    if (notificationId === NID_REMAIN_LOGOUT) {
+    if (notificationId.startsWith(NID_REMAIN_LOGOUT)) {
         const url = `https://weibo.com/login.php?url=${encodeURIComponent("https://weibo.com")}`;
-        chrome.tabs.create({ url }, (tab) => chrome.notifications.clear(NID_REMAIN_LOGOUT));
+        chrome.tabs.create({ url }, (tab) => chrome.notifications.clear(notificationId));
     }
 });
 

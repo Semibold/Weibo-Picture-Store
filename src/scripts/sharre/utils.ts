@@ -481,7 +481,7 @@ export class Utils {
     static notify(arg1: any, arg2?: any, arg3?: any): void {
         if (typeof arg1 === "string") {
             return chrome.notifications.create(
-                arg1,
+                arg1 + "@" + crypto.randomUUID(),
                 Object.assign(
                     {
                         type: "basic",

@@ -11,7 +11,6 @@ import {
     E_FILE_TYPE_RESTRICT,
     FP_TYPE_UPLOAD,
     K_WEIBO_INHERITED_WATERMARK,
-    NID_UPLOAD_RESULT,
 } from "./constant.js";
 
 import { requestUpload } from "../weibo/upload.js";
@@ -147,7 +146,7 @@ export class WeiboUpload {
                     if (this.isNotify) {
                         const { succeed, failure, discard } = await this.progress.getPrevInfo();
                         if (failure || discard) {
-                            chrome.notifications.create(NID_UPLOAD_RESULT, {
+                            chrome.notifications.create({
                                 type: "basic",
                                 iconUrl: chrome.i18n.getMessage("notify_icon"),
                                 title: chrome.i18n.getMessage("warn_title"),
